@@ -98,6 +98,10 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         contexto.progreso.alternarAccion(accionId, puntos)
     }
 
+    fun guardarLlaveOpenAi(llave: String) = viewModelScope.launch {
+        contexto.progreso.guardarLlaveOpenAi(llave)
+    }
+
     fun elegirPais(codigo: String) = viewModelScope.launch {
         contexto.progreso.elegirPais(codigo)
     }

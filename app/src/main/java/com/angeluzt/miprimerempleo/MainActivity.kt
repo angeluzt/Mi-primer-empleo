@@ -20,6 +20,7 @@ import androidx.navigation.compose.rememberNavController
 import com.angeluzt.miprimerempleo.cv.Plantillas
 import com.angeluzt.miprimerempleo.cv.cvDeMuestra
 import com.angeluzt.miprimerempleo.ui.AppViewModel
+import com.angeluzt.miprimerempleo.ui.screens.PantallaAjustes
 import com.angeluzt.miprimerempleo.ui.screens.PantallaBienvenida
 import com.angeluzt.miprimerempleo.ui.screens.PantallaCv
 import com.angeluzt.miprimerempleo.ui.screens.PantallaLector
@@ -71,6 +72,17 @@ class MainActivity : ComponentActivity() {
                             onModulo = { nav.navigate("modulo/$it") },
                             onCv = { nav.navigate("cv") },
                             onPaywall = { nav.navigate("paywall") },
+                            onAjustes = { nav.navigate("ajustes") },
+                        )
+                    }
+                    composable("ajustes") {
+                        PantallaAjustes(
+                            estado = estado,
+                            onElegirRuta = vm::elegirRuta,
+                            onElegirPais = vm::elegirPais,
+                            onGuardarLlave = vm::guardarLlaveOpenAi,
+                            onRestaurar = vm::restaurarCompras,
+                            onAtras = { nav.popBackStack() },
                         )
                     }
                     composable("modulo/{moduloId}") { entrada ->

@@ -21,7 +21,7 @@ class MiPrimerEmpleoApp : Application() {
         super.onCreate()
         contenido = RepositorioContenido(this)
         progreso = Progreso(this)
-        clienteCv = ClienteCv()
+        clienteCv = ClienteCv(this)
         compras = GestorCompras(this).also { it.conectar() }
     }
 }

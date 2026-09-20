@@ -25,14 +25,24 @@ android {
         )
     }
 
+    sourceSets["main"].assets.srcDirs(
+        "src/main/assets",
+        // Los prompts viven en /prompts y los comparten backend, script y app.
+        "../prompts",
+    )
+
     buildTypes {
         debug {
             // Play Billing no funciona en un APK instalado a mano, así que sin esto
             // no habría forma de probar el contenido de paga. Solo existe en debug.
             buildConfigField("boolean", "DESBLOQUEO_PRUEBA", "true")
+            // Permite pegar una llave de OpenAI dentro de la app para probar en un
+            // teléfono real. Solo en debug: en release la llave siempre vive en el backend.
+            buildConfigField("boolean", "LLAVE_LOCAL_PERMITIDA", "true")
         }
         release {
             buildConfigField("boolean", "DESBLOQUEO_PRUEBA", "false")
+            buildConfigField("boolean", "LLAVE_LOCAL_PERMITIDA", "false")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")

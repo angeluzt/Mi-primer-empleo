@@ -21,6 +21,7 @@ data class EstadoProgreso(
     val cvsGenerados: Int = 0,
     val plantillaCv: String = "",
     val pais: String = "MX",
+    val llaveOpenAi: String = "",
 )
 
 class Progreso(private val context: Context) {
@@ -34,6 +35,7 @@ class Progreso(private val context: Context) {
         val cvs = intPreferencesKey("cvs_generados")
         val plantilla = stringPreferencesKey("plantilla_cv")
         val pais = stringPreferencesKey("pais")
+        val llave = stringPreferencesKey("llave_openai")
     }
 
     val estado: Flow<EstadoProgreso> = context.dataStore.data.map { p ->
@@ -46,6 +48,7 @@ class Progreso(private val context: Context) {
             cvsGenerados = p[Llaves.cvs] ?: 0,
             plantillaCv = p[Llaves.plantilla].orEmpty(),
             pais = p[Llaves.pais] ?: "MX",
+            llaveOpenAi = p[Llaves.llave].orEmpty(),
         )
     }
 
@@ -82,6 +85,11 @@ class Progreso(private val context: Context) {
                 p[Llaves.puntos] = total + puntos
             }
         }
+    }
+
+    /** Solo la usa la pantalla de Ajustes, y solo en compilaciones de depuración. */
+    suspend fun guardarLlaveOpenAi(llave: String) {
+        context.dataStore.edit { it[Llaves.llave] = llave.trim() }
     }
 
     suspend fun elegirPais(codigo: String) {

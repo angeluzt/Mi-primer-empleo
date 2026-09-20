@@ -19,15 +19,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,22 +41,35 @@ import androidx.compose.ui.unit.dp
 import com.angeluzt.miprimerempleo.model.ModuloMeta
 import com.angeluzt.miprimerempleo.ui.EstadoApp
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantallaRuta(
     estado: EstadoApp,
     onModulo: (String) -> Unit,
     onCv: () -> Unit,
     onPaywall: () -> Unit,
+    onAjustes: () -> Unit,
 ) {
     val ruta = estado.ruta ?: return
 
-    Scaffold { relleno ->
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(ruta.titulo, style = MaterialTheme.typography.labelLarge) },
+                actions = {
+                    IconButton(onClick = onAjustes) {
+                        Icon(Icons.Default.Settings, contentDescription = "Ajustes")
+                    }
+                },
+            )
+        },
+    ) { relleno ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(relleno),
             contentPadding = androidx.compose.foundation.layout.PaddingValues(
-                start = 20.dp, end = 20.dp, top = 16.dp, bottom = 28.dp,
+                start = 20.dp, end = 20.dp, top = 8.dp, bottom = 28.dp,
             ),
         ) {
             item { TarjetaNivel(estado) }
