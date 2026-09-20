@@ -1,0 +1,218 @@
+{
+  "id": "entrevista",
+  "titulo": "La entrevista",
+  "intro": "Nadie espera que sepas hacer el trabajo. Esperan señales de que vas a aprenderlo rápido y no vas a ser un problema. Eso se prepara.",
+  "capitulos": [
+    {
+      "id": "en_buscan",
+      "titulo": "Qué buscan realmente en alguien sin experiencia",
+      "minutos": 6,
+      "gratis": true,
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Cuando entrevistan a un junior, quien está enfrente sabe perfectamente que no sabes. Nadie te va a preguntar algo esperando maestría. Está evaluando otra cosa: cuánto le va a costar enseñarte y si vale la pena."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "Señal 1: aprendes solo"
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Es la más valiosa de todas, porque significa que no tienen que empujarte. Se demuestra con una historia concreta de algo que aprendiste sin que nadie te obligara: un curso que tomaste por gusto, una herramienta que estudiaste para tu proyecto, un problema que te atoró y resolviste leyendo."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "Señal 2: eres proactivo"
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "No significa ser el más entusiasta de la sala. Significa que ves algo que se puede mejorar y lo haces sin que te lo pidan. Una historia de «noté que X estaba mal, propuse Y, pasó Z» vale más que diez adjetivos."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "Señal 3: terminas lo que empiezas"
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Esta es la que más gente reprueba sin darse cuenta. Hablan de cinco proyectos y ninguno está terminado. Un proyecto acabado, aunque sea modesto, comunica algo que cinco proyectos a medias no pueden: que se puede contar contigo."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "Señal 4: se puede trabajar contigo"
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Explicas las cosas de forma clara, escuchas la pregunta completa antes de responder, aceptas cuando no sabes algo y no hablas mal de nadie. Suena básico. Es donde se cae la mitad de los candidatos."
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "clave",
+          "titulo": "Tu tarea antes de cualquier entrevista",
+          "texto": "Ten preparada UNA historia concreta para cada señal. Cuatro historias. Las vas a reutilizar toda tu carrera. Escríbelas hoy, no las improvises."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "La fórmula para contar cualquier historia"
+        },
+        {
+          "tipo": "lista",
+          "ordenada": true,
+          "items": [
+            "**Situación**: cuál era el problema, en una frase.",
+            "**Qué hice**: tus acciones concretas, en primera persona. «Yo hice», no «se hizo».",
+            "**Resultado**: qué cambió, con número si se puede. Si salió mal, qué aprendiste."
+          ]
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Treinta a sesenta segundos por historia. Practícalas en voz alta, grabándote con el celular. La primera vez que te escuches vas a querer morirte; la quinta vez vas a sonar como alguien a quien se contrata."
+        }
+      ]
+    },
+    {
+      "id": "en_preguntas",
+      "titulo": "Las preguntas que siempre caen",
+      "minutos": 7,
+      "gratis": false,
+      "bloques": [
+        {
+          "tipo": "titulo",
+          "texto": "«Háblame de ti»"
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "No es tu biografía. Son 90 segundos: qué estudiaste, qué has hecho que tenga que ver con esta vacante, y por qué estás aquí. Termina siempre apuntando al puesto. Prepárala palabra por palabra: es la única pregunta garantizada de toda entrevista."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "«¿Por qué quieres trabajar aquí?»"
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Están midiendo si investigaste o si mandaste el CV a ciegas. Menciona algo específico de la empresa: un producto, un proyecto, un mercado en el que están. Cinco minutos en su sitio web bastan y te ponen por encima del 80% de los candidatos."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "«¿Cuál es tu mayor defecto?»"
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "peligro",
+          "titulo": "No digas «soy perfeccionista»",
+          "texto": "Lo escuchan diez veces al día y lo leen como deshonestidad. Di un defecto real, chico y profesional, y sobre todo qué estás haciendo al respecto: «Me cuesta pedir ayuda a tiempo, prefiero atorarme solo. Me puse la regla de preguntar si llevo más de una hora sin avanzar y me ha funcionado»."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "«No tienes experiencia, ¿por qué te contrataría?»"
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Suena agresiva pero es una invitación. No te disculpes ni te encojas. Reconócelo en media frase y pasa inmediatamente a tu evidencia: «Es cierto que no tengo experiencia formal en el puesto. Lo que sí tengo es [proyecto concreto], donde hice [X] y resolví [Y]. Aprendo rápido y puedo mostrarte exactamente cómo trabajo.»"
+        },
+        {
+          "tipo": "titulo",
+          "texto": "«¿Cuánto quieres ganar?»"
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "La que más miedo da. Dos reglas: nunca des un número sin haber investigado antes (módulo de Investiga la empresa), y siempre responde con un **rango**, no con una cifra exacta."
+        },
+        {
+          "tipo": "lista",
+          "items": [
+            "Primero intenta devolver la pregunta: «Me gustaría saber cuál es el rango que tienen presupuestado para el puesto.» Muchas veces te lo dicen.",
+            "Si insisten, da un rango realista: «Con base en lo que investigué del mercado, busco entre X y Y, dependiendo de las prestaciones.»",
+            "Ancla el rango **arriba** de tu mínimo real. El piso que digas es el techo de lo que te van a ofrecer.",
+            "Nunca digas «lo que la empresa considere justo». Comunica que no te valoras, y van a ofrecer el mínimo."
+          ]
+        },
+        {
+          "tipo": "titulo",
+          "texto": "«¿Tienes alguna pregunta para nosotros?»"
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Decir «no, todo claro» es un error costoso. Es tu oportunidad de parecer alguien con criterio y, de paso, de averiguar si ese lugar te conviene. Ten tres listas:"
+        },
+        {
+          "tipo": "lista",
+          "items": [
+            "«¿Cómo se vería un buen primer trimestre en este puesto?»",
+            "«¿Quién sería la persona con la que más trabajaría y cómo es el equipo?»",
+            "«¿Qué pasó con la persona que estaba antes en este puesto?» — la respuesta te dice muchísimo.",
+            "«¿Cómo se da la retroalimentación aquí?»",
+            "«¿Cuáles son los siguientes pasos del proceso y en qué fecha sabría algo?»"
+          ]
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "tip",
+          "titulo": "Búsqueda que debes hacer siempre",
+          "texto": "Antes de cada entrevista, busca en internet: «preguntas de entrevista para [nombre del puesto] 2026». Aparecen listas actualizadas y específicas de tu área. Diez minutos de esto cambian por completo cómo llegas."
+        }
+      ]
+    },
+    {
+      "id": "en_bitacora",
+      "titulo": "Usa las entrevistas que fallaste",
+      "minutos": 4,
+      "gratis": false,
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Vas a fallar entrevistas. Todos fallamos. La diferencia entre quien consigue trabajo en el intento 4 y quien sigue en el 30 es que el primero convirtió cada rechazo en información."
+        },
+        {
+          "tipo": "cita",
+          "texto": "Una entrevista perdida de la que aprendiste algo no es un fracaso: es una clase particular gratis sobre lo que el mercado te está pidiendo."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "Qué anotar saliendo, mientras está fresco"
+        },
+        {
+          "tipo": "lista",
+          "ordenada": true,
+          "items": [
+            "Las preguntas que te hicieron, lo más literal que recuerdes.",
+            "**Cuáles no supiste contestar.** Esta es la lista de oro.",
+            "En qué momento sentiste que se enfrió la cosa.",
+            "Qué te preguntaron sobre la empresa o el puesto que no habías investigado.",
+            "Una cosa que harías distinto la próxima."
+          ]
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Después de tres o cuatro entrevistas vas a ver el patrón: siempre te preguntan lo mismo y siempre te atoras en lo mismo. Ahí está exactamente lo que tienes que estudiar. No es adivinanza, son datos tuyos."
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "clave",
+          "titulo": "La Bitácora de entrevistas",
+          "texto": "La app tiene una herramienta para esto: registras cada entrevista, marcas qué no supiste y ella te arma tu lista de estudio y te muestra qué pregunta se te repite. Es de las cosas que más rápido mejora tus resultados."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "Pide retroalimentación"
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Si te rechazan, responde el correo agradeciendo y pregunta: «¿Habría algo específico que me recomendarías reforzar para futuros procesos?». Muchos no contestan. Uno de cada cinco sí, y lo que te dice vale más que cualquier guía — incluida esta."
+        },
+        {
+          "tipo": "accion",
+          "accionId": "primera_entrevista",
+          "texto": "Tuve mi primera entrevista y la registré",
+          "puntos": 25
+        },
+        {
+          "tipo": "accion",
+          "accionId": "tres_entrevistas",
+          "texto": "Llevo 3 entrevistas registradas y trabajé mi lista de estudio",
+          "puntos": 30
+        }
+      ]
+    }
+  ]
+}

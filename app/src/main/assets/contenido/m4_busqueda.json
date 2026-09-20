@@ -1,0 +1,150 @@
+{
+  "id": "busqueda",
+  "titulo": "Dónde buscar",
+  "intro": "Hay 6 canales para encontrar trabajo. La mayoría de la gente usa solo el que peor funciona. Este módulo completo es gratis.",
+  "capitulos": [
+    {
+      "id": "bu_canales",
+      "titulo": "Los 6 canales, comparados sin adornos",
+      "minutos": 5,
+      "gratis": true,
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Casi todo el mundo hace lo mismo: entra a una bolsa de trabajo, manda 60 CVs iguales en una tarde y espera. Es el canal con la tasa de respuesta más baja de todos, y es donde está el 90% de tu competencia."
+        },
+        {
+          "tipo": "tabla",
+          "encabezados": ["Canal", "Esfuerzo", "Respuesta", "Para quién"],
+          "filas": [
+            ["Referidos (conocidos, ex compañeros, maestros)", "Bajo", "Muy alta", "Todos. El más ignorado por juniors."],
+            ["Página «Careers» de la empresa", "Medio", "Alta", "Menos competencia que las bolsas."],
+            ["Entrega presencial de CV", "Alto", "Media-alta", "Industria, comercio, negocios locales."],
+            ["Bolsa de tu universidad y ferias", "Bajo", "Alta", "Estudiantes y recién egresados."],
+            ["LinkedIn", "Medio", "Media", "Corporativo, tech, marketing, diseño."],
+            ["OCC / Computrabajo / Indeed", "Bajo", "Baja", "Cubrir volumen. Nunca como único canal."]
+          ]
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "clave",
+          "titulo": "La regla 3-2-1 por semana",
+          "texto": "3 aplicaciones por bolsa de trabajo, 2 aplicaciones directas en la página de la empresa, 1 contacto humano (un referido, un mensaje a un reclutador, una visita presencial). Seis acciones a la semana, bien hechas, valen más que 200 CVs enviados a ciegas."
+        }
+      ]
+    },
+    {
+      "id": "bu_referidos",
+      "titulo": "Referidos: el canal que no usas",
+      "minutos": 4,
+      "gratis": true,
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Una parte enorme de las vacantes se llena por recomendación antes de publicarse. Cuando un empleado te recomienda, tu CV no cae en el montón: llega con una persona respondiendo por ti, y muchas empresas hasta pagan bono por referir. Es decir, ayudarte les conviene."
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "El bloqueo casi siempre es vergüenza. Se siente como pedir favores. No lo es: es avisar que estás disponible."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "A quién avisar (haz la lista hoy)"
+        },
+        {
+          "tipo": "lista",
+          "items": [
+            "Compañeros de generación que ya están trabajando.",
+            "Egresados de tu carrera que no conoces, pero que están en LinkedIn. Compartir universidad abre puertas más de lo que crees.",
+            "Tus profesores. Les llegan vacantes todo el tiempo y no saben a quién mandárselas.",
+            "Familia y amigos de la familia. Nadie sabe dónde trabaja el vecino.",
+            "Jefes o compañeros de cualquier trabajo anterior, aunque no fuera de tu área."
+          ]
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "tip",
+          "titulo": "El mensaje que sí funciona",
+          "texto": "«Hola [nombre], espero que estés bien. Acabo de egresar de [carrera] y ando buscando mi primera oportunidad como [puesto]. Si en tu empresa abren algo así, o sabes de alguien, te agradecería muchísimo que me tuvieras en mente. Te dejo mi CV por si acaso. ¡Gracias!» — Corto, concreto, sin rodeos y fácil de reenviar."
+        }
+      ]
+    },
+    {
+      "id": "bu_plataformas",
+      "titulo": "Cómo se usa cada plataforma",
+      "minutos": 7,
+      "gratis": true,
+      "bloques": [
+        {
+          "tipo": "titulo",
+          "texto": "LinkedIn"
+        },
+        {
+          "tipo": "lista",
+          "items": [
+            "Filtra por **«Menos de 10 solicitantes»** y por fecha: «Última hora» o «Últimas 24 horas».",
+            "Usa **Solicitud sencilla** para volumen, pero si la vacante te interesa de verdad, aplica también en la página de la empresa.",
+            "Después de aplicar, busca al reclutador que publicó y mándale un mensaje corto. Esto casi nadie lo hace y es lo que te saca del montón.",
+            "Revisa quién trabaja ahí y estudió en tu universidad. Ahí está tu referido."
+          ]
+        },
+        {
+          "tipo": "titulo",
+          "texto": "OCC, Computrabajo, Indeed, Bumeran"
+        },
+        {
+          "tipo": "lista",
+          "items": [
+            "Sube el CV **sin columnas ni tablas**: estos sitios lo procesan con lector automático.",
+            "Completa el perfil al 100%. Los perfiles incompletos se hunden en las búsquedas de los reclutadores.",
+            "Activa alertas y aplica en las primeras 24 horas.",
+            "Desconfía de las vacantes sin nombre de empresa, sin sueldo y con descripciones vagas. El módulo de Estafas explica por qué."
+          ]
+        },
+        {
+          "tipo": "titulo",
+          "texto": "La página «Careers» de la empresa — el canal subestimado"
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Haz una lista de 20 a 30 empresas donde te gustaría trabajar, sin importar si tienen vacante. Búscalas en Google como «[empresa] bolsa de trabajo» o «[empresa] careers». Muchas publican ahí primero, o solo ahí. Compites contra decenas, no contra cientos."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "Entrega presencial: sigue funcionando"
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "En parques industriales, zonas comerciales, talleres, consultorios y negocios medianos, llegar en persona con tu CV impreso todavía funciona muy bien — y prácticamente nadie de tu generación lo hace."
+        },
+        {
+          "tipo": "lista",
+          "items": [
+            "Ve entre semana por la mañana, arreglado, con 10 copias impresas.",
+            "Pregunta por **Recursos Humanos** y, si no está, deja el CV con el nombre de quién lo recibió.",
+            "Ten lista una frase de 15 segundos: quién eres, qué estudiaste, qué buscas.",
+            "Anota a dónde fuiste y qué día. Vuelve a marcar a la semana: eso demuestra interés real."
+          ]
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "aviso",
+          "titulo": "Seguridad primero",
+          "texto": "Entrega CV solo en establecimientos formales y en horario laboral. Nunca en un domicilio particular, nunca de noche, y avisa a alguien a dónde vas. Si una «empresa» te cita en un lugar raro, no vayas. Esto se explica a fondo en el módulo de Estafas y riesgos."
+        },
+        {
+          "tipo": "accion",
+          "accionId": "aplicaciones_15",
+          "texto": "Llevo 15 aplicaciones enviadas",
+          "puntos": 20
+        },
+        {
+          "tipo": "accion",
+          "accionId": "contacto_humano",
+          "texto": "Contacté a 5 personas (referidos, reclutadores o en persona)",
+          "puntos": 20
+        }
+      ]
+    }
+  ]
+}

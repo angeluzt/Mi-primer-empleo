@@ -1,0 +1,253 @@
+{
+  "id": "estafas",
+  "titulo": "Estafas y riesgos",
+  "intro": "Buscar trabajo sin dinero y con prisa te vuelve el blanco perfecto. Esto es lo que te van a intentar hacer y cómo salirte a tiempo.",
+  "capitulos": [
+    {
+      "id": "es_regla",
+      "titulo": "La regla que te salva de casi todo",
+      "minutos": 3,
+      "gratis": true,
+      "bloques": [
+        {
+          "tipo": "cita",
+          "texto": "Un trabajo te PAGA. Si en algún momento tú tienes que pagar, no es un trabajo."
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Con esa sola regla evitas la mayoría de los fraudes de empleo. No importa qué tan convincente sea el argumento, qué tan bonita esté la oficina o qué tan buena suene la oferta: el dinero va de la empresa hacia ti, nunca al revés."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "Las excusas que usan para cobrarte"
+        },
+        {
+          "tipo": "lista",
+          "items": [
+            "«Cuota de reclutamiento» o «gastos administrativos del contrato».",
+            "«Tienes que comprar tu kit de inicio / uniforme / material».",
+            "«El curso de capacitación es obligatorio y se paga aparte».",
+            "«Los exámenes médicos y psicométricos corren por tu cuenta» (la empresa los paga; si acaso te reembolsan después, y eso ya es sospechoso).",
+            "«Hay que pagar el trámite de la visa / el traslado» para un trabajo en el extranjero.",
+            "«Deposita para apartar tu lugar, hay mucha demanda»."
+          ]
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "peligro",
+          "titulo": "Sin excepciones",
+          "texto": "Una empresa legítima no te cobra por contratarte. Ni 200 pesos «simbólicos», ni «te lo descontamos del primer sueldo». En el momento en que te piden dinero, la conversación se acabó. Bloquea y reporta."
+        }
+      ]
+    },
+    {
+      "id": "es_catalogo",
+      "titulo": "Las estafas más comunes",
+      "minutos": 8,
+      "gratis": false,
+      "bloques": [
+        {
+          "tipo": "titulo",
+          "texto": "1. La pirámide disfrazada de vacante"
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Te contactan por una vacante de «ejecutivo comercial» o «gerente en desarrollo». Llegas y resulta ser una sesión grupal motivacional, con testimonios de gente que «cambió su vida». El sueldo es 100% comisión y para empezar tienes que comprar producto o pagar una membresía. Tu ingreso depende de reclutar a más gente debajo de ti."
+        },
+        {
+          "tipo": "lista",
+          "items": [
+            "Señal: te entrevistan en grupo, con 20 personas más, y hay aplausos.",
+            "Señal: nunca dicen claramente qué vas a hacer todos los días.",
+            "Señal: «no es un empleo, es una oportunidad de negocio», «sé tu propio jefe».",
+            "Señal: te piden llevar a conocidos a la siguiente sesión."
+          ]
+        },
+        {
+          "tipo": "titulo",
+          "texto": "2. Trabajo desde casa: empaque, ensamble y «data entry»"
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "«Arma bolígrafos / empaca dulces / captura datos desde tu casa, gana 8,000 a la semana.» Te piden un depósito por el material, que nunca llega, o llega y luego «tu trabajo no pasó el control de calidad» y no te pagan nada. Este fraude tiene 40 años y sigue funcionando."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "3. Robo de identidad disfrazado de contratación"
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Este es el más peligroso porque no te piden dinero — te piden documentos. Antes de siquiera entrevistarte te solicitan INE por ambos lados, CURP, comprobante de domicilio, foto tuya sosteniendo tu identificación, y a veces datos bancarios «para la nómina»."
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "peligro",
+          "titulo": "Para qué los usan",
+          "texto": "Con esos documentos abren créditos, cuentas y contratos a tu nombre. Te enteras meses después, cuando ya estás en buró de crédito con una deuda que no hiciste. Tus documentos se entregan CUANDO YA HAY OFERTA FORMAL POR ESCRITO y estás firmando contrato, nunca antes. Y jamás mandes una selfie sosteniendo tu identificación: ninguna contratación real lo necesita."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "4. El reclutador fantasma de WhatsApp o Telegram"
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Te escribe alguien de un número desconocido, dice representar a una empresa conocida, y todo el proceso ocurre por chat. Nunca hay videollamada, nunca hay correo corporativo, nunca hay oficina. El sueldo ofrecido es altísimo para lo que piden."
+        },
+        {
+          "tipo": "lista",
+          "items": [
+            "Verifica el correo: un reclutador real escribe desde `@empresa.com`, no desde Gmail.",
+            "Busca a la persona en LinkedIn. ¿Existe? ¿Tiene historial o la cuenta es de hace 3 semanas?",
+            "Llama al conmutador oficial de la empresa (el de su sitio web, no el que te dieron) y pregunta si esa persona trabaja ahí.",
+            "Si te presionan para decidir «hoy mismo», es estafa. La prisa es su herramienta principal."
+          ]
+        },
+        {
+          "tipo": "titulo",
+          "texto": "5. La prueba técnica que en realidad es trabajo gratis"
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Una prueba de 2 a 4 horas es normal y aceptable. Lo que no es normal: que te pidan diseñar su campaña completa, programar un módulo que van a usar en producción o entregar un plan de negocio de 30 páginas «como ejercicio». Si el entregable les sirve tal cual, eso es trabajo y se paga."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "6. Bootcamps y cursos con «empleo garantizado»"
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Hay bootcamps excelentes y honestos. También hay otros que venden deuda cara. La diferencia está en lo que firmas, no en lo que te prometen en la llamada de ventas."
+        },
+        {
+          "tipo": "lista",
+          "items": [
+            "Pide el **contrato completo por escrito** antes de pagar nada y léelo entero.",
+            "Si es «paga después con un % de tu sueldo», revisa: ¿cuánto %? ¿por cuántos años? ¿qué pasa si no consigues trabajo? ¿hay un mínimo que debes pagar de todos modos?",
+            "«Empleo garantizado» casi siempre tiene letras chiquitas: puede significar que basta con que te ofrezcan cualquier cosa, aunque no sea de tu área ni del sueldo prometido.",
+            "Busca egresados reales en LinkedIn (no los testimonios de su página) y pregúntales directo por mensaje. Te van a contestar."
+          ]
+        },
+        {
+          "tipo": "titulo",
+          "texto": "7. La oferta en el extranjero"
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "«Trabajo en Canadá, sueldo en dólares, solo paga el trámite de visa y el vuelo.» Las visas de trabajo legítimas las gestiona y normalmente las paga el empleador, y el proceso pasa por la embajada, no por un intermediario que te cobra por transferencia. Este fraude además puede terminar en trata de personas."
+        },
+        {
+          "tipo": "accion",
+          "accionId": "estafas_leido",
+          "texto": "Ya sé identificar las estafas más comunes",
+          "puntos": 10
+        }
+      ]
+    },
+    {
+      "id": "es_seguridad",
+      "titulo": "Tu seguridad física",
+      "minutos": 4,
+      "gratis": false,
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Esta parte no se habla lo suficiente. Buscar trabajo implica ir a lugares desconocidos a ver gente desconocida, muchas veces con prisa y con la guardia baja porque necesitas el empleo."
+        },
+        {
+          "tipo": "banderas",
+          "rojas": [
+            "La «entrevista» es en un domicilio particular, un hotel, un café a las 9 de la noche o un lugar sin nombre de empresa.",
+            "Te citan fuera de horario laboral o en fin de semana sin una razón clara.",
+            "Insisten en que vayas sola o solo, o en recogerte en su coche.",
+            "La dirección no coincide con la que aparece en el sitio oficial de la empresa.",
+            "Hay comentarios sobre tu apariencia, tu ropa o tu estado civil durante el proceso.",
+            "Te presionan para tomar algo o quedarte más tiempo del necesario."
+          ],
+          "verdes": [
+            "Oficina identificable, con recepción y otros empleados a la vista.",
+            "Cita en horario laboral, confirmada por correo corporativo.",
+            "Te dicen con quién te vas a entrevistar y cuál es su puesto.",
+            "El proceso tiene pasos claros y te los explican."
+          ]
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "clave",
+          "titulo": "Protocolo de seguridad para cada entrevista",
+          "texto": "1) Avisa a alguien a dónde vas, con quién y a qué hora sales. 2) Comparte tu ubicación en tiempo real con esa persona. 3) Verifica la dirección en el sitio oficial de la empresa, no en el mensaje que te mandaron. 4) Lleva tu teléfono con batería. 5) Si algo se siente mal al llegar, te vas. No debes ninguna explicación. Ningún trabajo vale tu seguridad."
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Y una nota sobre las entrevistas por video: son normales y seguras, pero si te piden encender la cámara en un contexto raro, quitarte algo de ropa «para el uniforme» o instalar un programa desconocido en tu computadora, cierra la llamada."
+        },
+        {
+          "tipo": "accion",
+          "accionId": "protocolo_seguridad",
+          "texto": "Tengo mi protocolo de seguridad para entrevistas",
+          "puntos": 10
+        }
+      ]
+    },
+    {
+      "id": "es_contrato",
+      "titulo": "El contrato y qué hacer si ya caíste",
+      "minutos": 5,
+      "gratis": false,
+      "bloques": [
+        {
+          "tipo": "titulo",
+          "texto": "Antes de firmar, revisa esto"
+        },
+        {
+          "tipo": "lista",
+          "items": [
+            "**Qué tipo de contrato es.** Si te contratan «por honorarios» o «por asimilados» pero trabajas con horario fijo, en su oficina y bajo sus órdenes, eso es una relación laboral disfrazada: te están quitando prestaciones e IMSS.",
+            "**Que te den de alta en el IMSS** y que el sueldo declarado sea el real, no un mínimo con el resto «por fuera». Si te registran con menos, tu incapacidad, tu crédito de vivienda y tu pensión se calculan sobre esa cifra menor.",
+            "**El sueldo escrito con número y letra**, la periodicidad de pago y el puesto.",
+            "**Periodo de prueba**: existe y es legal, pero tiene límites de duración y durante él te pagan igual.",
+            "Que te entreguen **una copia firmada**. Si no te la dan, es una bandera roja enorme."
+          ]
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "aviso",
+          "titulo": "Nunca firmes una renuncia en blanco",
+          "texto": "Algunas empresas piden firmar «documentos de rutina» al entrar, y entre ellos va una renuncia sin fecha. La usan para despedirte sin liquidación cuando quieran. Lee cada hoja que firmes, aunque te apuren."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "Si ya te estafaron"
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Primero: no es tu culpa, y no eres tonto. Estas estafas están diseñadas por gente que se dedica a esto a tiempo completo y que ataca justo cuando estás vulnerable. Lo que sigue importa más que lamentarlo."
+        },
+        {
+          "tipo": "lista",
+          "ordenada": true,
+          "items": [
+            "**Guarda todo**: capturas de la conversación, números, comprobantes de depósito, nombres, la publicación de la vacante.",
+            "**Si diste datos bancarios**, habla hoy mismo a tu banco y bloquea la tarjeta o cuenta.",
+            "**Si entregaste identificaciones**, revisa tu reporte de crédito (puedes pedir uno gratis al año) y vigila movimientos nuevos.",
+            "**Si ya trabajaste y no te pagaron**, en México la PROFEDET da asesoría laboral gratuita.",
+            "**Si fue fraude financiero**, acude a la CONDUSEF; si fue por internet, a la Policía Cibernética de tu estado.",
+            "**Repórtalo en la plataforma** donde viste la vacante. Evita que le pase al siguiente."
+          ]
+        },
+        {
+          "tipo": "recursos",
+          "items": [
+            { "nombre": "PROFEDET (México)", "descripcion": "Procuraduría Federal de la Defensa del Trabajo. Asesoría y representación laboral gratuita.", "url": "https://www.gob.mx/profedet", "afiliado": false, "gratis": true },
+            { "nombre": "CONDUSEF (México)", "descripcion": "Para fraudes financieros y problemas con bancos.", "url": "https://www.condusef.gob.mx/", "afiliado": false, "gratis": true }
+          ]
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "tip",
+          "titulo": "Regla final",
+          "texto": "Si una oferta suena demasiado bien para lo que piden, lo es. Un sueldo muy por encima del mercado para un puesto junior sin experiencia no es tu golpe de suerte: es el anzuelo. Tómate 24 horas antes de decidir cualquier cosa. La gente honesta te espera un día; el estafador no."
+        }
+      ]
+    }
+  ]
+}

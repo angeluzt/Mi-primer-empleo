@@ -1,0 +1,159 @@
+{
+  "id": "empresa",
+  "titulo": "Investiga la empresa",
+  "intro": "Ellos te investigan a ti. Es justo que tú los investigues a ellos. Cuánto pagan de verdad, si es buen lugar, y cómo formar tu propio criterio en vez de creerle a las reseñas.",
+  "capitulos": [
+    {
+      "id": "em_cuanto",
+      "titulo": "Cuánto pagan realmente",
+      "minutos": 5,
+      "gratis": true,
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Entrar a una negociación sin saber cuánto vale tu puesto es el error más caro que vas a cometer, y sus efectos duran años: tu siguiente sueldo se calcula sobre este, y el siguiente sobre ese."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "Dónde averiguarlo"
+        },
+        {
+          "tipo": "recursos",
+          "items": [
+            { "nombre": "Glassdoor", "descripcion": "Sueldos reportados por empleados y reseñas de la empresa. Empieza aquí.", "url": "https://www.glassdoor.com.mx/", "afiliado": false, "gratis": true },
+            { "nombre": "Indeed — Salarios", "descripcion": "Promedios por puesto y ciudad, con buena muestra en México y Latinoamérica.", "url": "https://mx.indeed.com/career/salaries", "afiliado": false, "gratis": true },
+            { "nombre": "Talent.com", "descripcion": "Rangos por puesto y estado. Útil para ciudades fuera de las capitales.", "url": "https://mx.talent.com/salary", "afiliado": false, "gratis": true },
+            { "nombre": "Levels.fyi", "descripcion": "Solo tecnología, pero muy preciso y con desglose por nivel.", "url": "https://www.levels.fyi/", "afiliado": false, "gratis": true },
+            { "nombre": "OCC — Comparador de sueldos", "descripcion": "Referencia del mercado mexicano por puesto y experiencia.", "url": "https://www.occ.com.mx/", "afiliado": false, "gratis": true }
+          ]
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "tip",
+          "titulo": "La fuente que nadie usa y es la mejor",
+          "texto": "Los egresados de tu propia carrera. Busca en LinkedIn gente que se graduó de tu universidad hace 1 o 2 años y trabaja en el puesto que quieres. Mándales mensaje: «Hola, también estudié en [universidad] y ando buscando mi primer empleo como [puesto]. ¿Te puedo preguntar en qué rango anda el sueldo para alguien que va empezando?» Mucha gente contesta, porque estuvo donde estás tú."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "Y pregúntalo en la primera llamada"
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "No es grosero y te ahorra semanas. En la llamada inicial con Recursos Humanos: «Antes de avanzar, ¿me podrías compartir el rango de sueldo del puesto? Para asegurarnos de que estamos en la misma página.» Si se niegan a decirlo en toda la primera etapa, es una bandera amarilla."
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "aviso",
+          "titulo": "Bruto no es neto",
+          "texto": "Si te dicen «20,000», pregunta si es bruto o libre. La diferencia después de impuestos es grande. Y suma o resta lo que no aparece en el número: transporte, comida, si te pagan vales, si hay home office (eso son horas y dinero real). Un sueldo de 18,000 con comedor y híbrido puede pagar mejor que uno de 21,000 a dos horas de tu casa."
+        },
+        {
+          "tipo": "accion",
+          "accionId": "investigue_sueldo",
+          "texto": "Ya sé cuánto paga el mercado por mi puesto",
+          "puntos": 10
+        }
+      ]
+    },
+    {
+      "id": "em_buena",
+      "titulo": "¿Es un buen lugar o me voy a arrepentir?",
+      "minutos": 6,
+      "gratis": false,
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Un primer trabajo malo no solo te hace infeliz: te quema un año de tu carrera y te enseña mañas. Vale la pena media hora de investigación."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "Cómo leer las reseñas sin dejarte engañar"
+        },
+        {
+          "tipo": "lista",
+          "items": [
+            "Ignora las 5 estrellas sin texto (suelen ser de la propia empresa) y las de 1 estrella puramente emocionales de alguien despedido.",
+            "Lee las de **3 estrellas**: son las más honestas, tienen pros y contras reales.",
+            "Busca **patrones**, no anécdotas. Si diez personas distintas mencionan «rotación altísima» o «no pagan a tiempo», eso es un hecho.",
+            "Revisa las fechas. Una empresa puede haber cambiado por completo en dos años."
+          ]
+        },
+        {
+          "tipo": "titulo",
+          "texto": "El truco de LinkedIn que vale por todas las reseñas"
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Entra a la página de la empresa en LinkedIn y mira la lista de empleados. Revisa cuántos llevan **menos de un año** y busca a gente que tuvo tu mismo puesto: ¿cuánto duraron? Si casi todos duran 8 meses, ya sabes lo que hay, sin que nadie te lo tenga que decir."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "Las banderas, sin diplomacia"
+        },
+        {
+          "tipo": "banderas",
+          "rojas": [
+            "El sueldo es «a negociar» y no lo sueltan hasta el final del proceso.",
+            "«Aquí somos una familia» — suele traducirse en pedirte cosas que no se le piden a un empleado.",
+            "Seis rondas de entrevista para un puesto junior.",
+            "Prueba no pagada de varios días que además les sirve tal cual.",
+            "Te ofrecen contrato por honorarios con horario fijo y jefe directo (es relación laboral disfrazada).",
+            "Rotación altísima en tu puesto.",
+            "Hablan mal de quien tenía el puesto antes que tú.",
+            "«Buscamos gente con hambre, aquí se trabaja hasta que se acabe» — es horas extra no pagadas con otro nombre.",
+            "No te dejan conocer a tu futuro equipo."
+          ],
+          "verdes": [
+            "Te dan el rango de sueldo desde la primera llamada.",
+            "Hay una persona claramente asignada a enseñarte.",
+            "Prestaciones de ley por escrito, IMSS con sueldo real.",
+            "Te dejan platicar con quien sería tu jefe y tu equipo.",
+            "El proceso tiene pasos claros y cumplen las fechas que te dan.",
+            "Gente con 3, 5 y 8 años en la empresa conviviendo con gente nueva.",
+            "Responden con naturalidad cuando preguntas por horarios y carga de trabajo."
+          ]
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "clave",
+          "titulo": "Tu propio criterio importa más que las listas",
+          "texto": "Ninguna lista sustituye lo que notaste estando ahí. ¿La gente se veía tensa o tranquila? ¿Tu entrevistador miraba el reloj? ¿Te contestaron las preguntas o las esquivaron? Esa incomodidad que sentiste y no supiste nombrar casi siempre tiene razón. Anótala, no la ignores."
+        }
+      ]
+    },
+    {
+      "id": "em_decidir",
+      "titulo": "Cómo decidir entre dos ofertas",
+      "minutos": 4,
+      "gratis": false,
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Cuando tengas dos ofertas — y vas a tenerlas — no decidas solo por el sueldo. Califica cada una del 1 al 5 en estos seis criterios:"
+        },
+        {
+          "tipo": "tabla",
+          "encabezados": ["Criterio", "Qué preguntarte"],
+          "filas": [
+            ["Aprendizaje", "¿Voy a salir de aquí sabiendo algo que hoy no sé y que el mercado paga?"],
+            ["Quién me enseña", "¿Hay alguien mejor que yo de quien aprender, o voy a estar solo?"],
+            ["Dinero real", "Sueldo neto menos transporte y comida, más prestaciones que sí uso."],
+            ["Tiempo", "¿Cuánto de mi vida se va en traslados y horas extra?"],
+            ["Nombre en el CV", "¿Esta empresa abre puertas después? Algunas marcas pesan años."],
+            ["Estabilidad", "¿El área es nueva y frágil o está consolidada?"]
+          ]
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "clave",
+          "titulo": "Si apenas empiezas, pondera doble «Aprendizaje» y «Quién me enseña»",
+          "texto": "En tu primer trabajo, 2,000 pesos más al mes no cambian tu vida. Un año aprendiendo al lado de alguien bueno sí la cambia, porque define cuánto vales en los siguientes cinco trabajos. Un mal primer empleo bien pagado es una trampa cara."
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Y si tienes dos ofertas, dilo. «Tengo otro proceso avanzado, pero ustedes son mi primera opción. ¿Habría posibilidad de revisar el sueldo?» Es el único momento en tu carrera con verdadero poder de negociación. Úsalo con respeto y sin faroles."
+        }
+      ]
+    }
+  ]
+}

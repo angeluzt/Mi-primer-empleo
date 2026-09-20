@@ -1,0 +1,16 @@
+{
+  "name": "mi-primer-empleo-backend",
+  "description": "Proxy de OpenAI con verificación de compra de Google Play",
+  "main": "index.js",
+  "engines": { "node": "20" },
+  "scripts": {
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^6.1.0",
+    "googleapis": "^144.0.0"
+  },
+  "private": true
+}

@@ -1,0 +1,4 @@
+-keepclassmembers class kotlinx.serialization.json.** { *; }
+-keep,includedescriptorclasses class com.angeluzt.miprimerempleo.**$$serializer { *; }
+-keepclassmembers class com.angeluzt.miprimerempleo.** { *** Companion; }
+-keepclasseswithmembers class com.angeluzt.miprimerempleo.** { kotlinx.serialization.KSerializer serializer(...); }

@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Mi Primer Empleo — Pantallas</title>
+<style>
+  /* Mismos tokens que ui/theme/Theme.kt */
+  :root{
+    --azul:#1D4ED8; --azul-claro:#EFF4FF; --azul-oscuro:#15307A;
+    --ambar:#D97706; --ambar-claro:#FEF3C7;
+    --verde:#047857; --verde-claro:#DCFCE7;
+    --rojo:#DC2626; --rojo-claro:#FEE2E2;
+    --tinta:#0F172A; --gris:#64748B; --gris-claro:#E2E8F0;
+    --fondo:#F8FAFC; --superficie:#FFFFFF; --variante:#F1F5F9;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#334155;font-family:Roboto,"Helvetica Neue",Arial,sans-serif;
+       display:flex;flex-wrap:wrap;gap:34px;padding:34px;align-items:flex-start;}
+  .phone{width:390px;height:844px;background:var(--fondo);border-radius:34px;
+         overflow:hidden;position:relative;display:flex;flex-direction:column;
+         box-shadow:0 18px 50px rgba(0,0,0,.45);}
+  .status{height:36px;background:var(--azul);color:#fff;display:flex;align-items:center;
+          justify-content:space-between;padding:0 20px;font-size:12px;font-weight:600;flex:none;}
+  .status.blanco{background:var(--superficie);color:var(--tinta);}
+  .appbar{height:54px;display:flex;align-items:center;gap:14px;padding:0 16px;
+          background:var(--fondo);flex:none;}
+  .appbar .back{font-size:21px;color:var(--tinta);line-height:1;}
+  .appbar .t{font-size:17px;font-weight:600;color:var(--tinta);}
+  .scroll{flex:1;overflow:hidden;padding:20px;}
+  .eyebrow{font-size:12px;font-weight:600;letter-spacing:.09em;color:var(--azul);}
+  h1{font-size:30px;line-height:38px;font-weight:700;color:var(--tinta);letter-spacing:-.4px;}
+  h2{font-size:25px;line-height:32px;font-weight:700;color:var(--tinta);}
+  h3{font-size:21px;line-height:28px;font-weight:700;color:var(--tinta);}
+  .title{font-size:17px;line-height:24px;font-weight:600;color:var(--tinta);}
+  .body{font-size:16px;line-height:26px;color:var(--tinta);}
+  .body-m{font-size:15px;line-height:23px;color:var(--tinta);}
+  .muted{color:var(--gris);}
+  .label{font-size:12px;line-height:16px;font-weight:500;color:var(--gris);}
+  .mt6{margin-top:6px}.mt8{margin-top:8px}.mt10{margin-top:10px}.mt12{margin-top:12px}
+  .mt14{margin-top:14px}.mt16{margin-top:16px}.mt18{margin-top:18px}.mt22{margin-top:22px}
+  .card{background:var(--superficie);border:1px solid var(--gris-claro);border-radius:16px;padding:16px;}
+  .row{display:flex;align-items:center;gap:13px;}
+  .between{display:flex;align-items:center;justify-content:space-between;}
+
+  /* Comparación Ana / Luis */
+  .comparacion{display:flex;gap:12px;}
+  .col{flex:1;background:var(--superficie);border-radius:14px;padding:14px;}
+  .col.a{border:1.5px solid rgba(29,78,216,.35);}
+  .col.b{border:1.5px solid rgba(217,119,6,.35);}
+  .col .nombre{font-size:21px;font-weight:700;line-height:26px;}
+  .col.a .nombre{color:var(--azul);} .col.b .nombre{color:var(--ambar);}
+  .col .etq{font-size:11px;font-weight:500;color:var(--gris);margin-bottom:10px;}
+  .col li{font-size:13px;line-height:19px;color:var(--tinta);list-style:none;margin-bottom:7px;}
+
+  .cita{background:var(--azul-claro);border-radius:14px;display:flex;overflow:hidden;}
+  .cita .barra{width:4px;background:var(--azul);flex:none;}
+  .cita p{padding:16px;font-size:16px;line-height:25px;font-style:italic;font-weight:500;color:var(--azul-oscuro);}
+
+  .alerta{border-radius:14px;display:flex;padding:16px;gap:14px;}
+  .alerta .barra{width:4px;border-radius:2px;flex:none;}
+  .alerta .tit{font-size:17px;font-weight:600;line-height:22px;}
+  .alerta .txt{font-size:14px;line-height:22px;color:var(--tinta);margin-top:6px;}
+  .alerta.clave{background:var(--azul-claro);} .alerta.clave .barra,.alerta.clave .tit{background:var(--azul);color:var(--azul);}
+  .alerta.clave .barra{background:var(--azul);}
+  .alerta.peligro{background:var(--rojo-claro);} .alerta.peligro .barra{background:var(--rojo);} .alerta.peligro .tit{color:var(--rojo);}
+  .alerta.aviso{background:var(--ambar-claro);} .alerta.aviso .barra{background:var(--ambar);} .alerta.aviso .tit{color:var(--ambar);}
+
+  .banderas{border-radius:14px;padding:16px;}
+  .banderas.rojas{background:var(--rojo-claro);} .banderas.verdes{background:var(--verde-claro);}
+  .banderas .tit{font-size:17px;font-weight:600;}
+  .banderas.rojas .tit{color:var(--rojo);} .banderas.verdes .tit{color:var(--verde);}
+  .banderas li{list-style:none;display:flex;gap:10px;font-size:14px;line-height:21px;color:var(--tinta);margin-top:9px;}
+  .banderas .sim{font-weight:700;flex:none;width:12px;}
+  .banderas.rojas .sim{color:var(--rojo);} .banderas.verdes .sim{color:var(--verde);}
+
+  .pill{display:inline-block;font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px;margin-left:8px;vertical-align:middle;}
+  .pill.gratis{background:rgba(4,120,87,.14);color:var(--verde);}
+  .pill.afiliado{background:rgba(100,116,139,.14);color:var(--gris);}
+
+  /* Nivel */
+  .nivel{background:var(--azul);border-radius:18px;padding:20px;color:#fff;}
+  .nivel .eyebrow{color:rgba(255,255,255,.75);}
+  .nivel h2{color:#fff;margin-top:2px;}
+  .nivel .desc{font-size:14px;line-height:21px;color:rgba(255,255,255,.85);margin:6px 0 16px;}
+  .barra-prog{height:8px;border-radius:4px;background:rgba(255,255,255,.25);overflow:hidden;}
+  .barra-prog i{display:block;height:100%;background:#fff;}
+  .nivel .pie{font-size:12px;color:rgba(255,255,255,.85);margin-top:10px;}
+
+  .cv-card{background:var(--ambar-claro);border-radius:18px;padding:18px;}
+  .cv-card .ico{font-size:26px;}
+  .cv-card .t{font-size:17px;font-weight:600;color:#78350F;}
+  .cv-card .s{font-size:14px;line-height:20px;color:rgba(120,53,15,.8);margin-top:2px;}
+
+  .mod{background:var(--superficie);border:1px solid var(--gris-claro);border-radius:16px;
+       padding:15px 16px;display:flex;align-items:center;gap:13px;margin-bottom:10px;}
+  .mod .num{width:38px;height:38px;border-radius:11px;background:var(--azul-claro);color:var(--azul);
+            font-size:17px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none;}
+  .mod .num.ok{background:var(--verde-claro);color:var(--verde);}
+  .mod .sub{font-size:14px;line-height:19px;color:var(--gris);margin-top:2px;}
+  .mod .lock{color:var(--ambar);font-size:15px;flex:none;}
+  .mini{height:4px;border-radius:2px;background:var(--gris-claro);margin-top:8px;overflow:hidden;}
+  .mini i{display:block;height:100%;background:var(--azul);}
+
+  .pase{background:var(--azul-claro);border-radius:18px;padding:20px;}
+
+  .cap{background:var(--superficie);border:1px solid var(--gris-claro);border-radius:16px;
+       padding:15px 16px;display:flex;align-items:center;gap:13px;margin-bottom:10px;}
+  .cap .ico{font-size:20px;flex:none;width:24px;text-align:center;}
+
+  .btn{background:var(--azul);color:#fff;border:none;border-radius:14px;height:54px;width:100%;
+       font-size:17px;font-weight:600;font-family:inherit;}
+  .btn-out{background:transparent;color:var(--azul);border:1.5px solid var(--azul);border-radius:12px;
+           height:46px;width:100%;font-size:15px;font-weight:600;font-family:inherit;}
+  .check{display:flex;gap:11px;align-items:flex-start;margin-bottom:12px;font-size:15px;line-height:22px;color:var(--tinta);}
+  .check .c{color:var(--verde);font-weight:700;flex:none;}
+
+  /* Chat CV */
+  .chat{flex:1;padding:16px;display:flex;flex-direction:column;gap:10px;overflow:hidden;}
+  .burb{max-width:86%;border-radius:16px;padding:14px;font-size:15px;line-height:23px;}
+  .burb.ia{background:var(--superficie);border:1px solid var(--gris-claro);color:var(--tinta);
+           border-bottom-left-radius:4px;align-self:flex-start;}
+  .burb.yo{background:var(--azul);color:#fff;border-bottom-right-radius:4px;align-self:flex-end;}
+  .barra-inf{background:var(--superficie);padding:12px 16px;flex:none;border-top:1px solid var(--gris-claro);}
+  .campo{border:1px solid var(--gris-claro);border-radius:14px;height:50px;display:flex;align-items:center;
+         padding:0 16px;color:var(--gris);font-size:15px;background:var(--superficie);}
+  .exportar{background:var(--azul-claro);border-radius:16px;padding:16px;margin-bottom:10px;}
+  .chip{display:inline-block;border:1px solid var(--gris-claro);border-radius:9px;padding:7px 13px;
+        font-size:13px;font-weight:500;color:var(--tinta);background:var(--superficie);margin-right:8px;}
+
+  .accion{background:var(--superficie);border:1.5px solid var(--azul);border-radius:14px;padding:16px;
+          display:flex;align-items:center;gap:14px;}
+  .accion .o{width:24px;height:24px;border-radius:50%;border:2px solid var(--azul);flex:none;}
+  .corte{background:var(--azul-claro);border-radius:18px;padding:22px;}
+  .fade{position:absolute;left:0;right:0;bottom:0;height:120px;
+        background:linear-gradient(to bottom,rgba(248,250,252,0),var(--fondo));pointer-events:none;}
+  ul.num li{list-style:none;display:flex;gap:11px;font-size:16px;line-height:25px;color:var(--tinta);margin-bottom:10px;}
+  ul.num .n{color:var(--azul);font-weight:700;flex:none;width:20px;}
+  b{font-weight:700;}
+</style>
+</head>
+<body>
+
+<!-- 1. BIENVENIDA -->
+<div class="phone" id="p1">
+  <div class="status"><span>9:41</span><span>▮▮▮ ▲ ▰</span></div>
+  <div class="scroll">
+    <div class="eyebrow">MI PRIMER EMPLEO</div>
+    <h1 class="mt10">El promedio no te contrata. La evidencia sí.</h1>
+
+    <div class="mt22 title">Dos caminos que terminan en el mismo sueldo</div>
+    <div class="comparacion mt12">
+      <div class="col a">
+        <div class="nombre">Ana</div>
+        <div class="etq">Trabajó desde 5º semestre</div>
+        <ul>
+          <li>· Promedio 8.0. Llegaba cansada a clases.</li>
+          <li>· Ganaba poco y pagaba parte de la escuela.</li>
+          <li>· Al egresar ya tenía 2 años de experiencia.</li>
+          <li>· Encontró trabajo en 3 semanas.</li>
+        </ul>
+      </div>
+      <div class="col b">
+        <div class="nombre">Luis</div>
+        <div class="etq">Solo estudió</div>
+        <ul>
+          <li>· Promedio 9.5. Mención honorífica.</li>
+          <li>· Se pudo concentrar en aprender.</li>
+          <li>· Al egresar no tenía qué mostrar.</li>
+          <li>· Buscó 7 meses y aceptó lo primero.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cita mt18"><div class="barra"></div>
+      <p>Los dos empezaron ganando casi lo mismo. Al tercer año Ana ganaba el doble, y Luis apenas alcanzaba el sueldo con el que Ana había empezado.</p>
+    </div>
+
+    <p class="body mt18">Esto no es una historia contra el estudio. Es la parte que nadie te explica: las empresas no compran tu promedio, compran la confianza de que vas a resolver algo.</p>
+  </div>
+  <div class="fade"></div>
+</div>
+
+<!-- 2. ELEGIR RUTA -->
+<div class="phone" id="p2">
+  <div class="status"><span>9:41</span><span>▮▮▮ ▲ ▰</span></div>
+  <div class="scroll">
+    <div class="alerta clave"><div class="barra"></div>
+      <div><div class="tit">La buena noticia</div>
+      <div class="txt">La evidencia no se hereda ni se espera: se construye. Un proyecto terminado, dos certificados y una carta de recomendación se consiguen en 90 días, aunque nunca hayas trabajado.</div></div>
+    </div>
+
+    <h3 class="mt22">¿En dónde estás ahora?</h3>
+    <p class="body-m muted mt6">Elige tu etapa y la guía se reordena para ti. Puedes cambiarla después.</p>
+
+    <div class="card mt16 between">
+      <div><div class="title">Soy estudiante</div><div class="body-m muted mt6">Todavía voy en la carrera</div></div>
+      <div style="color:var(--azul);font-size:19px">→</div>
+    </div>
+    <div class="card mt12 between">
+      <div><div class="title">Soy recién egresado</div><div class="body-m muted mt6">Ya terminé y busco mi primer empleo</div></div>
+      <div style="color:var(--azul);font-size:19px">→</div>
+    </div>
+    <div class="card mt12 between">
+      <div style="padding-right:10px"><div class="title">Tengo experiencia y quiero ganar más</div><div class="body-m muted mt6">Ya trabajo, pero siento que estoy estancado</div></div>
+      <div style="color:var(--azul);font-size:19px">→</div>
+    </div>
+    <div class="card mt12 between">
+      <div style="padding-right:10px"><div class="title">Quiero cambiar de área</div><div class="body-m muted mt6">Quiero dedicarme a otra cosa</div></div>
+      <div style="color:var(--azul);font-size:19px">→</div>
+    </div>
+
+    <p class="label mt18">Pago único, sin suscripciones y sin publicidad. La primera parte de cada módulo y todo «Dónde buscar» son gratis.</p>
+  </div>
+</div>
+
+<!-- 3. RUTA / INICIO -->
+<div class="phone" id="p3">
+  <div class="status"><span>9:41</span><span>▮▮▮ ▲ ▰</span></div>
+  <div class="scroll" style="padding-top:16px">
+    <div class="nivel">
+      <div class="eyebrow">NIVEL 2 DE EMPLEABILIDAD</div>
+      <h2>Creíble</h2>
+      <div class="desc">Tienes pruebas de que sabes hacer algo, no solo de que lo estudiaste.</div>
+      <div class="barra-prog"><i style="width:47%"></i></div>
+      <div class="pie">76 puntos · te faltan 24 para «En la cancha»</div>
+    </div>
+
+    <div class="cv-card mt16 row">
+      <div class="ico">📄</div>
+      <div style="flex:1">
+        <div class="t">Arma tu CV con IA</div>
+        <div class="s">Gratis de armar. Se paga solo al exportar el PDF.</div>
+      </div>
+      <div style="color:var(--ambar);font-size:19px">→</div>
+    </div>
+
+    <h3 class="mt22">Tu ruta</h3>
+    <p class="body-m muted mt6" style="margin-bottom:14px">Vas a leer casi lo mismo que un estudiante, pero con urgencia distinta: construyes evidencia y buscas al mismo tiempo.</p>
+
+    <div class="mod"><div class="num ok">1</div>
+      <div style="flex:1"><div class="title">Evidencia</div>
+      <div class="sub">Qué mostrar cuando no tienes experiencia</div>
+      <div class="mini"><i style="width:100%"></i></div></div></div>
+
+    <div class="mod"><div class="num">3</div>
+      <div style="flex:1"><div class="title">Tus materiales</div>
+      <div class="sub">CV, LinkedIn y carta que sí se leen</div>
+      <div class="mini"><i style="width:58%"></i></div></div></div>
+
+    <div class="mod"><div class="num">4</div>
+      <div style="flex:1"><div class="title">Dónde buscar<span class="pill gratis">GRATIS</span></div>
+      <div class="sub">Los 6 canales y cuál funciona de verdad</div></div></div>
+
+    <div class="mod"><div class="num">5</div>
+      <div style="flex:1"><div class="title">Estafas y riesgos</div>
+      <div class="sub">Cómo no perder dinero ni tu identidad</div></div>
+      <div class="lock">🔒</div></div>
+
+    <div class="mod"><div class="num">6</div>
+      <div style="flex:1"><div class="title">La entrevista</div>
+      <div class="sub">Qué buscan en alguien sin experiencia</div></div>
+      <div class="lock">🔒</div></div>
+  </div>
+  <div class="fade"></div>
+</div>
+
+<!-- 4. LECTOR — ESTAFAS -->
+<div class="phone" id="p4">
+  <div class="status blanco"><span>9:41</span><span>▮▮▮ ▲ ▰</span></div>
+  <div class="appbar"><span class="back">←</span><span class="t">Estafas y riesgos</span></div>
+  <div class="scroll" style="padding-top:4px">
+    <h2>La regla que te salva de casi todo</h2>
+    <div class="label mt6" style="margin-bottom:20px">3 min de lectura</div>
+
+    <div class="cita"><div class="barra"></div>
+      <p>Un trabajo te PAGA. Si en algún momento tú tienes que pagar, no es un trabajo.</p>
+    </div>
+
+    <p class="body mt18">Con esa sola regla evitas la mayoría de los fraudes de empleo. No importa qué tan convincente sea el argumento ni qué tan buena suene la oferta: el dinero va de la empresa hacia ti, nunca al revés.</p>
+
+    <h3 class="mt12" style="margin-bottom:12px">Las excusas que usan para cobrarte</h3>
+    <ul class="num">
+      <li><span class="n">•</span><span>«Cuota de reclutamiento» o «gastos administrativos».</span></li>
+      <li><span class="n">•</span><span>«Tienes que comprar tu kit de inicio o uniforme».</span></li>
+      <li><span class="n">•</span><span>«El curso de capacitación se paga aparte».</span></li>
+    </ul>
+
+    <div class="alerta peligro mt12"><div class="barra"></div>
+      <div><div class="tit">Sin excepciones</div>
+      <div class="txt">Una empresa legítima no te cobra por contratarte. Ni 200 pesos «simbólicos», ni «te lo descontamos del primer sueldo».</div></div>
+    </div>
+  </div>
+  <div class="fade"></div>
+</div>
+
+<!-- 5. LECTOR — BANDERAS -->
+<div class="phone" id="p5">
+  <div class="status blanco"><span>9:41</span><span>▮▮▮ ▲ ▰</span></div>
+  <div class="appbar"><span class="back">←</span><span class="t">Investiga la empresa</span></div>
+  <div class="scroll" style="padding-top:4px">
+    <h2>¿Es un buen lugar o me voy a arrepentir?</h2>
+    <div class="label mt6" style="margin-bottom:18px">6 min de lectura</div>
+
+    <div class="banderas rojas">
+      <div class="tit">Banderas rojas</div>
+      <ul>
+        <li><span class="sim">!</span><span>El sueldo es «a negociar» y no lo sueltan hasta el final.</span></li>
+        <li><span class="sim">!</span><span>«Aquí somos una familia».</span></li>
+        <li><span class="sim">!</span><span>Seis rondas de entrevista para un puesto junior.</span></li>
+        <li><span class="sim">!</span><span>Te ofrecen honorarios con horario fijo y jefe directo.</span></li>
+        <li><span class="sim">!</span><span>Rotación altísima en tu puesto.</span></li>
+      </ul>
+    </div>
+
+    <div class="banderas verdes mt12">
+      <div class="tit">Banderas verdes</div>
+      <ul>
+        <li><span class="sim">+</span><span>Te dan el rango de sueldo desde la primera llamada.</span></li>
+        <li><span class="sim">+</span><span>Hay una persona asignada a enseñarte.</span></li>
+        <li><span class="sim">+</span><span>Prestaciones de ley por escrito, IMSS con sueldo real.</span></li>
+        <li><span class="sim">+</span><span>Te dejan platicar con tu futuro equipo.</span></li>
+      </ul>
+    </div>
+
+    <div class="accion mt16"><div class="o"></div>
+      <div><div class="title">Ya sé cuánto paga el mercado por mi puesto</div>
+      <div class="label mt6">+10 puntos de empleabilidad</div></div>
+    </div>
+  </div>
+  <div class="fade"></div>
+</div>
+
+<!-- 6. MURO DE PAGO EN LECTURA -->
+<div class="phone" id="p6">
+  <div class="status blanco"><span>9:41</span><span>▮▮▮ ▲ ▰</span></div>
+  <div class="appbar"><span class="back">←</span><span class="t">Inglés y cursos</span></div>
+  <div class="scroll" style="padding-top:4px">
+    <h2>Cómo llegar a B2 gastando poco</h2>
+    <div class="label mt6" style="margin-bottom:18px">6 min de lectura</div>
+
+    <p class="body">Casi todos fallan por la misma razón: estudian gramática durante dos años y nunca hablan. Entienden todo y no pueden decir nada. El cuello de botella no es el vocabulario, es la práctica oral.</p>
+
+    <div class="corte mt18">
+      <h3>Aquí sigue lo importante</h3>
+      <p class="body-m mt8" style="color:var(--azul-oscuro)">Con el Pase Completo desbloqueas este capítulo y todos los demás, para siempre. Un solo pago, sin suscripción.</p>
+      <div class="mt18"><button class="btn">Ver el Pase Completo</button></div>
+    </div>
+
+    <div class="card mt16" style="opacity:.42;filter:blur(2.2px)">
+      <div class="title">La rutina que sí funciona: 30 minutos al día</div>
+      <p class="body-m mt8">10 min de vocabulario, 10 min de escucha real y 10 min hablando en voz alta. Lo último es lo único que de verdad mueve la aguja.</p>
+    </div>
+  </div>
+  <div class="fade"></div>
+</div>
+
+<!-- 7. PAYWALL -->
+<div class="phone" id="p7">
+  <div class="status blanco"><span>9:41</span><span>▮▮▮ ▲ ▰</span></div>
+  <div class="appbar"><span class="back">←</span></div>
+  <div class="scroll" style="padding-top:4px">
+    <h1>Pase Completo</h1>
+    <p class="body muted mt6" style="margin-bottom:22px">Un pago. Una vez. Tuyo para siempre.</p>
+
+    <div class="card" style="border:2px solid var(--azul);border-radius:18px;padding:22px">
+      <div class="check"><span class="c">✓</span><span>Los 9 módulos completos, sin candados</span></div>
+      <div class="check"><span class="c">✓</span><span>Generador de CV con IA en español e inglés</span></div>
+      <div class="check"><span class="c">✓</span><span>15 generaciones de CV incluidas</span></div>
+      <div class="check"><span class="c">✓</span><span>Bitácora de entrevistas</span></div>
+      <div class="check"><span class="c">✓</span><span>Módulo de estafas y seguridad completo</span></div>
+      <div class="check"><span class="c">✓</span><span>Actualizaciones futuras incluidas</span></div>
+      <div class="mt18"><button class="btn">Desbloquear todo · $149.00</button></div>
+      <p class="label mt10" style="text-align:center">Sin suscripción. No se renueva ni se cobra otra vez.</p>
+    </div>
+
+    <div class="mt18" style="text-align:center"><span class="body-m" style="color:var(--azul);font-weight:600">Ya compré antes — restaurar mi compra</span></div>
+
+    <p class="label mt18" style="text-align:center">Esta app no vende suscripciones ni muestra publicidad. Algunos enlaces a cursos son de afiliado y están marcados como tales.</p>
+  </div>
+</div>
+
+<!-- 8. CV CON IA -->
+<div class="phone" id="p8">
+  <div class="status blanco"><span>9:41</span><span>▮▮▮ ▲ ▰</span></div>
+  <div class="appbar"><span class="back">←</span><span class="t">Tu CV con IA</span></div>
+  <div class="chat">
+    <div class="burb ia">Vamos a armar tu CV. Te voy a hacer preguntas cortas y con tus respuestas genero dos versiones: español e inglés.<br><br>No invento nada: solo acomodo y redacto lo que tú me digas.</div>
+    <div class="burb ia">No tienes experiencia laboral formal, así que vamos por tus proyectos. ¿Hay algo que hayas hecho por tu cuenta, para la escuela o para algún negocio?</div>
+    <div class="burb yo">Le hice el catálogo digital y el Instagram a la papelería de mi tío durante un mes</div>
+    <div class="burb ia">Eso cuenta y mucho. ¿Recuerdas algún número? Por ejemplo cuántos productos tenía el catálogo, o si subieron los seguidores o las ventas.</div>
+    <div class="burb yo">El catálogo tenía como 120 productos y pasó de 300 a 800 seguidores</div>
+    <div class="burb ia">Perfecto, eso es un logro con cifra real. Ahora dime: ¿qué herramientas usaste?</div>
+  </div>
+  <div class="barra-inf">
+    <div class="exportar">
+      <div class="title">🔒 Tu CV está listo — falta un paso</div>
+      <p class="body-m muted mt6">Ya lo armaste completo. Para exportarlo en PDF, español e inglés, necesitas el Pase Completo.</p>
+      <div class="mt12"><span class="chip">PDF Español</span><span class="chip">PDF English</span></div>
+    </div>
+    <div class="campo">Escribe tu respuesta…<span style="margin-left:auto;color:var(--azul);font-size:19px">➤</span></div>
+  </div>
+</div>
+
+<!-- 9. MÓDULO CURSOS / RECURSOS -->
+<div class="phone" id="p9">
+  <div class="status blanco"><span>9:41</span><span>▮▮▮ ▲ ▰</span></div>
+  <div class="appbar"><span class="back">←</span><span class="t">Inglés y cursos</span></div>
+  <div class="scroll" style="padding-top:4px">
+    <h3 style="margin-bottom:6px">Certificados gratuitos con peso real</h3>
+    <p class="body-m muted" style="margin-bottom:16px">Estos no cuestan nada y los reconocen las empresas. Si andas sin dinero, empieza aquí.</p>
+
+    <div class="card mt10 between">
+      <div style="flex:1"><div class="title">Google Career Certificates<span class="pill gratis">GRATIS</span></div>
+        <div class="body-m muted mt6">Soporte TI, análisis de datos, UX y project management.</div></div>
+      <div style="color:var(--azul);font-size:17px;margin-left:10px">↗</div>
+    </div>
+    <div class="card mt10 between">
+      <div style="flex:1"><div class="title">freeCodeCamp<span class="pill gratis">GRATIS</span></div>
+        <div class="body-m muted mt6">Programación desde cero, con proyectos obligatorios.</div></div>
+      <div style="color:var(--azul);font-size:17px;margin-left:10px">↗</div>
+    </div>
+    <div class="card mt10 between">
+      <div style="flex:1"><div class="title">Udemy<span class="pill afiliado">AFILIADO</span></div>
+        <div class="body-m muted mt6">Catálogo enorme y cursos muy prácticos.</div></div>
+      <div style="color:var(--azul);font-size:17px;margin-left:10px">↗</div>
+    </div>
+
+    <div class="alerta aviso mt16"><div class="barra"></div>
+      <div><div class="tit">Nunca pagues precio de lista en Udemy</div>
+      <div class="txt">Los cursos tienen descuentos enormes de forma constante. Si ves uno en varios cientos de pesos, ponlo en tu lista de deseos y espera unos días.</div></div>
+    </div>
+  </div>
+  <div class="fade"></div>
+</div>
+
+</body>
+</html>

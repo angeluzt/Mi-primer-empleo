@@ -1,0 +1,100 @@
+package com.angeluzt.miprimerempleo
+
+import android.content.Intent
+import android.net.Uri
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.angeluzt.miprimerempleo.ui.AppViewModel
+import com.angeluzt.miprimerempleo.ui.screens.PantallaBienvenida
+import com.angeluzt.miprimerempleo.ui.screens.PantallaCv
+import com.angeluzt.miprimerempleo.ui.screens.PantallaLector
+import com.angeluzt.miprimerempleo.ui.screens.PantallaModulo
+import com.angeluzt.miprimerempleo.ui.screens.PantallaPaywall
+import com.angeluzt.miprimerempleo.ui.screens.PantallaRuta
+import com.angeluzt.miprimerempleo.ui.theme.MiPrimerEmpleoTheme
+
+class MainActivity : ComponentActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContent {
+            MiPrimerEmpleoTheme {
+                val vm: AppViewModel = viewModel()
+                val estado by vm.estado.collectAsStateWithLifecycle()
+                val nav = rememberNavController()
+
+                val abrirEnlace: (String) -> Unit = { url ->
+                    runCatching { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
+                }
+
+                NavHost(
+                    navController = nav,
+                    startDestination = if (estado.progreso.onboardingHecho) "ruta" else "bienvenida",
+                ) {
+                    composable("bienvenida") {
+                        PantallaBienvenida(
+                            estado = estado,
+                            onElegirRuta = {
+                                vm.elegirRuta(it)
+                                nav.navigate("ruta") { popUpTo("bienvenida") { inclusive = true } }
+                            },
+                        )
+                    }
+                    composable("ruta") {
+                        PantallaRuta(
+                            estado = estado,
+                            onModulo = { nav.navigate("modulo/$it") },
+                            onCv = { nav.navigate("cv") },
+                            onPaywall = { nav.navigate("paywall") },
+                        )
+                    }
+                    composable("modulo/{moduloId}") { entrada ->
+                        PantallaModulo(
+                            estado = estado,
+                            moduloId = entrada.arguments?.getString("moduloId").orEmpty(),
+                            onCapitulo = { moduloId, capituloId -> nav.navigate("lector/$moduloId/$capituloId") },
+                            onPaywall = { nav.navigate("paywall") },
+                            onAtras = { nav.popBackStack() },
+                        )
+                    }
+                    composable("lector/{moduloId}/{capituloId}") { entrada ->
+                        PantallaLector(
+                            estado = estado,
+                            moduloId = entrada.arguments?.getString("moduloId").orEmpty(),
+                            capituloId = entrada.arguments?.getString("capituloId").orEmpty(),
+                            onLeido = vm::marcarLeido,
+                            onAccion = vm::alternarAccion,
+                            onEnlace = abrirEnlace,
+                            onPaywall = { nav.navigate("paywall") },
+                            onAtras = { nav.popBackStack() },
+                        )
+                    }
+                    composable("paywall") {
+                        PantallaPaywall(
+                            estado = estado,
+                            onComprar = { vm.comprar(this@MainActivity, it) },
+                            onRestaurar = vm::restaurarCompras,
+                            onAtras = { nav.popBackStack() },
+                        )
+                    }
+                    composable("cv") {
+                        PantallaCv(
+                            estado = estado,
+                            onPaywall = { nav.navigate("paywall") },
+                            onAtras = { nav.popBackStack() },
+                        )
+                    }
+                }
+            }
+        }
+    }
+}

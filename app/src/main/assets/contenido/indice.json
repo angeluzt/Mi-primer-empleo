@@ -1,0 +1,139 @@
+{
+  "version": 1,
+  "pais": "MX",
+  "actualizado": "2026-09",
+  "tesis": {
+    "titulo": "El promedio no te contrata. La evidencia sí.",
+    "bloques": [
+      {
+        "tipo": "comparacion",
+        "titulo": "Dos caminos que terminan en el mismo sueldo",
+        "izquierda": {
+          "nombre": "Ana",
+          "etiqueta": "Trabajó desde 5º semestre",
+          "puntos": [
+            "Promedio 8.0. Llegaba cansada a clases.",
+            "Ganaba poco y le pagaba parte de la escuela.",
+            "Al egresar ya tenía 2 años de experiencia.",
+            "Encontró trabajo en 3 semanas."
+          ]
+        },
+        "derecha": {
+          "nombre": "Luis",
+          "etiqueta": "Solo estudió",
+          "puntos": [
+            "Promedio 9.5. Mención honorífica.",
+            "Se pudo concentrar en aprender de verdad.",
+            "Al egresar no tenía nada que mostrar.",
+            "Buscó 7 meses y aceptó lo primero que salió."
+          ]
+        }
+      },
+      {
+        "tipo": "cita",
+        "texto": "Los dos empezaron ganando casi lo mismo. Al tercer año Ana ganaba el doble, y Luis apenas alcanzaba el sueldo con el que Ana había empezado."
+      },
+      {
+        "tipo": "parrafo",
+        "texto": "Esto no es una historia contra el estudio. Es la parte que nadie te explica: las empresas no compran tu promedio, compran la confianza de que vas a resolver algo. Ana no era mejor que Luis. Ana tenía pruebas y Luis no."
+      },
+      {
+        "tipo": "alerta",
+        "nivel": "clave",
+        "titulo": "La buena noticia",
+        "texto": "La evidencia no se hereda ni se espera: se construye. Un proyecto terminado, dos certificados y una carta de recomendación se consiguen en 90 días, aunque nunca hayas trabajado. Eso es exactamente lo que hace esta guía contigo."
+      },
+      {
+        "tipo": "parrafo",
+        "texto": "Y si ya tienes experiencia, el problema es otro pero se arregla igual: tu trabajo vale más de lo que te pagan y tu CV no lo está contando."
+      }
+    ]
+  },
+  "rutas": [
+    {
+      "id": "estudiante",
+      "titulo": "Soy estudiante",
+      "subtitulo": "Todavía voy en la carrera",
+      "icono": "escuela",
+      "promesa": "Tu ventaja es el tiempo, y se te está acabando sin que lo notes. Vamos a convertir los semestres que te quedan en experiencia real.",
+      "mensaje": "Consigue experiencia ANTES de egresar aunque pague poco. Un año trabajando a medio tiempo vale más en una entrevista que subir tu promedio de 8.5 a 9.5.",
+      "orden": ["evidencia", "ingles", "materiales", "busqueda", "estafas", "entrevista", "empresa", "dinero", "movimiento"]
+    },
+    {
+      "id": "egresado",
+      "titulo": "Soy recién egresado",
+      "subtitulo": "Ya terminé y busco mi primer empleo",
+      "icono": "diploma",
+      "promesa": "Tu desventaja es real pero temporal. En 90 días puedes presentarte como alguien que ya produjo algo.",
+      "mensaje": "Vas a leer casi lo mismo que un estudiante, pero con urgencia distinta: tú construyes evidencia y buscas al mismo tiempo, no uno después del otro.",
+      "orden": ["evidencia", "materiales", "busqueda", "estafas", "entrevista", "ingles", "empresa", "dinero", "movimiento"]
+    },
+    {
+      "id": "ganar_mas",
+      "titulo": "Tengo experiencia y quiero ganar más",
+      "subtitulo": "Ya trabajo, pero siento que estoy estancado",
+      "icono": "crecer",
+      "promesa": "Tu experiencia ya vale más de lo que te pagan. El problema es que no sabes cuánto pedir y tu CV no cuenta lo que hiciste.",
+      "mensaje": "Para ti el orden se invierte: primero entiende el mercado y el movimiento, luego arregla tus materiales. Los módulos de evidencia y cursos siguen aplicando, solo que ahora son para saltar de nivel, no para entrar.",
+      "orden": ["movimiento", "empresa", "materiales", "entrevista", "ingles", "dinero", "busqueda", "evidencia", "estafas"]
+    },
+    {
+      "id": "cambiar",
+      "titulo": "Tengo experiencia y quiero cambiar de área",
+      "subtitulo": "Quiero dedicarme a otra cosa",
+      "icono": "cambio",
+      "promesa": "No empiezas de cero. Empiezas siendo junior en lo nuevo y senior en todo lo que ya sabes hacer sin pensarlo.",
+      "mensaje": "Tu reto es doble: construir evidencia en el área nueva y aprender a contar tu experiencia anterior como una ventaja, no como algo que no tiene que ver.",
+      "orden": ["evidencia", "ingles", "materiales", "entrevista", "busqueda", "empresa", "dinero", "estafas", "movimiento"]
+    }
+  ],
+  "niveles": [
+    {
+      "nivel": 0,
+      "titulo": "Invisible",
+      "descripcion": "Nadie puede contratarte porque nadie sabe que existes.",
+      "puntosMinimos": 0
+    },
+    {
+      "nivel": 1,
+      "titulo": "Existes",
+      "descripcion": "Ya tienes con qué presentarte.",
+      "puntosMinimos": 20
+    },
+    {
+      "nivel": 2,
+      "titulo": "Creíble",
+      "descripcion": "Tienes pruebas de que sabes hacer algo, no solo de que lo estudiaste.",
+      "puntosMinimos": 55
+    },
+    {
+      "nivel": 3,
+      "titulo": "En la cancha",
+      "descripcion": "Estás aplicando en serio y por varios canales.",
+      "puntosMinimos": 100
+    },
+    {
+      "nivel": 4,
+      "titulo": "En el juego",
+      "descripcion": "Ya te están entrevistando. Aquí se aprende rapidísimo.",
+      "puntosMinimos": 150
+    },
+    {
+      "nivel": 5,
+      "titulo": "Contratable",
+      "descripcion": "Tienes evidencia, práctica y criterio. Ahora es cuestión de tiempo.",
+      "puntosMinimos": 220
+    }
+  ],
+  "modulos": [
+    { "id": "evidencia",  "archivo": "m1_evidencia.json",  "numero": 1, "titulo": "Evidencia",            "subtitulo": "Qué mostrar cuando no tienes experiencia", "icono": "evidencia",  "gratis": false },
+    { "id": "ingles",     "archivo": "m2_ingles.json",     "numero": 2, "titulo": "Inglés y cursos",      "subtitulo": "El multiplicador de sueldo más barato",     "icono": "idioma",     "gratis": false },
+    { "id": "materiales", "archivo": "m3_materiales.json", "numero": 3, "titulo": "Tus materiales",       "subtitulo": "CV, LinkedIn y carta que sí se leen",       "icono": "documento",  "gratis": false },
+    { "id": "busqueda",   "archivo": "m4_busqueda.json",   "numero": 4, "titulo": "Dónde buscar",         "subtitulo": "Los 6 canales y cuál funciona de verdad",   "icono": "buscar",     "gratis": true  },
+    { "id": "estafas",    "archivo": "m5_estafas.json",    "numero": 5, "titulo": "Estafas y riesgos",    "subtitulo": "Cómo no perder dinero ni tu identidad",     "icono": "escudo",     "gratis": false },
+    { "id": "entrevista", "archivo": "m6_entrevista.json", "numero": 6, "titulo": "La entrevista",        "subtitulo": "Qué buscan realmente en alguien sin experiencia", "icono": "conversacion", "gratis": false },
+    { "id": "empresa",    "archivo": "m7_empresa.json",    "numero": 7, "titulo": "Investiga la empresa", "subtitulo": "Cuánto pagan y si es un buen lugar",        "icono": "lupa",       "gratis": false },
+    { "id": "dinero",     "archivo": "m8_dinero.json",     "numero": 8, "titulo": "El dinero",            "subtitulo": "Sueldo, prestaciones y cómo ahorrar desde el primer pago", "icono": "dinero", "gratis": false },
+    { "id": "movimiento", "archivo": "m9_movimiento.json", "numero": 9, "titulo": "Cuándo moverte",       "subtitulo": "Cambiar de trabajo sin quemar tu carrera",   "icono": "ruta",       "gratis": false }
+  ]
+}

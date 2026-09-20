@@ -1,0 +1,167 @@
+{
+  "id": "movimiento",
+  "titulo": "Cuándo moverte",
+  "intro": "Cambiar de trabajo es la forma más rápida de ganar más. Cambiar mal es la forma más rápida de que dejen de contratarte. La diferencia es el tiempo.",
+  "capitulos": [
+    {
+      "id": "mo_por_que",
+      "titulo": "Por qué cambiar paga más que quedarse",
+      "minutos": 5,
+      "gratis": true,
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "El aumento anual dentro de una empresa suele rondar la inflación. Un cambio de trabajo bien hecho se mueve en otro rango completamente distinto, y no es porque seas mejor: es porque el sueldo interno se ajusta contra lo que ya ganabas, mientras que una oferta nueva se ajusta contra el mercado."
+        },
+        {
+          "tipo": "cita",
+          "texto": "Tu empresa actual te paga según lo que valías cuando entraste. Una empresa nueva te paga según lo que vales hoy."
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Por eso pasa algo que parece injusto y es completamente normal: alguien recién llegado, con tu mismo nivel, gana más que tú por hacer lo mismo. No es que no te valoren. Es cómo funciona el sistema, y hay que entenderlo sin resentimiento."
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "clave",
+          "titulo": "Pero aquí viene la parte que casi nadie te dice",
+          "texto": "Esto NO significa cambiar todo el tiempo. Significa cambiar pocas veces y bien. El que cambia cada 8 meses deja de recibir llamadas, porque contratar y entrenar a alguien cuesta caro y nadie quiere invertir en quien ya demostró que se va."
+        }
+      ]
+    },
+    {
+      "id": "mo_cuando",
+      "titulo": "El calendario: cuánto quedarte",
+      "minutos": 5,
+      "gratis": false,
+      "bloques": [
+        {
+          "tipo": "titulo",
+          "texto": "La regla"
+        },
+        {
+          "tipo": "tabla",
+          "encabezados": ["Tiempo en la empresa", "Cómo se lee en tu CV"],
+          "filas": [
+            ["Menos de 1 año", "Bandera amarilla. Una vez se perdona y se explica; dos veces seguidas, no."],
+            ["1 a 2 años", "Perfectamente normal y sano, sobre todo al principio de tu carrera."],
+            ["2 a 4 años", "Excelente. Demuestra que te quedaste, creciste y entregaste."],
+            ["Más de 5 años sin cambiar de puesto", "Empieza a leerse como estancamiento. Si creciste internamente, no cuenta."]
+          ]
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "clave",
+          "titulo": "El patrón que construye una buena carrera",
+          "texto": "Dos o tres cambios en cinco años, quedándote mínimo 1 o 2 años en cada lugar. Eso sube tu sueldo de forma importante y te hace ver como alguien que crece, no como alguien inestable. Cuatro cambios en tres años te cierra puertas."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "En tu PRIMER trabajo, aguanta"
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "El primer empleo es especial: es donde aprendes a trabajar, no solo a hacer tu oficio. Horarios, reuniones, pedir ayuda, entregar a tiempo, tratar con un jefe. Un año mínimo, dos ideal. Irte a los seis meses del primer trabajo te deja sin la experiencia que fuiste a buscar y con una mancha que explicar."
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "La excepción: si el lugar es abusivo, no te pagan, no te dieron de alta, o hay acoso. Ahí te vas y no le debes explicaciones a nadie. Eso no es «aguantar», es daño."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "Cuándo SÍ quedarte aunque crezcas más lento"
+        },
+        {
+          "tipo": "lista",
+          "items": [
+            "Estás aprendiendo cosas que el mercado paga bien y todavía no agotas lo que hay que aprender ahí.",
+            "Tienes un buen jefe que te enseña. Esto es más raro y más valioso de lo que crees.",
+            "Hay una ruta de crecimiento clara y **con fechas**, no solo promesas.",
+            "Te dan flexibilidad real que te sirve para estudiar o para tu vida.",
+            "El nombre de la empresa te va a abrir puertas después."
+          ]
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "En un buen lugar se avanza más lento pero se avanza. Y llega un punto en el que el crecimiento se detiene: cuando ya aprendiste todo lo que ahí se puede aprender. Ese, y no el sueldo, es el momento real de moverte."
+        }
+      ]
+    },
+    {
+      "id": "mo_como",
+      "titulo": "Cómo renunciar sin quemar nada",
+      "minutos": 6,
+      "gratis": false,
+      "bloques": [
+        {
+          "tipo": "alerta",
+          "nivel": "peligro",
+          "titulo": "Regla número uno",
+          "texto": "NUNCA renuncies sin tener la oferta nueva firmada y con fecha de inicio. Ni con una promesa verbal, ni con un «ya casi está». Buscar trabajo desempleado te quita poder de negociación, te mete prisa y te obliga a aceptar lo primero."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "Buscar mientras trabajas"
+        },
+        {
+          "tipo": "lista",
+          "items": [
+            "En LinkedIn, activa «Abierto a trabajo» en la opción **visible solo para reclutadores**, y desactiva las notificaciones de cambios de perfil antes de actualizarlo.",
+            "Agenda entrevistas a primera hora, en la comida o al final del día. Usa días de vacaciones si hace falta.",
+            "No uses el correo ni la computadora de la empresa para nada de tu búsqueda.",
+            "No le cuentes a nadie de la oficina, ni a tu amigo de confianza. Se sabe siempre."
+          ]
+        },
+        {
+          "tipo": "titulo",
+          "texto": "La renuncia, paso a paso"
+        },
+        {
+          "tipo": "lista",
+          "ordenada": true,
+          "items": [
+            "Avísale primero **a tu jefe directo**, en persona o por videollamada. Que no se entere por otro lado.",
+            "Sé breve y neutro: «Recibí una oportunidad que se alinea con lo que busco a largo plazo. Mi último día sería el [fecha].» No tienes que justificarte ni dar detalles de la nueva empresa.",
+            "Ofrece **dos semanas** de transición, más si el puesto es complejo.",
+            "**Deja documentado** lo que hacías y capacita a quien te sustituya. Esto es lo que hace que te recuerden bien.",
+            "Entrega por escrito tu renuncia y guarda copia. Revisa tu finiquito: días trabajados, aguinaldo proporcional y vacaciones no gozadas.",
+            "Despídete bien de todos y conecta en LinkedIn con la gente con la que trabajaste."
+          ]
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "clave",
+          "titulo": "Nunca te vayas mal",
+          "texto": "Tu industria es más chica de lo que parece. Tu jefe de hoy puede ser el que te entreviste en cinco años, o al que le pidan referencias tuyas. Irte con dignidad cuesta dos semanas de esfuerzo y te sirve toda la carrera. Desquitarte se siente bien 20 minutos y te persigue años."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "La contraoferta"
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Cuando renuncies, es posible que te ofrezcan más dinero para que te quedes. Se siente increíble y es una trampa la mayoría de las veces."
+        },
+        {
+          "tipo": "lista",
+          "items": [
+            "Si tenían ese dinero, ¿por qué esperaron a que renunciaras para dártelo?",
+            "El problema que te hizo buscar (el jefe, el estancamiento, el ambiente) casi nunca se arregla con dinero.",
+            "Ya saben que estuviste a punto de irte. Eso cambia cómo te ven para ascensos y para recortes.",
+            "Una buena parte de quienes aceptan contraoferta termina saliendo en menos de un año de todos modos, y ya quemaron la otra oferta."
+          ]
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Solo tiene sentido aceptarla si el problema era **exclusivamente** el sueldo, todo lo demás te gustaba, y te lo ponen por escrito con fecha."
+        },
+        {
+          "tipo": "accion",
+          "accionId": "plan_movimiento",
+          "texto": "Tengo claro cuándo y cómo voy a dar mi siguiente paso",
+          "puntos": 15
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,125 @@
+{
+  "id": "dinero",
+  "titulo": "El dinero",
+  "intro": "Nadie te enseñó esto en la escuela y es lo que decide si tu primer sueldo te construye o te atrapa.",
+  "capitulos": [
+    {
+      "id": "di_primer",
+      "titulo": "La regla del primer trabajo",
+      "minutos": 5,
+      "gratis": true,
+      "bloques": [
+        {
+          "tipo": "cita",
+          "texto": "Tu primer trabajo tiene que cubrir tus gastos básicos y dejarte ahorrar algo. Lo demás que te dé, que sea experiencia."
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Esto se malinterpreta en los dos sentidos. Unos aceptan cualquier miseria «por la experiencia» y terminan endeudados y amargados. Otros rechazan buenas oportunidades porque pagan 3,000 menos. Las dos posturas son caras."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "Calcula tu piso real"
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Antes de aceptar nada, suma lo que de verdad necesitas al mes: renta o aportación a la casa, comida, transporte, teléfono, deudas y un mínimo de vida. A eso agrégale 10% de ahorro. Ese número es tu piso, y no es negociable."
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "aviso",
+          "titulo": "Lo que cuesta ir a trabajar",
+          "texto": "Réstale al sueldo el transporte diario, la comida fuera y la ropa de trabajo. Un empleo a dos horas de distancia que te obliga a comer fuera todos los días puede costarte 3,000 pesos al mes que nadie contabiliza. Compara netos reales, no sueldos brutos."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "Prestaciones que son dinero y la gente ignora"
+        },
+        {
+          "tipo": "lista",
+          "items": [
+            "**Aguinaldo**: mínimo 15 días por ley. Muchas empresas dan 30.",
+            "**Vacaciones pagadas**: desde 2023 en México son mínimo 12 días desde el primer año.",
+            "**Vales de despensa**: dinero libre de impuestos. Pueden valer más que un aumento equivalente.",
+            "**Fondo de ahorro**: la empresa iguala lo que tú aportas. Es dinero regalado, úsalo siempre que exista.",
+            "**Seguro de gastos médicos mayores**: pagarlo por tu cuenta cuesta muchísimo.",
+            "**Home office**: dos días en casa son unas 80 horas al año de tu vida y ahorro en transporte y comida.",
+            "**Que te den de alta con el sueldo real**: define tu crédito Infonavit, tu incapacidad y tu pensión."
+          ]
+        },
+        {
+          "tipo": "accion",
+          "accionId": "piso_calculado",
+          "texto": "Ya calculé mi piso salarial real",
+          "puntos": 10
+        }
+      ]
+    },
+    {
+      "id": "di_ahorro",
+      "titulo": "Qué hacer con tu primer sueldo",
+      "minutos": 6,
+      "gratis": false,
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "El primer depósito es un momento peligroso. Después de años sin dinero, de repente hay. Y lo que hagas los primeros seis meses define tu relación con el dinero por mucho tiempo."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "El fondo de emergencia: por qué TÚ lo necesitas más que nadie"
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Un fondo de emergencia son 3 a 6 meses de tus gastos básicos, guardados y sin tocar. Casi todos lo explican como protección contra imprevistos. Es eso, pero para tu carrera es otra cosa mucho más importante:"
+        },
+        {
+          "tipo": "cita",
+          "texto": "Tu fondo de emergencia es lo que te da el poder de renunciar."
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Sin ahorro, estás obligado a aguantar un mal jefe, un sueldo injusto o un lugar que te está quemando, porque la quincena que sigue no es opcional. Con tres meses guardados puedes decir que no, puedes negociar de verdad y puedes irte de un lugar tóxico. Es la diferencia entre elegir tu carrera y que te la elijan."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "Reparto simple para empezar"
+        },
+        {
+          "tipo": "tabla",
+          "encabezados": ["Parte", "A dónde va"],
+          "filas": [
+            ["50%", "Necesidades: renta, comida, transporte, servicios."],
+            ["20%", "Ahorro. Primero el fondo de emergencia, hasta completarlo."],
+            ["20%", "Tu crecimiento: cursos, inglés, herramientas, libros."],
+            ["10%", "Gusto. Sin culpa. Un plan sin nada de disfrute no se sostiene."]
+          ]
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "tip",
+          "titulo": "Automatízalo el día del pago",
+          "texto": "Programa una transferencia automática a una cuenta aparte el mismo día que te depositan. Ahorrar «lo que sobre» nunca funciona, porque nunca sobra. Que se vaya antes de que lo veas."
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "peligro",
+          "titulo": "La trampa del primer aumento",
+          "texto": "Te suben el sueldo y automáticamente subes tu nivel de vida: mejor auto, mejor depa, más suscripciones. Al mes siguiente vuelves a no tener nada, pero ahora con más compromisos fijos y menos libertad para moverte. Cuando te aumenten, sube tu ahorro primero y tu gasto después — con la mitad, no con todo."
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "aviso",
+          "titulo": "Cuidado con el crédito fácil",
+          "texto": "Tu primer empleo formal trae ofertas de tarjetas de crédito y préstamos de nómina. Una tarjeta usada bien construye tu historial, que vas a necesitar. Una tarjeta usada mal es la deuda más cara que existe. Si la sacas: úsala para gastos que ya ibas a hacer y págala completa cada mes, nunca el mínimo."
+        },
+        {
+          "tipo": "accion",
+          "accionId": "fondo_emergencia",
+          "texto": "Abrí una cuenta aparte y empecé mi fondo de emergencia",
+          "puntos": 15
+        }
+      ]
+    }
+  ]
+}

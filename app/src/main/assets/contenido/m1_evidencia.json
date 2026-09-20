@@ -1,0 +1,214 @@
+{
+  "id": "evidencia",
+  "titulo": "Evidencia",
+  "intro": "No tienes experiencia. Perfecto: vamos a construir pruebas de que puedes hacer el trabajo. Esto es lo que hace la diferencia entre 7 meses buscando y 3 semanas.",
+  "capitulos": [
+    {
+      "id": "ev_por_que",
+      "titulo": "Por qué nadie te contesta",
+      "minutos": 4,
+      "gratis": true,
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Cuando una empresa abre una vacante junior recibe entre 80 y 400 CVs. Quien los revisa les dedica menos de 10 segundos a cada uno. No está buscando al mejor: está buscando una razón para descartarte rápido y quedarse con 8 finalistas."
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Casi todos esos CVs dicen lo mismo: nombre de la universidad, carrera, promedio, 'Office avanzado', 'trabajo en equipo', 'responsable y proactivo'. Son intercambiables. El tuyo probablemente también."
+        },
+        {
+          "tipo": "cita",
+          "texto": "El que contrata no tiene miedo de que no sepas. Tiene miedo de invertir tres meses enseñándote y que no sirvas, o que te vayas."
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Ese miedo se llama riesgo, y es lo único que tienes que bajar. La experiencia laboral lo baja, sí, pero no es lo único que lo baja. Cualquier cosa que demuestre que terminas lo que empiezas sirve: un proyecto acabado, un certificado que costó esfuerzo, alguien que te recomiende por escrito."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "Las 4 señales que buscan"
+        },
+        {
+          "tipo": "lista",
+          "items": [
+            "**Aprendes solo.** ¿Hay algo que sepas que nadie te obligó a aprender?",
+            "**Eres proactivo.** ¿Hiciste algo que nadie te pidió?",
+            "**Terminas.** Un proyecto acabado vale más que cinco empezados. En serio.",
+            "**Se puede hablar contigo.** Explicas lo que hiciste sin marearte ni marear."
+          ]
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Todo este módulo es para que tengas una prueba concreta de cada una de las cuatro. No una frase en el CV: una prueba que se pueda abrir en un link."
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "clave",
+          "titulo": "La regla de los 90 días",
+          "texto": "Un proyecto propio terminado + dos certificados + una carta de recomendación. Eso se consigue en 90 días trabajando unas horas por semana, sin gastar casi nada, y cambia por completo cómo te ven. Es el plan de este módulo."
+        }
+      ]
+    },
+    {
+      "id": "ev_proyecto",
+      "titulo": "Tu proyecto propio (lo más importante)",
+      "minutos": 6,
+      "gratis": false,
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Un proyecto propio es algo que hiciste porque quisiste, que resuelve un problema real y que alguien más puede abrir y ver. Es la evidencia más poderosa que existe para alguien sin experiencia, porque nadie te lo pidió y aun así lo terminaste."
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "aviso",
+          "titulo": "El error clásico",
+          "texto": "Elegir un proyecto enorme y ambicioso, avanzar 30% y abandonarlo. Un proyecto pequeño y TERMINADO gana siempre. Si dudas entre dos ideas, elige la más chica."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "Qué hacer según tu carrera"
+        },
+        {
+          "tipo": "tabla",
+          "encabezados": ["Área", "Proyecto que funciona"],
+          "filas": [
+            ["Software / Sistemas", "Una app o sitio que resuelva un problema tuyo real. Súbela a GitHub con un README que explique el problema y por qué lo resolviste así."],
+            ["Ingeniería industrial / Mecánica", "Rediseña el proceso de un negocio local. Mide tiempos antes, propón cambio, mide después. Documenta con fotos y números."],
+            ["Diseño / Publicidad", "Rebranding completo de un negocio real de tu colonia. Antes, después y el razonamiento. Tres piezas bien hechas valen más que veinte sueltas."],
+            ["Administración / Contabilidad", "Ordena las finanzas de un negocio familiar o pequeño. Arma su control de gastos, su flujo y un reporte mensual."],
+            ["Marketing", "Lleva las redes de un negocio chico 2 meses. Captura las métricas del antes y del después. Eso es un caso de estudio."],
+            ["Derecho", "Escribe análisis de casos reales o ayuda en una clínica jurídica. Documenta tu participación y pide constancia."],
+            ["Salud / Enfermería", "Horas de voluntariado documentadas, campañas de salud comunitaria, constancias de cursos de certificación vigente."],
+            ["Educación", "Da asesorías y documenta el progreso de tus alumnos con números. Arma material didáctico propio y compártelo."]
+          ]
+        },
+        {
+          "tipo": "titulo",
+          "texto": "Cómo presentarlo"
+        },
+        {
+          "tipo": "lista",
+          "ordenada": true,
+          "items": [
+            "Súbelo a **Google Drive** (carpeta pública con link) o **GitHub** si es código.",
+            "Escribe media cuartilla: **qué problema había, qué hiciste, qué resultado dio**. Con números si puedes.",
+            "Incluye fotos, capturas o el archivo final. Que se pueda ver en 30 segundos.",
+            "Genera un **link corto** y ponlo en tu CV y en tu LinkedIn.",
+            "Prepárate para contarlo en voz alta en 60 segundos. Te lo van a preguntar."
+          ]
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "tip",
+          "titulo": "Que el link funcione",
+          "texto": "Antes de mandar tu CV, abre el link desde el celular en modo incógnito. Si pide permiso de acceso, acabas de perder la vacante sin enterarte. Pásalo a 'cualquier persona con el enlace'."
+        },
+        {
+          "tipo": "accion",
+          "accionId": "proyecto_terminado",
+          "texto": "Terminé un proyecto propio y lo subí con link público",
+          "puntos": 25
+        }
+      ]
+    },
+    {
+      "id": "ev_recomendacion",
+      "titulo": "La jugada que casi nadie usa",
+      "minutos": 5,
+      "gratis": false,
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Un certificado dice que tomaste un curso. Una carta de recomendación dice que una persona real confió en ti y quedó satisfecha. No se comparan."
+        },
+        {
+          "tipo": "cita",
+          "texto": "Trabajo real, chico y acotado, para un negocio local, a cambio de una carta de recomendación firmada."
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Es la forma más rápida de conseguir experiencia verificable cuando nadie te contrata todavía. No es trabajar gratis para siempre: es un intercambio claro, con inicio y fin, del que sales con tres cosas: experiencia, una pieza de portafolio y una carta con nombre y teléfono de alguien que responde por ti."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "Cómo hacerlo bien"
+        },
+        {
+          "tipo": "lista",
+          "ordenada": true,
+          "items": [
+            "Elige negocios cercanos: la papelería, el taller, el consultorio, la tienda de tu tío, una asociación civil.",
+            "Propón **algo específico y pequeño**: 'les hago su catálogo digital', 'les ordeno su inventario', 'les llevo el Instagram un mes'. Nada de 'les ayudo en lo que sea'.",
+            "Pon **fecha de inicio y de fin** desde el primer día. Dos a cuatro semanas.",
+            "Di desde el principio que lo haces para tu portafolio y que al final pedirás una **carta de recomendación**. Que no sea sorpresa.",
+            "Entrega bien y a tiempo, aunque sea gratis. Esto es una muestra de tu trabajo.",
+            "Pide la carta **en papel membretado, firmada, con el puesto y el teléfono de quien firma**."
+          ]
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "peligro",
+          "titulo": "Dónde está el límite",
+          "texto": "Esto funciona una o dos veces, con trabajo acotado y con fecha de fin. Si un negocio empieza a darte trabajo indefinido sin pagarte, ya no es portafolio: es abuso. Cierra el trato, cobra la carta y sigue tu camino. Y nunca hagas gratis un trabajo para una empresa grande con presupuesto: eso no es portafolio, es que te están viendo la cara."
+        },
+        {
+          "tipo": "accion",
+          "accionId": "carta_recomendacion",
+          "texto": "Conseguí una carta de recomendación firmada",
+          "puntos": 20
+        }
+      ]
+    },
+    {
+      "id": "ev_practicas",
+      "titulo": "Prácticas y servicio social: el único criterio que importa",
+      "minutos": 4,
+      "gratis": false,
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Las prácticas profesionales y el servicio social son la experiencia más barata de tu vida: la institución te obliga a hacerlos de todos modos. La diferencia entre quien sale con experiencia y quien sale con un papel sellado es UNA decisión: dónde lo hiciste."
+        },
+        {
+          "tipo": "cita",
+          "texto": "¿Me van a dejar tocar el trabajo real, o voy a sacar copias y llenar Excel?"
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Esa es la pregunta. Y sí se puede preguntar antes de aceptar, con estas palabras: «¿En qué proyectos concretos participaría? ¿Quién sería la persona que me guía?». Si no saben responderte, ya sabes qué te espera."
+        },
+        {
+          "tipo": "banderas",
+          "rojas": [
+            "«Ahorita vemos en qué te ponemos.»",
+            "Nadie asignado para enseñarte.",
+            "El practicante anterior duró dos semanas.",
+            "Te describen tareas que no tienen nada que ver con tu carrera.",
+            "Es una empresa donde nunca han contratado a un practicante."
+          ],
+          "verdes": [
+            "Te nombran un proyecto específico.",
+            "Hay una persona responsable de tu formación.",
+            "Han contratado practicantes de planta antes (¡pregúntalo!).",
+            "Te dejan hablar con quien sería tu equipo.",
+            "Aunque sea sin goce, te dan horario que te permite estudiar."
+          ]
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "clave",
+          "titulo": "El objetivo real de tus prácticas",
+          "texto": "Que te contraten ahí. Cerca del 30% de los practicantes que hacen bien su trabajo reciben oferta. Trátalas como un periodo de prueba de seis meses, no como un trámite: llega puntual, pregunta, ofrécete para lo que nadie quiere hacer y pide retroalimentación a la mitad."
+        },
+        {
+          "tipo": "accion",
+          "accionId": "practicas_elegidas",
+          "texto": "Elegí un lugar de prácticas donde sí voy a aprender",
+          "puntos": 15
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,198 @@
+{
+  "id": "ingles",
+  "titulo": "Inglés y cursos",
+  "intro": "Si solo pudieras hacer una cosa este año para ganar más, sería esta. No es opinión: es la diferencia de sueldo más grande y más barata que existe para el mismo puesto.",
+  "capitulos": [
+    {
+      "id": "in_por_que",
+      "titulo": "Por qué el inglés paga más que un semestre más de escuela",
+      "minutos": 4,
+      "gratis": true,
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Mismo puesto, misma empresa, misma carrera. La persona que puede sostener una junta en inglés gana notablemente más que la que no, y sobre todo: puede aplicar a vacantes a las que la otra ni siquiera entra."
+        },
+        {
+          "tipo": "cita",
+          "texto": "El inglés no te hace mejor en tu trabajo. Te hace elegible para trabajos mejores."
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Las vacantes mejor pagadas de casi cualquier carrera están en empresas con operación internacional, clientes extranjeros o casa matriz fuera. Todas filtran por inglés antes de mirar tu experiencia. Es un muro, y del otro lado hay mucha menos competencia."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "El nivel que realmente piden"
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "No te piden hablar perfecto. Te piden **B2 conversacional**: entender una junta, explicar tu trabajo, escribir un correo claro y no congelarte cuando te preguntan algo. Eso es alcanzable en meses, no en años."
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "peligro",
+          "titulo": "Nunca mientas con tu nivel",
+          "texto": "Si pones «inglés avanzado» en el CV, en algún momento de la entrevista van a cambiar el idioma a media conversación. Es una prueba estándar y se nota en tres segundos. Quedar en ridículo ahí te cuesta la vacante y la recomendación. Pon tu nivel real: «intermedio, en curso» es honesto y no descalifica."
+        }
+      ]
+    },
+    {
+      "id": "in_como",
+      "titulo": "Cómo llegar a B2 gastando poco",
+      "minutos": 6,
+      "gratis": false,
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Casi todos fallan por la misma razón: estudian gramática durante dos años y nunca hablan. Entienden todo y no pueden decir nada. El cuello de botella no es el vocabulario, es la práctica oral."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "La rutina que sí funciona: 30 minutos al día"
+        },
+        {
+          "tipo": "tabla",
+          "encabezados": ["Minutos", "Qué haces", "Para qué"],
+          "filas": [
+            ["10 min", "App de vocabulario y estructura (Duolingo, Anki, Busuu)", "Constancia y base. Es el calentamiento, no el entrenamiento."],
+            ["10 min", "Escucha real: podcast, YouTube o serie con subtítulos EN INGLÉS", "Oído. Los subtítulos en español anulan el beneficio."],
+            ["10 min", "**Hablar en voz alta.** Describe tu día, responde preguntas de entrevista, o clase con tutor.", "Es lo único que de verdad mueve la aguja. No se puede saltar."]
+          ]
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "clave",
+          "titulo": "El atajo real",
+          "texto": "Clases de conversación con un tutor en italki o Preply cuestan una fracción de una escuela de idiomas y son 1 a 1. Dos sesiones por semana durante cuatro meses hacen más que dos años de app. Si tu presupuesto solo alcanza para una cosa, que sea esta."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "Gratis y con valor real"
+        },
+        {
+          "tipo": "lista",
+          "items": [
+            "Cambia el idioma de tu **teléfono y tus redes** a inglés. Es gratis, pasivo y funciona.",
+            "Series que ya viste, ahora en inglés con subtítulos en inglés. Ya conoces la trama, así que te enfocas en el idioma.",
+            "Grupos de conversación gratuitos: busca «English conversation club» en tu ciudad o en Discord.",
+            "**EF SET** te da una certificación de nivel gratis y con link verificable para tu LinkedIn."
+          ]
+        },
+        {
+          "tipo": "titulo",
+          "texto": "Certificaciones: cuál sacar"
+        },
+        {
+          "tipo": "tabla",
+          "encabezados": ["Certificación", "Costo", "Cuándo vale la pena"],
+          "filas": [
+            ["EF SET", "Gratis", "Siempre. Es el primer paso, sin excusa."],
+            ["Duolingo English Test", "Bajo", "Cuando necesitas algo rápido y aceptado por muchas empresas."],
+            ["TOEFL iBT", "Alto", "Corporativos grandes, becas, posgrado en el extranjero."],
+            ["IELTS", "Alto", "Migración y estudios, sobre todo Reino Unido y Canadá."],
+            ["Cambridge (B2 First / C1)", "Alto", "No caduca. Buena inversión si ya estás en nivel."]
+          ]
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "tip",
+          "titulo": "No pagues certificación antes de tiempo",
+          "texto": "Haz primero el EF SET gratis. Si sales en B1 bajo, todavía no gastes en TOEFL: te va a salir un número malo, caro y con fecha. Certifica cuando ya estés en el nivel que quieres presumir."
+        },
+        {
+          "tipo": "accion",
+          "accionId": "ingles_rutina",
+          "texto": "Armé mi rutina de inglés y llevo una semana",
+          "puntos": 10
+        },
+        {
+          "tipo": "accion",
+          "accionId": "ingles_certificado",
+          "texto": "Tengo una certificación de inglés con link verificable",
+          "puntos": 15
+        }
+      ]
+    },
+    {
+      "id": "in_cursos",
+      "titulo": "Cursos: cuáles valen y cómo no gastar de más",
+      "minutos": 6,
+      "gratis": false,
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Un certificado no te contrata. Lo que hace es doble: te enseña algo que no sabías y le demuestra a quien te entrevista que aprendes por tu cuenta. Esa segunda parte es la que vale, y por eso importa más lo que HICISTE en el curso que el PDF que te dieron."
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "clave",
+          "titulo": "La regla de oro de los cursos",
+          "texto": "Un curso sin proyecto entregable es entretenimiento. Antes de inscribirte a cualquier cosa, pregúntate: ¿al terminar voy a tener algo que pueda enseñar? Si la respuesta es no, busca otro."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "Certificados gratuitos con peso real"
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Estos no cuestan nada y los reconocen las empresas. Si andas sin dinero, empieza aquí — no hay excusa."
+        },
+        {
+          "tipo": "recursos",
+          "items": [
+            { "nombre": "Google Career Certificates", "descripcion": "Soporte TI, análisis de datos, UX, project management. De los certificados gratuitos o baratos con más reconocimiento.", "url": "https://grow.google/certificates/", "afiliado": false, "gratis": true },
+            { "nombre": "Microsoft Learn", "descripcion": "Rutas gratis hacia certificaciones oficiales de Azure, Power BI y Microsoft 365.", "url": "https://learn.microsoft.com/training/", "afiliado": false, "gratis": true },
+            { "nombre": "freeCodeCamp", "descripcion": "Programación desde cero, gratis, con proyectos obligatorios. Sale con portafolio incluido.", "url": "https://www.freecodecamp.org/espanol/", "afiliado": false, "gratis": true },
+            { "nombre": "Santander Open Academy", "descripcion": "Becas y cursos gratuitos para estudiantes y egresados en Latinoamérica.", "url": "https://www.santanderopenacademy.com/", "afiliado": false, "gratis": true },
+            { "nombre": "Cisco Networking Academy", "descripcion": "Redes y ciberseguridad. El curso de introducción es gratis y muy valorado.", "url": "https://www.netacad.com/", "afiliado": false, "gratis": true },
+            { "nombre": "AWS Skill Builder", "descripcion": "Nube. Gran parte del contenido es gratuito y el mercado lo paga bien.", "url": "https://skillbuilder.aws/", "afiliado": false, "gratis": true }
+          ]
+        },
+        {
+          "tipo": "titulo",
+          "texto": "Plataformas de paga"
+        },
+        {
+          "tipo": "recursos",
+          "items": [
+            { "nombre": "Udemy", "descripcion": "Catálogo enorme y cursos muy prácticos. Ideal para habilidades puntuales.", "url": "https://www.udemy.com/", "afiliado": true, "gratis": false },
+            { "nombre": "Platzi", "descripcion": "Rutas en español con comunidad activa. Buena si necesitas estructura y no solo videos sueltos.", "url": "https://platzi.com/", "afiliado": true, "gratis": false },
+            { "nombre": "Coursera", "descripcion": "Cursos de universidades reales. Se puede auditar gratis y pagar solo si quieres el certificado.", "url": "https://www.coursera.org/", "afiliado": true, "gratis": false }
+          ]
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "peligro",
+          "titulo": "Nunca pagues precio de lista en Udemy",
+          "texto": "Los cursos de Udemy tienen descuentos enormes de forma constante. Si ves un curso en varios cientos de pesos, ponlo en tu lista de deseos y espera unos días. Pagar el precio completo es tirar dinero. Lo mismo con Platzi y Coursera: tienen becas, planes anuales en oferta y periodos de prueba."
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "aviso",
+          "titulo": "Cuidado con los «bootcamps» que prometen empleo",
+          "texto": "Si un curso cuesta decenas de miles de pesos y te «garantiza» trabajo o te ofrece pagar después con un porcentaje de tu sueldo, léelo diez veces. Muchos son legítimos, pero otros son deuda cara con promesas que no cumplen. Revisa el contrato completo, busca egresados reales en LinkedIn y pregúntales directo. Revisamos esto a fondo en el módulo de Estafas."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "Cómo se pone un certificado en el CV"
+        },
+        {
+          "tipo": "lista",
+          "items": [
+            "Nombre exacto del curso, institución y año. Nada de «varios cursos de Excel».",
+            "Súbelo también a LinkedIn en **Licencias y certificaciones**, con el link verificable.",
+            "Menciona el **proyecto** que hiciste, no solo las horas: «Certificado de Análisis de Datos de Google — proyecto final: tablero de ventas de un negocio local».",
+            "Máximo 4 o 5 en el CV, los más relevantes para esa vacante. Una lista de 20 cursos se lee como relleno."
+          ]
+        },
+        {
+          "tipo": "accion",
+          "accionId": "certificados_dos",
+          "texto": "Tengo al menos 2 certificados con link verificable",
+          "puntos": 20
+        }
+      ]
+    }
+  ]
+}

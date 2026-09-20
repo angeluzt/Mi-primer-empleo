@@ -1,0 +1,154 @@
+{
+  "id": "materiales",
+  "titulo": "Tus materiales",
+  "intro": "Tu CV, tu LinkedIn y tu carta son tres versiones del mismo anuncio. Aquí se arreglan de una vez, y al final la app te arma el CV en español e inglés.",
+  "capitulos": [
+    {
+      "id": "ma_cv",
+      "titulo": "Anatomía de un CV que sí se lee",
+      "minutos": 6,
+      "gratis": true,
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Tu CV tiene un solo objetivo: que te llamen. No cuenta tu vida, no te define como persona y no tiene que ser bonito. Tiene que ser rápido de leer y fácil de decir que sí."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "Las reglas que no se discuten"
+        },
+        {
+          "tipo": "lista",
+          "items": [
+            "**Una página.** Sin experiencia, dos páginas es una señal de que no sabes priorizar.",
+            "**PDF siempre**, nunca Word. El formato se rompe en la computadora del otro.",
+            "**Nómbralo bien**: `CV_Juan_Perez_Analista.pdf`, no `cv final final2.pdf`.",
+            "**Sin foto** si la empresa usa filtros automáticos (casi todas las grandes). Guarda una versión con foto para entrega en mano o empresas chicas.",
+            "**Correo serio.** `juan.perez.dev@gmail.com`, no el que hiciste en secundaria.",
+            "**Sin tablas ni columnas raras** en la versión que subes a bolsas de trabajo: los lectores automáticos las revuelven y tu CV llega hecho un desastre."
+          ]
+        },
+        {
+          "tipo": "titulo",
+          "texto": "El orden correcto cuando NO tienes experiencia"
+        },
+        {
+          "tipo": "lista",
+          "ordenada": true,
+          "items": [
+            "Nombre, ciudad, teléfono, correo, LinkedIn y **link a tu portafolio**.",
+            "Un resumen de 2 líneas: qué eres, qué sabes hacer, qué buscas.",
+            "**Proyectos** (sí, antes que la escuela). Con link.",
+            "Formación académica.",
+            "Certificaciones y cursos.",
+            "Experiencia (prácticas, servicio social, trabajos aunque no sean del área).",
+            "Habilidades técnicas e idiomas con nivel real."
+          ]
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "clave",
+          "titulo": "La fórmula de cada línea",
+          "texto": "Verbo de acción + qué hiciste + resultado con número. «Responsable de redes sociales» no dice nada. «Llevé las redes de una cafetería 3 meses: pasé de 400 a 1,900 seguidores y las ventas de fin de semana subieron ~15%» dice todo. Si no tienes números exactos, usa aproximados honestos."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "Lo que hay que borrar ya"
+        },
+        {
+          "tipo": "lista",
+          "items": [
+            "«Responsable, proactivo, trabajo bajo presión». Lo escriben todos, no prueba nada.",
+            "Tu edad, estado civil, CURP, RFC y tu dirección exacta. No se usan y son datos sensibles.",
+            "«Office avanzado» si no lo es. Preguntan tablas dinámicas y se acaba el cuento.",
+            "Tu promedio, salvo que sea sobresaliente o te lo pidan.",
+            "Secundaria y preparatoria si ya tienes licenciatura.",
+            "Fotos informales, logos de colores y diseños que distraen (salvo que seas diseñador y sea intencional)."
+          ]
+        },
+        {
+          "tipo": "accion",
+          "accionId": "cv_listo",
+          "texto": "Tengo mi CV en PDF de una página",
+          "puntos": 15
+        }
+      ]
+    },
+    {
+      "id": "ma_linkedin",
+      "titulo": "LinkedIn es un anuncio, no un CV",
+      "minutos": 5,
+      "gratis": false,
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "El error es copiar y pegar el CV. LinkedIn funciona al revés: el CV lo mandas tú, LinkedIn hace que te encuentren a ti. Está optimizado para que un reclutador que busca «analista de datos junior Guadalajara» te vea aparecer."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "Las 6 cosas que mueven la aguja"
+        },
+        {
+          "tipo": "lista",
+          "ordenada": true,
+          "items": [
+            "**El titular.** No pongas «Estudiante de la UdeG». Pon lo que quieres ser: «Desarrollador Web Junior | React y Node | Buscando mi primera oportunidad». Ahí busca el reclutador.",
+            "**Foto decente.** Fondo liso, buena luz, ropa de trabajo. Con el celular basta. Los perfiles con foto reciben muchísimas más visitas.",
+            "**«Abierto a trabajo»** activado, en la opción que solo ven los reclutadores si sigues empleado.",
+            "**La sección «Acerca de»** en primera persona, 4 o 5 líneas, terminando con lo que buscas.",
+            "**Aptitudes**: pon las que salen en las vacantes que te interesan, palabra por palabra.",
+            "**Conecta con reclutadores** de tu ciudad y de tu sector. Con nota corta: quién eres y qué buscas. La mayoría acepta."
+          ]
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "tip",
+          "titulo": "Alertas de empleo",
+          "texto": "Configura alertas guardadas con tus 3 o 4 búsquedas. Aplicar en las primeras 24 horas de publicada una vacante multiplica tu probabilidad de respuesta: después el reclutador ya tiene 200 candidatos y deja de leer."
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Y una cosa más: publica de vez en cuando. No tienes que ser influencer. Sube tu proyecto terminado, di qué aprendiste. Dos o tres publicaciones al año te ponen delante de gente que jamás habría visto tu perfil."
+        },
+        {
+          "tipo": "accion",
+          "accionId": "linkedin_listo",
+          "texto": "Tengo LinkedIn con titular, foto y «Abierto a trabajo»",
+          "puntos": 10
+        }
+      ]
+    },
+    {
+      "id": "ma_carta",
+      "titulo": "Carta de presentación: cuándo sirve",
+      "minutos": 3,
+      "gratis": false,
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "En la mayoría de las vacantes de bolsa de trabajo, nadie la lee. Pero en tres casos vale mucho la pena: cuando escribes directo a una empresa sin vacante publicada, cuando la piden explícitamente y cuando tienes algo raro que explicar (cambio de carrera, hueco largo, mudanza de ciudad)."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "La estructura de 4 párrafos"
+        },
+        {
+          "tipo": "lista",
+          "ordenada": true,
+          "items": [
+            "Qué puesto buscas y cómo te enteraste. Una línea.",
+            "Por qué **esa** empresa. Algo concreto de ellos, que demuestre que investigaste 5 minutos.",
+            "Tu mejor prueba: el proyecto o logro más relacionado con lo que necesitan.",
+            "Cierre corto pidiendo una conversación. Sin rogar, sin «espero su amable respuesta»."
+          ]
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "peligro",
+          "titulo": "El error que mata",
+          "texto": "Mandar la misma carta a 50 empresas cambiando solo el nombre — y peor, olvidarte de cambiarlo. Si no vas a personalizarla de verdad, no la mandes: un CV solo se ve mejor que una carta genérica."
+        }
+      ]
+    }
+  ]
+}
