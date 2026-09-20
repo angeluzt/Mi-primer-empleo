@@ -46,8 +46,18 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
+      # Sin --stacktrace: el volcado de Gradle entierra las líneas "e:" del compilador,
+      # que son lo único que sirve para arreglar el fallo.
       - name: Construir APK de depuración
-        run: ./gradlew assembleDebug --no-daemon --stacktrace
+        run: |
+          set -o pipefail
+          ./gradlew assembleDebug --no-daemon | tee build.log
+
+      - name: Mostrar errores de compilación
+        if: failure()
+        run: |
+          echo "=== Errores de Kotlin ==="
+          grep -E "^e: " build.log || echo "(sin errores del compilador; el fallo fue en otro paso)"
 
       - name: Publicar el APK
         uses: actions/upload-artifact@v4
