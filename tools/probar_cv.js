@@ -6,7 +6,6 @@
  *   export OPENAI_API_KEY=sk-...
  *   node tools/probar_cv.js                        # con el perfil de ejemplo
  *   node tools/probar_cv.js mis_respuestas.json    # con tus propios datos
- *   node tools/probar_cv.js --preguntas            # prueba la entrevista guiada
  *
  * Deja dos archivos en salida_cv/: el JSON crudo y un HTML para verlo.
  */
@@ -14,7 +13,6 @@
 const fs = require("fs");
 const path = require("path");
 const {
-  sistemaPregunta,
   sistemaGenerar,
   entradaGenerar,
   MODELO,
@@ -230,17 +228,6 @@ async function main() {
     console.error("Falta la llave. Ejecuta:  export OPENAI_API_KEY=sk-...");
     console.error("O prueba el formato de salida sin gastar nada:  node tools/probar_cv.js --simular");
     process.exit(1);
-  }
-
-  if (process.argv.includes("--preguntas")) {
-    console.log("Probando la entrevista guiada…\n");
-    const { contenido, uso } = await llamar([
-      { role: "system", content: sistemaPregunta() },
-      { role: "user", content: `Respuestas hasta ahora:\n${JSON.stringify({ nombre: "Ana López" }, null, 2)}` },
-    ]);
-    console.log(JSON.stringify(contenido, null, 2));
-    console.log(`\nCosto: ${costo(uso)}`);
-    return;
   }
 
   const archivo = process.argv.find((a) => a.endsWith(".json"));

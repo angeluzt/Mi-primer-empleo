@@ -24,21 +24,6 @@ private data class PeticionCv(
     val cvPegado: String = "",
 )
 
-@Serializable
-private data class PeticionPregunta(
-    val purchaseToken: String,
-    val respuestas: Map<String, String>,
-)
-
-@Serializable
-data class SiguientePregunta(
-    val campo: String,
-    val pregunta: String,
-    val ayuda: String = "",
-    val sugerencias: List<String> = emptyList(),
-    val terminado: Boolean = false,
-)
-
 /**
  * Habla con nuestro backend, que es quien guarda la llave de OpenAI y verifica la compra.
  *
@@ -53,24 +38,6 @@ class ClienteCv(private val context: Context) {
 
     private fun prompt(archivo: String): String =
         context.assets.open(archivo).bufferedReader().use { it.readText() }.trim()
-
-    suspend fun siguientePregunta(
-        purchaseToken: String,
-        respuestas: Map<String, String>,
-        llaveLocal: String = "",
-    ): Result<SiguientePregunta> =
-        if (usaLlaveLocal(llaveLocal)) {
-            directo(
-                llaveLocal,
-                prompt("siguiente_pregunta.txt"),
-                "Respuestas hasta ahora:\n${json.encodeToString(respuestas)}",
-            ).mapCatching { json.decodeFromString<SiguientePregunta>(it) }
-        } else {
-            llamar(
-                ruta = "siguientePregunta",
-                cuerpo = json.encodeToString(PeticionPregunta(purchaseToken, respuestas)),
-            ).mapCatching { json.decodeFromString<SiguientePregunta>(it) }
-        }
 
     suspend fun generar(
         purchaseToken: String,

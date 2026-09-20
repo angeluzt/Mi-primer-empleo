@@ -12,7 +12,6 @@ const path = require("path");
 const DIR = path.resolve(__dirname, "..", "prompts");
 const leer = (archivo) => fs.readFileSync(path.join(DIR, archivo), "utf8").trim();
 
-const sistemaPregunta = () => leer("siguiente_pregunta.txt");
 const sistemaGenerar = () => leer("generar_cv.txt");
 
 const entradaGenerar = (respuestas, cvPegado) =>
@@ -22,7 +21,6 @@ const entradaGenerar = (respuestas, cvPegado) =>
   ].join("");
 
 module.exports = {
-  sistemaPregunta,
   sistemaGenerar,
   entradaGenerar,
   MODELO: "gpt-4o-mini",

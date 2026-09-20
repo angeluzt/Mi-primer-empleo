@@ -35,6 +35,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -69,7 +70,7 @@ fun PantallaCv(
     var entrada by remember { mutableStateOf("") }
     val listState = rememberLazyListState()
 
-    LaunchedEffect(cv.turnos.size, cv.pensando) {
+    LaunchedEffect(cv.turnos.size, cv.generando) {
         listState.animateScrollToItem((cv.turnos.size + 1).coerceAtLeast(0))
     }
 
@@ -83,7 +84,18 @@ fun PantallaCv(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Tu CV con IA", style = MaterialTheme.typography.titleMedium) },
+                title = {
+                    Column {
+                        Text("Tu CV con IA", style = MaterialTheme.typography.titleMedium)
+                        if (!cv.terminoElGuion) {
+                            Text(
+                                "Pregunta ${cv.posicion} de ${cv.total}",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    }
+                },
                 navigationIcon = {
                     IconButton(onClick = onAtras) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Atrás")
@@ -105,18 +117,18 @@ fun PantallaCv(
                 if (cv.cv != null) {
                     BarraExportar(estado, onPaywall, onPlantillas)
                     Spacer(Modifier.height(10.dp))
-                } else if (cv.listoParaGenerar) {
-                    BotonGenerar(cv.generando) { vm.generar() }
+                } else if (cv.puedeGenerar) {
+                    BotonGenerar(cv.generando, cv.terminoElGuion) { vm.generar() }
                     Spacer(Modifier.height(10.dp))
                 }
 
-                if (cv.sugerencias.isNotEmpty() && !cv.pensando) {
+                cv.campo?.sugerencias?.takeIf { it.isNotEmpty() }?.let { sugerencias ->
                     Row(
                         Modifier
                             .horizontalScroll(rememberScrollState())
                             .padding(bottom = 10.dp),
                     ) {
-                        cv.sugerencias.forEach { sugerencia ->
+                        sugerencias.forEach { sugerencia ->
                             AssistChip(
                                 onClick = { vm.responder(sugerencia) },
                                 label = { Text(sugerencia) },
@@ -126,26 +138,36 @@ fun PantallaCv(
                     }
                 }
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    OutlinedTextField(
-                        value = entrada,
-                        onValueChange = { entrada = it },
-                        modifier = Modifier.weight(1f),
-                        placeholder = { Text("Escribe tu respuesta…") },
-                        shape = RoundedCornerShape(14.dp),
-                        maxLines = 4,
-                        enabled = !cv.pensando && !cv.generando,
-                    )
-                    IconButton(
-                        onClick = enviar,
-                        enabled = entrada.isNotBlank() && !cv.pensando && !cv.generando,
-                        modifier = Modifier.padding(start = 6.dp),
-                    ) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.Send,
-                            contentDescription = "Enviar",
-                            tint = MaterialTheme.colorScheme.primary,
+                if (cv.campo != null) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        OutlinedTextField(
+                            value = entrada,
+                            onValueChange = { entrada = it },
+                            modifier = Modifier.weight(1f),
+                            placeholder = { Text("Escribe tu respuesta…") },
+                            shape = RoundedCornerShape(14.dp),
+                            maxLines = 4,
+                            enabled = !cv.generando,
                         )
+                        IconButton(
+                            onClick = enviar,
+                            enabled = entrada.isNotBlank() && !cv.generando,
+                            modifier = Modifier.padding(start = 6.dp),
+                        ) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.Send,
+                                contentDescription = "Enviar",
+                                tint = MaterialTheme.colorScheme.primary,
+                            )
+                        }
+                    }
+                    if (cv.campo?.opcional == true) {
+                        TextButton(
+                            onClick = { entrada = ""; vm.saltar() },
+                            enabled = !cv.generando,
+                        ) {
+                            Text("No tengo esto, saltar")
+                        }
                     }
                 }
             }
@@ -160,8 +182,8 @@ fun PantallaCv(
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             items(cv.turnos) { turno -> Burbuja(turno) }
-            if (cv.pensando || cv.generando) {
-                item { Pensando(cv.generando) }
+            if (cv.generando) {
+                item { Pensando() }
             }
             item { Spacer(Modifier.height(8.dp)) }
         }
@@ -201,11 +223,11 @@ private fun Burbuja(turno: TurnoCv) {
 }
 
 @Composable
-private fun Pensando(generando: Boolean) {
+private fun Pensando() {
     Row(Modifier.padding(start = 12.dp), verticalAlignment = Alignment.CenterVertically) {
         CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
         Text(
-            text = if (generando) "Armando tu CV en español e inglés…" else "Escribiendo…",
+            text = "Armando tu CV en español e inglés…",
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(start = 10.dp),
@@ -243,16 +265,26 @@ private fun AvisoError(mensaje: String, onCerrar: () -> Unit) {
 }
 
 @Composable
-private fun BotonGenerar(generando: Boolean, onGenerar: () -> Unit) {
-    Button(
-        onClick = onGenerar,
-        enabled = !generando,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(50.dp),
-        shape = RoundedCornerShape(14.dp),
-    ) {
-        Text(if (generando) "Generando…" else "Generar mi CV")
+private fun BotonGenerar(generando: Boolean, guionCompleto: Boolean, onGenerar: () -> Unit) {
+    Column {
+        Button(
+            onClick = onGenerar,
+            enabled = !generando,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            shape = RoundedCornerShape(14.dp),
+        ) {
+            Text(if (generando) "Generando…" else "Generar mi CV")
+        }
+        if (!guionCompleto) {
+            Text(
+                text = "Ya tengo lo mínimo. Si sigues contestando, tu CV queda mejor.",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 6.dp),
+            )
+        }
     }
 }
 

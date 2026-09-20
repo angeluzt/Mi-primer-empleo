@@ -11,7 +11,6 @@ const { defineSecret } = require("firebase-functions/params");
 const admin = require("firebase-admin");
 const { google } = require("googleapis");
 const {
-  sistemaPregunta,
   sistemaGenerar,
   entradaGenerar,
   MODELO,
@@ -106,23 +105,6 @@ async function llamarOpenAI(mensajes) {
 }
 
 
-exports.siguientePregunta = onRequest(opciones, async (req, res) => {
-  try {
-    const { purchaseToken, respuestas } = req.body || {};
-
-    // Armar el CV es gratis: aquí no se cobra ni se verifica compra.
-    // El muro está en generarCv (exportar), que es donde la persona ya invirtió su trabajo.
-    const salida = await llamarOpenAI([
-      { role: "system", content: sistemaPregunta() },
-      { role: "user", content: `Respuestas hasta ahora:\n${JSON.stringify(respuestas || {}, null, 2)}` },
-    ]);
-
-    res.json(salida);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "No pudimos continuar la conversación." });
-  }
-});
 
 exports.generarCv = onRequest(opciones, async (req, res) => {
   try {
