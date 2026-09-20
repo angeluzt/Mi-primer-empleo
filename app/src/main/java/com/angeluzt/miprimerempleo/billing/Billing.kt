@@ -2,12 +2,14 @@ package com.angeluzt.miprimerempleo.billing
 
 import android.app.Activity
 import android.content.Context
+import com.angeluzt.miprimerempleo.BuildConfig
 import com.android.billingclient.api.AcknowledgePurchaseParams
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.ConsumeParams
+import com.android.billingclient.api.PendingPurchasesParams
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesUpdatedListener
@@ -53,7 +55,7 @@ object Productos {
 
 data class EstadoCompras(
     val conectado: Boolean = false,
-    val tienePase: Boolean = false,
+    val tienePase: Boolean = BuildConfig.DESBLOQUEO_PRUEBA,
     val recargasCompradas: Int = 0,
     val precios: Map<String, String> = emptyMap(),
     val error: String? = null,
@@ -88,7 +90,9 @@ class GestorCompras(context: Context) {
 
     private val cliente = BillingClient.newBuilder(context)
         .setListener(escucha)
-        .enablePendingPurchases()
+        .enablePendingPurchases(
+            PendingPurchasesParams.newBuilder().enableOneTimeProducts().build()
+        )
         .build()
 
     fun conectar() {
@@ -143,7 +147,10 @@ class GestorCompras(context: Context) {
             it.purchaseState == Purchase.PurchaseState.PURCHASED
         }
         _estado.update { estado ->
-            estado.copy(tienePase = activas.any { Productos.PASE_COMPLETO in it.products })
+            estado.copy(
+                tienePase = BuildConfig.DESBLOQUEO_PRUEBA ||
+                    activas.any { Productos.PASE_COMPLETO in it.products }
+            )
         }
         activas.forEach { procesar(it) }
     }

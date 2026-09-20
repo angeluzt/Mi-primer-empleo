@@ -1,7 +1,7 @@
 {
   "id": "ingles",
-  "titulo": "Inglés y cursos",
-  "intro": "Si solo pudieras hacer una cosa este año para ganar más, sería esta. No es opinión: es la diferencia de sueldo más grande y más barata que existe para el mismo puesto.",
+  "titulo": "Inglés, IA y cursos",
+  "intro": "Tres habilidades que cuestan poco o nada y cambian el rango de sueldo al que puedes aspirar. Si solo pudieras trabajar en una cosa este año además de tu carrera, estaría en este módulo.",
   "capitulos": [
     {
       "id": "in_por_que",
@@ -110,6 +110,134 @@
           "tipo": "accion",
           "accionId": "ingles_certificado",
           "texto": "Tengo una certificación de inglés con link verificable",
+          "puntos": 15
+        }
+      ]
+    },
+    {
+      "id": "in_ia",
+      "titulo": "Saber usar IA ya es un requisito",
+      "minutos": 8,
+      "gratis": false,
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Hace poco, saber usar inteligencia artificial era un extra simpático. Hoy aparece como requisito en vacantes de casi cualquier área: marketing, contabilidad, diseño, ingeniería, atención a clientes, recursos humanos. Y en las entrevistas ya preguntan por ello de forma directa."
+        },
+        {
+          "tipo": "cita",
+          "texto": "Aquí está tu mayor ventaja: en IA nadie tiene diez años de experiencia. La distancia entre un junior y un senior es más corta en esto que en cualquier otra cosa que puedas aprender."
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Piénsalo bien, porque es importante. En tu carrera compites contra gente con años de ventaja que tú no puedes recuperar. En IA la ventaja de todos es de meses, no de décadas. Es el único terreno donde puedes ponerte al nivel de alguien con experiencia en un plazo corto y real."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "Qué buscan las empresas exactamente"
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "No buscan que sepas programar modelos. Eso es otra carrera. Para un puesto normal buscan tres cosas muy concretas:"
+        },
+        {
+          "tipo": "lista",
+          "ordenada": true,
+          "items": [
+            "**Que la uses para ir más rápido sin apagar el cerebro.** Que entregues en dos horas lo que antes tomaba un día, y que el resultado sea bueno porque tú lo revisaste.",
+            "**Que sepas qué NO meterle.** Esto es lo que más miedo les da, y con razón. Es la causa número uno de problemas serios con IA en empresas.",
+            "**Que verifiques lo que te devuelve.** La IA se equivoca con total seguridad y buena redacción. Si entregas su respuesta sin revisar y está mal, el error es tuyo, no de la herramienta."
+          ]
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "peligro",
+          "titulo": "Lo que nunca debes pegar en una IA del trabajo",
+          "texto": "Datos personales de clientes, números financieros sin publicar, código propiedad de la empresa, contratos, bases de datos, credenciales o contraseñas. Salvo que tu empresa tenga una herramienta empresarial aprobada y te diga expresamente que sí puedes. Gente con buen desempeño ha perdido su trabajo por pegar información confidencial en una IA pública. Si dudas, pregunta antes a tu jefe o a sistemas: preguntar nunca te costó el empleo."
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "aviso",
+          "titulo": "La IA inventa, y lo hace muy convencida",
+          "texto": "Puede darte una cifra, una ley, una cita o una fuente que simplemente no existe, redactada con total seguridad. A esto se le llama alucinación. Nunca entregues un dato de IA sin verificarlo en la fuente original. En entrevistas, saber explicar esto te distingue de inmediato: demuestra criterio, no solo entusiasmo."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "Cursos y certificaciones que las empresas reconocen"
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Casi todos tienen versión gratuita. Empieza por el que se parezca más a tu área y termina uno completo antes de empezar otro."
+        },
+        {
+          "tipo": "recursos",
+          "items": [
+            { "nombre": "Anthropic — Cursos de Claude", "descripcion": "Formación gratuita del creador de Claude: cómo escribir buenas instrucciones, trabajar con documentos largos y construir sobre la API. Muy buena si quieres entender de fondo, no solo usar.", "url": "https://www.anthropic.com/learn", "afiliado": false, "gratis": true },
+            { "nombre": "Microsoft Learn — Copilot", "descripcion": "Rutas gratuitas de Microsoft 365 Copilot. La más útil si tu área es administrativa, contable o de oficina: Word, Excel, Outlook y Teams con IA.", "url": "https://learn.microsoft.com/training/", "afiliado": false, "gratis": true },
+            { "nombre": "Microsoft AI-900 (Azure AI Fundamentals)", "descripcion": "Certificación oficial de Microsoft. El estudio es gratis en Microsoft Learn y solo el examen se paga. De las más pedidas en vacantes corporativas.", "url": "https://learn.microsoft.com/credentials/certifications/azure-ai-fundamentals/", "afiliado": false, "gratis": false },
+            { "nombre": "GitHub Copilot", "descripcion": "Para programadores. GitHub tiene formación y una certificación propia de Copilot. Si estudias sistemas o software, esta es la tuya.", "url": "https://github.com/features/copilot", "afiliado": false, "gratis": true },
+            { "nombre": "Google AI Essentials", "descripcion": "Pensado para quien no es de tecnología. Enfocado en usar IA en el trabajo diario. Se puede cursar gratis en modo oyente en Coursera.", "url": "https://www.coursera.org/", "afiliado": true, "gratis": false },
+            { "nombre": "OpenAI Academy", "descripcion": "Formación gratuita de OpenAI sobre ChatGPT y sus herramientas, con material por tipo de trabajo.", "url": "https://academy.openai.com/", "afiliado": false, "gratis": true },
+            { "nombre": "AWS Certified AI Practitioner", "descripcion": "Certificación de nube e IA de Amazon. Exige más, pero pesa mucho en vacantes técnicas y se paga bien.", "url": "https://aws.amazon.com/certification/", "afiliado": false, "gratis": false },
+            { "nombre": "DeepLearning.AI — Cursos cortos", "descripcion": "Cursos gratuitos y breves sobre cómo escribir instrucciones efectivas. Prácticos y sin relleno.", "url": "https://www.deeplearning.ai/short-courses/", "afiliado": false, "gratis": true }
+          ]
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "tip",
+          "titulo": "Verifica antes de pagar",
+          "texto": "El mundo de la IA cambia muy rápido: nombres de cursos, precios y certificaciones se actualizan cada pocos meses. Entra al sitio oficial y confirma qué incluye y cuánto cuesta hoy antes de pagar nada. Y antes de gastar, agota lo gratuito: es muchísimo y es bueno."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "Cómo demuestras que sabes usarla"
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Un certificado ayuda, pero lo que convence de verdad es una historia concreta. Y aquí se conecta con el módulo de Evidencia: usa la IA para construir tu proyecto propio y después cuenta cómo la usaste."
+        },
+        {
+          "tipo": "lista",
+          "items": [
+            "En el **CV**, dentro de habilidades: «Uso de IA aplicada al trabajo (Copilot, Claude, ChatGPT)» y el certificado que tengas.",
+            "En la **entrevista**, con una historia real: «Para mi proyecto usé IA para hacer un primer borrador del análisis, luego verifiqué las cifras contra la fuente y corregí dos errores que había inventado».",
+            "Menciona siempre que **revisas** lo que produce. Esa frase es la que te separa del montón.",
+            "Si tu área es administrativa, aprende a automatizar algo aburrido y repetitivo. Llegar el primer día sabiendo hacer eso vale muchísimo."
+          ]
+        },
+        {
+          "tipo": "banderas",
+          "rojas": [
+            "«Uso ChatGPT para todo» sin poder explicar para qué exactamente.",
+            "Entregar texto de IA sin leerlo, con su tono y sus muletillas evidentes.",
+            "No saber qué información es confidencial.",
+            "Decir que la IA nunca se equivoca.",
+            "Presentar como tuyo un trabajo que no revisaste ni entiendes."
+          ],
+          "verdes": [
+            "Das un ejemplo concreto con un antes y un después.",
+            "Explicas qué verificaste y qué corregiste.",
+            "Sabes cuándo NO usarla y lo puedes justificar.",
+            "Conoces las reglas de manejo de datos confidenciales.",
+            "Tienes un certificado terminado, no cinco cursos a medias."
+          ]
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "clave",
+          "titulo": "Y una advertencia honesta sobre tu carrera",
+          "texto": "La IA está haciendo más fáciles justo las tareas que antes se le daban a los juniors: resumir, ordenar datos, hacer el primer borrador. Eso asusta, y con razón. Pero el que usa IA con criterio no está compitiendo contra ella: está haciendo en su primer año lo que antes tomaba tres. Aprenderla no es opcional para tu generación, y tampoco es difícil. Es tu ventaja si empiezas hoy."
+        },
+        {
+          "tipo": "accion",
+          "accionId": "ia_curso",
+          "texto": "Terminé un curso de IA y lo puedo explicar con un ejemplo real",
+          "puntos": 20
+        },
+        {
+          "tipo": "accion",
+          "accionId": "ia_proyecto",
+          "texto": "Usé IA en un proyecto y sé contar qué verifiqué y qué corregí",
           "puntos": 15
         }
       ]

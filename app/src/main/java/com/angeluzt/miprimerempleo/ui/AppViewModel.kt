@@ -21,12 +21,19 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class EstadoApp(
-    val cargando: Boolean = true,
+    val contenidoListo: Boolean = false,
+    val progresoListo: Boolean = false,
     val indice: Indice? = null,
     val modulos: Map<String, Modulo> = emptyMap(),
     val progreso: EstadoProgreso = EstadoProgreso(),
     val compras: EstadoCompras = EstadoCompras(),
 ) {
+    /**
+     * NavHost fija su destino inicial en la primera composición. Hasta no saber si la
+     * persona ya eligió ruta, mostrar cualquier pantalla la mandaría al lugar equivocado.
+     */
+    val listo: Boolean get() = contenidoListo && progresoListo
+
     val ruta: Ruta?
         get() = indice?.rutas?.firstOrNull { it.id == progreso.ruta }
 
@@ -67,13 +74,13 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         viewModelScope.launch {
             val indice = contexto.contenido.indice()
             val modulos = contexto.contenido.todosLosModulos().associateBy { it.id }
-            _estado.update { it.copy(cargando = false, indice = indice, modulos = modulos) }
+            _estado.update { it.copy(contenidoListo = true, indice = indice, modulos = modulos) }
         }
         viewModelScope.launch {
             combine(contexto.progreso.estado, contexto.compras.estado) { progreso, compras ->
                 progreso to compras
             }.collect { (progreso, compras) ->
-                _estado.update { it.copy(progreso = progreso, compras = compras) }
+                _estado.update { it.copy(progreso = progreso, compras = compras, progresoListo = true) }
             }
         }
     }

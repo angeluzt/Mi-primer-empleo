@@ -83,6 +83,11 @@ class Progreso(private val context: Context) {
     }
 
     companion object {
-        const val PUNTOS_POR_CAPITULO = 5
+        /**
+         * Leer vale poco a propósito. El nivel de empleabilidad tiene que reflejar
+         * lo que la persona hizo en el mundo real, no cuánto avanzó en la app:
+         * leer la guía completa no te hace contratable.
+         */
+        const val PUNTOS_POR_CAPITULO = 2
     }
 }

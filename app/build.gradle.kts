@@ -26,7 +26,13 @@ android {
     }
 
     buildTypes {
+        debug {
+            // Play Billing no funciona en un APK instalado a mano, así que sin esto
+            // no habría forma de probar el contenido de paga. Solo existe en debug.
+            buildConfigField("boolean", "DESBLOQUEO_PRUEBA", "true")
+        }
         release {
+            buildConfigField("boolean", "DESBLOQUEO_PRUEBA", "false")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
@@ -40,6 +46,9 @@ android {
 
     kotlinOptions {
         jvmTarget = "17"
+        // @JsonClassDiscriminator es experimental: lo usamos para que el mismo JSON
+        // de contenido sirva a la app y más adelante al libro.
+        freeCompilerArgs += "-opt-in=kotlinx.serialization.ExperimentalSerializationApi"
     }
 
     buildFeatures {

@@ -62,6 +62,30 @@ La transparencia es obligatoria y no opcional: solo se recomienda lo que sirve.
 
 ---
 
+## Probar la app en tu teléfono
+
+No necesitas instalar nada. Cada push dispara el workflow **APK de prueba**:
+
+1. Entra a la pestaña **Actions** del repositorio en GitHub.
+2. Abre la ejecución más reciente de *APK de prueba*.
+3. Descarga el artefacto **`mi-primer-empleo-debug`** (es un .zip con el APK dentro).
+4. Pásalo a tu Android, descomprime e instala. Tendrás que permitir
+   *Instalar apps de fuentes desconocidas* para tu gestor de archivos.
+
+> **El APK de depuración desbloquea todo el contenido.** Play Billing no funciona en
+> una app instalada a mano, así que sin eso no habría forma de probar lo de paga.
+> La bandera `DESBLOQUEO_PRUEBA` vale `true` solo en `debug` y `false` en `release`.
+
+Qué funciona y qué no en ese APK:
+
+| | Estado |
+|---|---|
+| Los 9 módulos y toda la lectura | Funciona, incluso sin internet |
+| Nivel de empleabilidad y progreso | Funciona |
+| Enlaces a cursos y recursos | Funciona |
+| Pantallas de compra | Se ven, pero no cobran |
+| Generador de CV con IA | **Necesita el backend desplegado** |
+
 ## Configuración
 
 ### 1. La app

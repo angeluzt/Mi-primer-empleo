@@ -1,0 +1,45 @@
+name: APK de prueba
+
+# Compila un APK instalable para probar en un teléfono real.
+# Se ejecuta en cada push y también a mano desde la pestaña Actions.
+on:
+  push:
+    branches: ["**"]
+  workflow_dispatch:
+
+jobs:
+  revisar-contenido:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Revisar el contenido
+        run: node tools/revisar_contenido.js
+
+  construir-apk:
+    runs-on: ubuntu-latest
+    needs: revisar-contenido
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: android-actions/setup-android@v3
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Construir APK de depuración
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
+
+      - name: Publicar el APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: mi-primer-empleo-debug
+          path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+          retention-days: 30
