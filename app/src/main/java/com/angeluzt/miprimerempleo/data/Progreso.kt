@@ -20,6 +20,7 @@ data class EstadoProgreso(
     val onboardingHecho: Boolean = false,
     val cvsGenerados: Int = 0,
     val plantillaCv: String = "",
+    val pais: String = "MX",
 )
 
 class Progreso(private val context: Context) {
@@ -32,6 +33,7 @@ class Progreso(private val context: Context) {
         val onboarding = booleanPreferencesKey("onboarding_hecho")
         val cvs = intPreferencesKey("cvs_generados")
         val plantilla = stringPreferencesKey("plantilla_cv")
+        val pais = stringPreferencesKey("pais")
     }
 
     val estado: Flow<EstadoProgreso> = context.dataStore.data.map { p ->
@@ -43,6 +45,7 @@ class Progreso(private val context: Context) {
             onboardingHecho = p[Llaves.onboarding] ?: false,
             cvsGenerados = p[Llaves.cvs] ?: 0,
             plantillaCv = p[Llaves.plantilla].orEmpty(),
+            pais = p[Llaves.pais] ?: "MX",
         )
     }
 
@@ -79,6 +82,10 @@ class Progreso(private val context: Context) {
                 p[Llaves.puntos] = total + puntos
             }
         }
+    }
+
+    suspend fun elegirPais(codigo: String) {
+        context.dataStore.edit { it[Llaves.pais] = codigo }
     }
 
     suspend fun elegirPlantilla(plantillaId: String) {

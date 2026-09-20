@@ -87,6 +87,7 @@ fun PantallaLector(
                         accionesHechas = estado.progreso.accionesHechas,
                         onAccion = onAccion,
                         onEnlace = onEnlace,
+                        pais = estado.progreso.pais,
                     )
                 }
             } else {
@@ -98,6 +99,7 @@ fun PantallaLector(
                             accionesHechas = emptySet(),
                             onAccion = { _, _ -> },
                             onEnlace = onEnlace,
+                            pais = estado.progreso.pais,
                         )
                     }
                 }

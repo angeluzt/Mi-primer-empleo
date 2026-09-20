@@ -54,11 +54,36 @@
         {
           "tipo": "recursos",
           "items": [
-            { "nombre": "La búsqueda de empleo en 2 horas — Steve Dalton", "descripcion": "El más práctico de la lista. Un método concreto para investigar empresas y conseguir referidos en vez de mandar CVs a ciegas. Si solo lees uno mientras buscas, que sea este.", "url": "https://www.amazon.com.mx/s?k=The+2-Hour+Job+Search+Steve+Dalton", "afiliado": true },
-            { "nombre": "¿De qué color es tu paracaídas? — Richard Bolles", "descripcion": "El clásico de la búsqueda de empleo, revisado cada año. Largo, pero es el más completo sobre cómo averiguar qué quieres hacer y cómo buscarlo.", "url": "https://www.amazon.com.mx/s?k=De+que+color+es+tu+paracaidas+Bolles", "afiliado": true },
-            { "nombre": "Hazlo tan bien que no puedan ignorarte — Cal Newport", "descripcion": "Desarma el consejo de «sigue tu pasión» y explica por qué la satisfacción viene de volverte bueno en algo raro y valioso. El más útil si no sabes a qué dedicarte.", "url": "https://www.amazon.com.mx/s?k=So+Good+They+Cant+Ignore+You+Cal+Newport", "afiliado": true },
-            { "nombre": "Diseña tu vida — Bill Burnett y Dave Evans", "descripcion": "De un curso de Stanford. Ejercicios para probar caminos de carrera antes de comprometerte con uno. Bueno para quien quiere cambiar de área.", "url": "https://www.amazon.com.mx/s?k=Disena+tu+vida+Burnett+Evans", "afiliado": true },
-            { "nombre": "Nunca comas solo — Keith Ferrazzi", "descripcion": "Sobre construir relaciones profesionales sin sentir que estás usando a la gente. Directo al canal de referidos, que es el que mejor funciona y el que menos usas.", "url": "https://www.amazon.com.mx/s?k=Nunca+comas+solo+Keith+Ferrazzi", "afiliado": true }
+            {
+              "nombre": "La búsqueda de empleo en 2 horas — Steve Dalton",
+              "descripcion": "El más práctico de la lista. Un método concreto para investigar empresas y conseguir referidos en vez de mandar CVs a ciegas. Si solo lees uno mientras buscas, que sea este.",
+              "url": "https://www.amazon.com.mx/s?k=The+2-Hour+Job+Search+Steve+Dalton",
+              "afiliado": true
+            },
+            {
+              "nombre": "¿De qué color es tu paracaídas? — Richard Bolles",
+              "descripcion": "El clásico de la búsqueda de empleo, revisado cada año. Largo, pero es el más completo sobre cómo averiguar qué quieres hacer y cómo buscarlo.",
+              "url": "https://www.amazon.com.mx/s?k=De+que+color+es+tu+paracaidas+Bolles",
+              "afiliado": true
+            },
+            {
+              "nombre": "Hazlo tan bien que no puedan ignorarte — Cal Newport",
+              "descripcion": "Desarma el consejo de «sigue tu pasión» y explica por qué la satisfacción viene de volverte bueno en algo raro y valioso. El más útil si no sabes a qué dedicarte.",
+              "url": "https://www.amazon.com.mx/s?k=So+Good+They+Cant+Ignore+You+Cal+Newport",
+              "afiliado": true
+            },
+            {
+              "nombre": "Diseña tu vida — Bill Burnett y Dave Evans",
+              "descripcion": "De un curso de Stanford. Ejercicios para probar caminos de carrera antes de comprometerte con uno. Bueno para quien quiere cambiar de área.",
+              "url": "https://www.amazon.com.mx/s?k=Disena+tu+vida+Burnett+Evans",
+              "afiliado": true
+            },
+            {
+              "nombre": "Nunca comas solo — Keith Ferrazzi",
+              "descripcion": "Sobre construir relaciones profesionales sin sentir que estás usando a la gente. Directo al canal de referidos, que es el que mejor funciona y el que menos usas.",
+              "url": "https://www.amazon.com.mx/s?k=Nunca+comas+solo+Keith+Ferrazzi",
+              "afiliado": true
+            }
           ]
         },
         {
@@ -82,9 +107,24 @@
         {
           "tipo": "recursos",
           "items": [
-            { "nombre": "Pequeño Cerdo Capitalista — Sofía Macías", "descripcion": "Finanzas personales escritas para México: Afore, Infonavit, buró de crédito, tandas. El resto de la lista es de Estados Unidos y muchas cosas no aplican igual. Empieza por este.", "url": "https://www.amazon.com.mx/s?k=Pequeno+Cerdo+Capitalista+Sofia+Macias", "afiliado": true },
-            { "nombre": "La psicología del dinero — Morgan Housel", "descripcion": "No enseña productos financieros, enseña por qué tomamos malas decisiones con el dinero. Corto, fácil y de los que cambian cómo piensas.", "url": "https://www.amazon.com.mx/s?k=La+psicologia+del+dinero+Morgan+Housel", "afiliado": true },
-            { "nombre": "Tu dinero o tu vida — Vicki Robin", "descripcion": "La idea central es medir las compras en horas de tu vida, no en pesos. Incómodo y muy útil cuando acabas de empezar a ganar dinero propio.", "url": "https://www.amazon.com.mx/s?k=Tu+dinero+o+tu+vida+Vicki+Robin", "afiliado": true }
+            {
+              "nombre": "Pequeño Cerdo Capitalista — Sofía Macías",
+              "descripcion": "Finanzas personales escritas desde México pero útiles en toda la región: fondos de pensión, crédito de vivienda, historial crediticio, tandas. El resto de la lista es de Estados Unidos y varias cosas no aplican igual. Si estás en otro país, los principios sirven aunque cambien los nombres.",
+              "url": "https://www.amazon.com.mx/s?k=Pequeno+Cerdo+Capitalista+Sofia+Macias",
+              "afiliado": true
+            },
+            {
+              "nombre": "La psicología del dinero — Morgan Housel",
+              "descripcion": "No enseña productos financieros, enseña por qué tomamos malas decisiones con el dinero. Corto, fácil y de los que cambian cómo piensas.",
+              "url": "https://www.amazon.com.mx/s?k=La+psicologia+del+dinero+Morgan+Housel",
+              "afiliado": true
+            },
+            {
+              "nombre": "Tu dinero o tu vida — Vicki Robin",
+              "descripcion": "La idea central es medir las compras en horas de tu vida, no en pesos. Incómodo y muy útil cuando acabas de empezar a ganar dinero propio.",
+              "url": "https://www.amazon.com.mx/s?k=Tu+dinero+o+tu+vida+Vicki+Robin",
+              "afiliado": true
+            }
           ]
         },
         {
@@ -108,11 +148,36 @@
         {
           "tipo": "recursos",
           "items": [
-            { "nombre": "Hábitos atómicos — James Clear", "descripcion": "Cómo sostener algo diario sin depender de la motivación. Directamente aplicable a la rutina de inglés y a estudiar después del trabajo.", "url": "https://www.amazon.com.mx/s?k=Habitos+atomicos+James+Clear", "afiliado": true },
-            { "nombre": "Mindset — Carol Dweck", "descripcion": "Por qué creer que la inteligencia se entrena cambia lo que te atreves a intentar. Útil si te frena el miedo a no ser suficiente.", "url": "https://www.amazon.com.mx/s?k=Mindset+Carol+Dweck", "afiliado": true },
-            { "nombre": "Rompe la barrera del no — Chris Voss", "descripcion": "Negociación por un ex negociador del FBI. El que te va a servir el día que tengas que hablar de sueldo, que es el momento donde más dinero se gana por hora invertida.", "url": "https://www.amazon.com.mx/s?k=Rompe+la+barrera+del+no+Chris+Voss", "afiliado": true },
-            { "nombre": "Céntrate (Deep Work) — Cal Newport", "descripcion": "Sobre trabajar concentrado en un mundo de interrupciones. La habilidad que más te va a diferenciar en tus primeros años.", "url": "https://www.amazon.com.mx/s?k=Centrate+Deep+Work+Cal+Newport", "afiliado": true },
-            { "nombre": "Cómo ganar amigos e influir sobre las personas — Dale Carnegie", "descripcion": "Tiene casi un siglo y los ejemplos se sienten viejos, pero lo básico sigue siendo cierto: escuchar, recordar nombres, no criticar de frente. Barato y se consigue usado en todos lados.", "url": "https://www.amazon.com.mx/s?k=Como+ganar+amigos+e+influir+sobre+las+personas", "afiliado": true }
+            {
+              "nombre": "Hábitos atómicos — James Clear",
+              "descripcion": "Cómo sostener algo diario sin depender de la motivación. Directamente aplicable a la rutina de inglés y a estudiar después del trabajo.",
+              "url": "https://www.amazon.com.mx/s?k=Habitos+atomicos+James+Clear",
+              "afiliado": true
+            },
+            {
+              "nombre": "Mindset — Carol Dweck",
+              "descripcion": "Por qué creer que la inteligencia se entrena cambia lo que te atreves a intentar. Útil si te frena el miedo a no ser suficiente.",
+              "url": "https://www.amazon.com.mx/s?k=Mindset+Carol+Dweck",
+              "afiliado": true
+            },
+            {
+              "nombre": "Rompe la barrera del no — Chris Voss",
+              "descripcion": "Negociación por un ex negociador del FBI. El que te va a servir el día que tengas que hablar de sueldo, que es el momento donde más dinero se gana por hora invertida.",
+              "url": "https://www.amazon.com.mx/s?k=Rompe+la+barrera+del+no+Chris+Voss",
+              "afiliado": true
+            },
+            {
+              "nombre": "Céntrate (Deep Work) — Cal Newport",
+              "descripcion": "Sobre trabajar concentrado en un mundo de interrupciones. La habilidad que más te va a diferenciar en tus primeros años.",
+              "url": "https://www.amazon.com.mx/s?k=Centrate+Deep+Work+Cal+Newport",
+              "afiliado": true
+            },
+            {
+              "nombre": "Cómo ganar amigos e influir sobre las personas — Dale Carnegie",
+              "descripcion": "Tiene casi un siglo y los ejemplos se sienten viejos, pero lo básico sigue siendo cierto: escuchar, recordar nombres, no criticar de frente. Barato y se consigue usado en todos lados.",
+              "url": "https://www.amazon.com.mx/s?k=Como+ganar+amigos+e+influir+sobre+las+personas",
+              "afiliado": true
+            }
           ]
         },
         {

@@ -15,14 +15,49 @@
         },
         {
           "tipo": "tabla",
-          "encabezados": ["Canal", "Esfuerzo", "Respuesta", "Para quién"],
+          "encabezados": [
+            "Canal",
+            "Esfuerzo",
+            "Respuesta",
+            "Para quién"
+          ],
           "filas": [
-            ["Referidos (conocidos, ex compañeros, maestros)", "Bajo", "Muy alta", "Todos. El más ignorado por juniors."],
-            ["Página «Careers» de la empresa", "Medio", "Alta", "Menos competencia que las bolsas."],
-            ["Entrega presencial de CV", "Alto", "Media-alta", "Industria, comercio, negocios locales."],
-            ["Bolsa de tu universidad y ferias", "Bajo", "Alta", "Estudiantes y recién egresados."],
-            ["LinkedIn", "Medio", "Media", "Corporativo, tech, marketing, diseño."],
-            ["OCC / Computrabajo / Indeed", "Bajo", "Baja", "Cubrir volumen. Nunca como único canal."]
+            [
+              "Referidos (conocidos, ex compañeros, maestros)",
+              "Bajo",
+              "Muy alta",
+              "Todos. El más ignorado por juniors."
+            ],
+            [
+              "Página «Careers» de la empresa",
+              "Medio",
+              "Alta",
+              "Menos competencia que las bolsas."
+            ],
+            [
+              "Entrega presencial de CV",
+              "Alto",
+              "Media-alta",
+              "Industria, comercio, negocios locales."
+            ],
+            [
+              "Bolsa de tu universidad y ferias",
+              "Bajo",
+              "Alta",
+              "Estudiantes y recién egresados."
+            ],
+            [
+              "LinkedIn",
+              "Medio",
+              "Media",
+              "Corporativo, tech, marketing, diseño."
+            ],
+            [
+              "Bolsas de trabajo en línea",
+              "Bajo",
+              "Baja",
+              "Cubrir volumen. Nunca como único canal."
+            ]
           ]
         },
         {
@@ -90,7 +125,7 @@
         },
         {
           "tipo": "titulo",
-          "texto": "OCC, Computrabajo, Indeed, Bumeran"
+          "texto": "Las bolsas de trabajo en línea"
         },
         {
           "tipo": "lista",
@@ -100,6 +135,68 @@
             "Activa alertas y aplica en las primeras 24 horas.",
             "Desconfía de las vacantes sin nombre de empresa, sin sueldo y con descripciones vagas. El módulo de Estafas explica por qué."
           ]
+        },
+        {
+          "tipo": "regional",
+          "titulo": "Las bolsas que se usan en tu país",
+          "porPais": {
+            "MX": {
+              "items": [
+                "**OCC Mundial** — la más grande del país.",
+                "**Computrabajo México** — mucho volumen, todos los niveles.",
+                "**Indeed México** — agrega vacantes de muchos lados.",
+                "**LinkedIn** — corporativo y tecnología."
+              ]
+            },
+            "CO": {
+              "items": [
+                "**Computrabajo Colombia** — la de mayor volumen.",
+                "**elempleo.com** — muy usada por empresas grandes.",
+                "**Magneto Empleos**.",
+                "**Servicio Público de Empleo** — estatal y gratuita, con menos competencia."
+              ]
+            },
+            "AR": {
+              "items": [
+                "**Bumeran** — la más usada.",
+                "**Computrabajo Argentina**.",
+                "**ZonaJobs**.",
+                "**LinkedIn** — fuerte en tecnología y corporativo."
+              ]
+            },
+            "CL": {
+              "items": [
+                "**Laborum** — la principal.",
+                "**Computrabajo Chile**.",
+                "**Trabajando.com**.",
+                "**Bolsa Nacional de Empleo** — estatal y gratuita."
+              ]
+            },
+            "PE": {
+              "items": [
+                "**Bumeran Perú**.",
+                "**Computrabajo Perú**.",
+                "**Aptitus**.",
+                "**Empleos Perú**, del Ministerio de Trabajo."
+              ]
+            },
+            "EC": {
+              "items": [
+                "**Multitrabajos** — la más usada.",
+                "**Computrabajo Ecuador**.",
+                "**Red Socio Empleo** — estatal y gratuita."
+              ]
+            },
+            "generico": {
+              "texto": "Busca en internet «bolsa de trabajo» con el nombre de tu país y quédate con dos o tres. Casi siempre vas a encontrar:",
+              "items": [
+                "**Computrabajo**, que opera en casi toda Latinoamérica.",
+                "**LinkedIn**, para puestos corporativos y de tecnología.",
+                "Una bolsa **estatal y gratuita** de tu ministerio de trabajo. Casi nadie la usa, así que hay menos competencia.",
+                "Una bolsa local grande propia de tu país."
+              ]
+            }
+          }
         },
         {
           "tipo": "titulo",

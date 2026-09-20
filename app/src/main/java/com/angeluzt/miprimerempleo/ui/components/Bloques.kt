@@ -45,6 +45,7 @@ import com.angeluzt.miprimerempleo.model.Comparacion
 import com.angeluzt.miprimerempleo.model.Lista
 import com.angeluzt.miprimerempleo.model.Parrafo
 import com.angeluzt.miprimerempleo.model.Recursos
+import com.angeluzt.miprimerempleo.model.Regional
 import com.angeluzt.miprimerempleo.model.Subtitulo
 import com.angeluzt.miprimerempleo.model.Tabla
 
@@ -54,7 +55,12 @@ fun BloqueVista(
     accionesHechas: Set<String>,
     onAccion: (String, Int) -> Unit,
     onEnlace: (String) -> Unit,
+    pais: String = "MX",
 ) {
+    if (bloque is Regional) {
+        RegionalVista(bloque, pais, onEnlace)
+        return
+    }
     when (bloque) {
         is Parrafo -> Text(
             text = conNegritas(bloque.texto),
@@ -78,6 +84,7 @@ fun BloqueVista(
         is Comparacion -> ComparacionVista(bloque)
         is Recursos -> RecursosVista(bloque, onEnlace)
         is AccionBloque -> AccionVista(bloque, bloque.accionId in accionesHechas, onAccion)
+        is Regional -> Unit
     }
 }
 
@@ -430,6 +437,54 @@ fun conNegritas(texto: String) = buildAnnotatedString {
             withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append(parte) }
         } else {
             append(parte)
+        }
+    }
+}
+
+@Composable
+private fun RegionalVista(bloque: Regional, pais: String, onEnlace: (String) -> Unit) {
+    val contenido = bloque.para(pais) ?: return
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 20.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+        shape = RoundedCornerShape(14.dp),
+    ) {
+        Column(Modifier.padding(16.dp)) {
+            Text(
+                text = bloque.titulo,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            if (contenido.texto.isNotBlank()) {
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    text = conNegritas(contenido.texto),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+            }
+            contenido.items.forEach { item ->
+                Row(Modifier.padding(top = 9.dp)) {
+                    Text(
+                        text = "\u00b7",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.width(18.dp),
+                    )
+                    Text(
+                        text = conNegritas(item),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                }
+            }
+            if (contenido.recursos.isNotEmpty()) {
+                Spacer(Modifier.height(12.dp))
+                RecursosVista(Recursos(contenido.recursos), onEnlace)
+            }
         }
     }
 }

@@ -98,6 +98,10 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         contexto.progreso.alternarAccion(accionId, puntos)
     }
 
+    fun elegirPais(codigo: String) = viewModelScope.launch {
+        contexto.progreso.elegirPais(codigo)
+    }
+
     fun elegirPlantilla(plantillaId: String) = viewModelScope.launch {
         contexto.progreso.elegirPlantilla(plantillaId)
     }

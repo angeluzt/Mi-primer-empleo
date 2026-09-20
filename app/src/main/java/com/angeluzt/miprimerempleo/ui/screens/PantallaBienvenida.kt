@@ -16,8 +16,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilterChip
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.material3.Card
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -34,8 +40,13 @@ import com.angeluzt.miprimerempleo.ui.components.BloqueVista
  * Primera pantalla. Aquí se gana o se pierde a la persona: primero la tesis
  * (por qué esto le sirve), y solo después se le pide elegir su etapa.
  */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun PantallaBienvenida(estado: EstadoApp, onElegirRuta: (String) -> Unit) {
+fun PantallaBienvenida(
+    estado: EstadoApp,
+    onElegirPais: (String) -> Unit,
+    onElegirRuta: (String) -> Unit,
+) {
     val indice = estado.indice ?: return
 
     Scaffold { relleno ->
@@ -66,7 +77,35 @@ fun PantallaBienvenida(estado: EstadoApp, onElegirRuta: (String) -> Unit) {
                     accionesHechas = emptySet(),
                     onAccion = { _, _ -> },
                     onEnlace = {},
+                    pais = estado.progreso.pais,
                 )
+            }
+
+            if (indice.paises.isNotEmpty()) {
+                item {
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        text = "¿Desde dónde buscas?",
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    Text(
+                        text = "Las instituciones, prestaciones y bolsas de trabajo cambian por país.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 6.dp, bottom = 12.dp),
+                    )
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        indice.paises.forEach { pais ->
+                            FilterChip(
+                                selected = estado.progreso.pais == pais.codigo,
+                                onClick = { onElegirPais(pais.codigo) },
+                                label = { Text(pais.nombre) },
+                            )
+                        }
+                    }
+                    Spacer(Modifier.height(24.dp))
+                }
             }
 
             item {

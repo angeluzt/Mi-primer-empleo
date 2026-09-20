@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "pais": "MX",
+  "pais": "LATAM",
   "actualizado": "2026-09",
   "tesis": {
     "titulo": "El promedio no te contrata. La evidencia sí.",
@@ -259,6 +259,43 @@
       "subtitulo": "Doce, no doscientos, y cuál te toca hoy",
       "icono": "libro",
       "gratis": false
+    }
+  ],
+  "paises": [
+    {
+      "codigo": "MX",
+      "nombre": "México",
+      "moneda": "MXN"
+    },
+    {
+      "codigo": "CO",
+      "nombre": "Colombia",
+      "moneda": "COP"
+    },
+    {
+      "codigo": "AR",
+      "nombre": "Argentina",
+      "moneda": "ARS"
+    },
+    {
+      "codigo": "CL",
+      "nombre": "Chile",
+      "moneda": "CLP"
+    },
+    {
+      "codigo": "PE",
+      "nombre": "Perú",
+      "moneda": "PEN"
+    },
+    {
+      "codigo": "EC",
+      "nombre": "Ecuador",
+      "moneda": "USD"
+    },
+    {
+      "codigo": "generico",
+      "nombre": "Otro país",
+      "moneda": ""
     }
   ]
 }

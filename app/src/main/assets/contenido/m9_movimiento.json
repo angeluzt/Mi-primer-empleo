@@ -41,12 +41,27 @@
         },
         {
           "tipo": "tabla",
-          "encabezados": ["Tiempo en la empresa", "Cómo se lee en tu CV"],
+          "encabezados": [
+            "Tiempo en la empresa",
+            "Cómo se lee en tu CV"
+          ],
           "filas": [
-            ["Menos de 1 año", "Bandera amarilla. Una vez se perdona y se explica; dos veces seguidas, no."],
-            ["1 a 2 años", "Perfectamente normal y sano, sobre todo al principio de tu carrera."],
-            ["2 a 4 años", "Excelente. Demuestra que te quedaste, creciste y entregaste."],
-            ["Más de 5 años sin cambiar de puesto", "Empieza a leerse como estancamiento. Si creciste internamente, no cuenta."]
+            [
+              "Menos de 1 año",
+              "Bandera amarilla. Una vez se perdona y se explica; dos veces seguidas, no."
+            ],
+            [
+              "1 a 2 años",
+              "Perfectamente normal y sano, sobre todo al principio de tu carrera."
+            ],
+            [
+              "2 a 4 años",
+              "Excelente. Demuestra que te quedaste, creciste y entregaste."
+            ],
+            [
+              "Más de 5 años sin cambiar de puesto",
+              "Empieza a leerse como estancamiento. Si creciste internamente, no cuenta."
+            ]
           ]
         },
         {
@@ -124,7 +139,7 @@
             "Sé breve y neutro: «Recibí una oportunidad que se alinea con lo que busco a largo plazo. Mi último día sería el [fecha].» No tienes que justificarte ni dar detalles de la nueva empresa.",
             "Ofrece **dos semanas** de transición, más si el puesto es complejo.",
             "**Deja documentado** lo que hacías y capacita a quien te sustituya. Esto es lo que hace que te recuerden bien.",
-            "Entrega por escrito tu renuncia y guarda copia. Revisa tu finiquito: días trabajados, aguinaldo proporcional y vacaciones no gozadas.",
+            "Entrega por escrito tu renuncia y guarda copia. Revisa tu liquidación: días trabajados, la parte proporcional del pago anual extra y las vacaciones que no tomaste.",
             "Despídete bien de todos y conecta en LinkedIn con la gente con la que trabajaste."
           ]
         },

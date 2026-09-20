@@ -58,6 +58,7 @@ class MainActivity : ComponentActivity() {
                     composable("bienvenida") {
                         PantallaBienvenida(
                             estado = estado,
+                            onElegirPais = vm::elegirPais,
                             onElegirRuta = {
                                 vm.elegirRuta(it)
                                 nav.navigate("ruta") { popUpTo("bienvenida") { inclusive = true } }

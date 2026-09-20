@@ -10,6 +10,12 @@ const { onRequest } = require("firebase-functions/v2/https");
 const { defineSecret } = require("firebase-functions/params");
 const admin = require("firebase-admin");
 const { google } = require("googleapis");
+const {
+  sistemaPregunta,
+  sistemaGenerar,
+  entradaGenerar,
+  MODELO,
+} = require("./prompts");
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -21,7 +27,6 @@ const PRODUCTO_PASE = "pase_completo";
 const PRODUCTO_RECARGA = "recarga_cv_10";
 const CVS_INCLUIDOS = 15;
 const CVS_POR_RECARGA = 10;
-const MODELO = "gpt-4o-mini";
 
 const opciones = { secrets: [OPENAI_API_KEY], cors: true, region: "us-central1" };
 
@@ -76,7 +81,7 @@ async function consumirCredito(purchaseToken) {
   });
 }
 
-async function llamarOpenAI(mensajes, esquemaNombre) {
+async function llamarOpenAI(mensajes) {
   const respuesta = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -100,22 +105,6 @@ async function llamarOpenAI(mensajes, esquemaNombre) {
   return JSON.parse(datos.choices[0].message.content);
 }
 
-/**
- * La regla que define el producto: la IA NUNCA agrega logros, cifras ni responsabilidades
- * que la persona no haya dicho. Un CV inflado se cae en la primera entrevista y quema
- * la reputación de quien lo usó.
- */
-const REGLA_SIN_INVENTOS = `
-Regla absoluta e inviolable: solo puedes reformular y ordenar información que la persona
-haya proporcionado explícitamente. Está terminantemente prohibido:
-- Inventar logros, cifras, porcentajes o resultados.
-- Agregar tecnologías, herramientas o responsabilidades no mencionadas.
-- Inflar títulos de puesto o duraciones.
-- Rellenar secciones vacías con contenido genérico plausible.
-Si falta información para una sección, deja esa sección vacía. Es preferible un CV corto
-y verdadero que uno largo e inventado.
-Puedes mejorar la redacción, usar verbos de acción y estructurar con claridad.
-`.trim();
 
 exports.siguientePregunta = onRequest(opciones, async (req, res) => {
   try {
@@ -123,19 +112,8 @@ exports.siguientePregunta = onRequest(opciones, async (req, res) => {
 
     // Armar el CV es gratis: aquí no se cobra ni se verifica compra.
     // El muro está en generarCv (exportar), que es donde la persona ya invirtió su trabajo.
-    const sistema = `
-Eres un asesor de carrera que entrevista a alguien para armar su CV.
-Haz UNA pregunta a la vez, corta y concreta, en español mexicano neutro y tono cercano.
-Si la persona no tiene experiencia laboral, pregunta por proyectos propios, servicio social,
-prácticas, cursos y trabajos ajenos a su carrera. Nunca la hagas sentir mal por no tener experiencia.
-Responde SOLO con JSON:
-{"campo":"id_del_campo","pregunta":"...","ayuda":"pista corta opcional","sugerencias":["opción","opción"],"terminado":false}
-Marca terminado:true cuando ya tengas: datos de contacto, formación, y al menos experiencia o proyectos,
-habilidades e idiomas.
-`.trim();
-
     const salida = await llamarOpenAI([
-      { role: "system", content: sistema },
+      { role: "system", content: sistemaPregunta() },
       { role: "user", content: `Respuestas hasta ahora:\n${JSON.stringify(respuestas || {}, null, 2)}` },
     ]);
 
@@ -160,32 +138,9 @@ exports.generarCv = onRequest(opciones, async (req, res) => {
       return res.status(429).json({ error: "Generaciones agotadas. Compra una recarga." });
     }
 
-    const sistema = `
-Eres un redactor experto en CVs para el mercado laboral de México y Latinoamérica.
-${REGLA_SIN_INVENTOS}
-
-Genera DOS versiones del mismo CV: español ("es") e inglés ("en").
-La versión en inglés no es traducción literal: usa convenciones del mercado angloparlante
-(verbos de acción, sin foto, sin datos personales como edad o estado civil).
-
-Cada logro debe seguir: verbo de acción + qué se hizo + resultado, usando SOLO cifras
-que la persona haya dado. Sin cifras, describe la acción sin inventar resultados.
-
-El resumen son 2 o 3 líneas, en primera persona implícita, sin adjetivos vacíos
-("proactivo", "responsable", "trabajo bajo presión").
-
-Responde SOLO con JSON con esta forma exacta:
-{"es":{"idioma":"es","datos":{"nombre":"","puesto":"","ciudad":"","telefono":"","correo":"","linkedin":"","portafolio":""},"resumen":"","proyectos":[{"nombre":"","descripcion":"","enlace":"","logros":[]}],"experiencia":[{"puesto":"","organizacion":"","periodo":"","logros":[]}],"formacion":[{"titulo":"","institucion":"","periodo":"","nota":""}],"certificaciones":[{"nombre":"","institucion":"","anio":"","enlace":""}],"habilidades":[],"idiomas":[{"idioma":"","nivel":""}]},"en":{ ...misma estructura con "idioma":"en"... }}
-`.trim();
-
-    const entrada = [
-      `Respuestas de la entrevista:\n${JSON.stringify(respuestas || {}, null, 2)}`,
-      cvPegado ? `\nCV o texto que la persona pegó:\n${cvPegado}` : "",
-    ].join("");
-
     const salida = await llamarOpenAI([
-      { role: "system", content: sistema },
-      { role: "user", content: entrada },
+      { role: "system", content: sistemaGenerar() },
+      { role: "user", content: entradaGenerar(respuestas, cvPegado) },
     ]);
 
     res.json({ ...salida, restantes: credito.restantes });

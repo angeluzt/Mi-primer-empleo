@@ -29,6 +29,8 @@ class RenderizadorCv(private val context: Context) {
     }
 
     fun exportar(cv: Cv, plantilla: Plantilla, foto: Bitmap?, nombreArchivo: String): File {
+        fuenteActiva = plantilla.fuente
+
         val documento = PdfDocument()
         val pagina = documento.startPage(PdfDocument.PageInfo.Builder(ANCHO, ALTO, 1).create())
 
@@ -256,11 +258,17 @@ class RenderizadorCv(private val context: Context) {
 
     // ---------- Utilidades de dibujo ----------
 
+    /** La plantilla activa decide familia y escala de TODO el texto de la página. */
+    private var fuenteActiva: Fuente = Fuente.MODERNA
+
     private fun texto(tamano: Float, negrita: Boolean, color: Int) = Paint().apply {
         this.color = color
-        textSize = tamano
+        textSize = tamano * fuenteActiva.escala
         isAntiAlias = true
-        typeface = Typeface.create(Typeface.SANS_SERIF, if (negrita) Typeface.BOLD else Typeface.NORMAL)
+        typeface = Typeface.create(
+            fuenteActiva.familia,
+            if (negrita) Typeface.BOLD else Typeface.NORMAL,
+        )
     }
 
     private fun dibujarFoto(lienzo: Canvas, foto: Bitmap, x: Float, y: Float, lado: Float) {

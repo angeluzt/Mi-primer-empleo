@@ -12,7 +12,7 @@ const DIR = path.resolve(__dirname, "..", "app/src/main/assets/contenido");
 
 const TIPOS_VALIDOS = new Set([
   "parrafo", "titulo", "cita", "lista", "tabla",
-  "alerta", "banderas", "accion", "recursos", "comparacion",
+  "alerta", "banderas", "accion", "recursos", "comparacion", "regional",
 ]);
 const NIVELES_ALERTA = new Set(["peligro", "aviso", "clave", "tip"]);
 
@@ -87,6 +87,24 @@ function revisarBloque(bloque, donde) {
         }
       });
       break;
+    case "regional": {
+      const paises = Object.keys(bloque.porPais || {});
+      if (!paises.length) errores.push(`${donde}: bloque regional sin países`);
+      if (!paises.includes("generico")) {
+        // Sin respaldo, quien elija un país no cubierto no ve nada.
+        errores.push(`${donde}: bloque regional sin variante "generico"`);
+      }
+      Object.entries(bloque.porPais || {}).forEach(([codigo, c]) => {
+        textos.push(c.texto, ...(c.items || []));
+        (c.recursos || []).forEach((r) => {
+          textos.push(r.nombre, r.descripcion);
+          if (!/^https:\/\//.test(r.url)) {
+            errores.push(`${donde}/${codigo}: recurso "${r.nombre}" no usa https`);
+          }
+        });
+      });
+      break;
+    }
     case "comparacion":
       textos.push(
         bloque.titulo,
