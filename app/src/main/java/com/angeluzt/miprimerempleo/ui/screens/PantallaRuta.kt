@@ -77,12 +77,12 @@ fun PantallaRuta(
                 TarjetaModulo(
                     modulo = modulo,
                     avance = estado.avanceDe(modulo.id),
-                    desbloqueado = estado.compras.tienePase || modulo.gratis,
+                    desbloqueado = estado.compras.puedeLeerTodo || modulo.gratis,
                     onClick = { onModulo(modulo.id) },
                 )
             }
 
-            if (!estado.compras.tienePase) {
+            if (!estado.compras.puedeLeerTodo) {
                 item {
                     Spacer(Modifier.height(10.dp))
                     TarjetaPase(estado, onPaywall)

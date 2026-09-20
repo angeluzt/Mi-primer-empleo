@@ -17,12 +17,15 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.angeluzt.miprimerempleo.cv.Plantillas
+import com.angeluzt.miprimerempleo.cv.cvDeMuestra
 import com.angeluzt.miprimerempleo.ui.AppViewModel
 import com.angeluzt.miprimerempleo.ui.screens.PantallaBienvenida
 import com.angeluzt.miprimerempleo.ui.screens.PantallaCv
 import com.angeluzt.miprimerempleo.ui.screens.PantallaLector
 import com.angeluzt.miprimerempleo.ui.screens.PantallaModulo
 import com.angeluzt.miprimerempleo.ui.screens.PantallaPaywall
+import com.angeluzt.miprimerempleo.ui.screens.PantallaPlantillas
 import com.angeluzt.miprimerempleo.ui.screens.PantallaRuta
 import com.angeluzt.miprimerempleo.ui.theme.MiPrimerEmpleoTheme
 
@@ -102,6 +105,18 @@ class MainActivity : ComponentActivity() {
                         PantallaCv(
                             estado = estado,
                             onPaywall = { nav.navigate("paywall") },
+                            onPlantillas = { nav.navigate("plantillas") },
+                            onAtras = { nav.popBackStack() },
+                        )
+                    }
+                    composable("plantillas") {
+                        PantallaPlantillas(
+                            // Mientras el CV real no esté armado, se previsualiza con un
+                            // perfil de muestra: el formato se ve igual con cualquier contenido.
+                            cv = cvDeMuestra(),
+                            plantillaElegida = estado.progreso.plantillaCv
+                                .ifBlank { Plantillas.porDefecto.id },
+                            onElegir = vm::elegirPlantilla,
                             onAtras = { nav.popBackStack() },
                         )
                     }

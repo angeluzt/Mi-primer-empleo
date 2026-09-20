@@ -36,7 +36,10 @@ import kotlinx.coroutines.launch
  * reembolsos y malas reseñas. Se paga una vez y se queda para siempre.
  */
 object Productos {
-    /** Pago único que desbloquea los 9 módulos y todas las herramientas. No consumible. */
+    /** Barato: abre los 10 módulos de lectura, sin el generador de CV. No consumible. */
+    const val PASE_LECTURA = "pase_lectura"
+
+    /** Pago único que desbloquea todo, incluido el generador de CV. No consumible. */
     const val PASE_COMPLETO = "pase_completo"
 
     /** Consumible: 10 generaciones más de CV para quien agote las incluidas. */
@@ -45,7 +48,7 @@ object Productos {
     /** Consumible: paquete de plantillas extra de CV. */
     const val PLANTILLAS_EXTRA = "plantillas_extra"
 
-    val todos = listOf(PASE_COMPLETO, RECARGA_CV, PLANTILLAS_EXTRA)
+    val todos = listOf(PASE_LECTURA, PASE_COMPLETO, RECARGA_CV, PLANTILLAS_EXTRA)
     val consumibles = setOf(RECARGA_CV, PLANTILLAS_EXTRA)
 
     /** Generaciones de CV incluidas en el pase, suficientes para un proceso de búsqueda normal. */
@@ -56,10 +59,14 @@ object Productos {
 data class EstadoCompras(
     val conectado: Boolean = false,
     val tienePase: Boolean = BuildConfig.DESBLOQUEO_PRUEBA,
+    val tieneLectura: Boolean = BuildConfig.DESBLOQUEO_PRUEBA,
     val recargasCompradas: Int = 0,
     val precios: Map<String, String> = emptyMap(),
     val error: String? = null,
 ) {
+    /** El pase completo incluye la lectura, así que quien lo tiene no necesita el otro. */
+    val puedeLeerTodo: Boolean get() = tienePase || tieneLectura
+
     fun creditosCv(cvsGenerados: Int): Int {
         if (!tienePase) return 0
         val total = Productos.CVS_INCLUIDOS_EN_PASE + recargasCompradas * Productos.CVS_POR_RECARGA
@@ -149,7 +156,9 @@ class GestorCompras(context: Context) {
         _estado.update { estado ->
             estado.copy(
                 tienePase = BuildConfig.DESBLOQUEO_PRUEBA ||
-                    activas.any { Productos.PASE_COMPLETO in it.products }
+                    activas.any { Productos.PASE_COMPLETO in it.products },
+                tieneLectura = BuildConfig.DESBLOQUEO_PRUEBA ||
+                    activas.any { Productos.PASE_LECTURA in it.products },
             )
         }
         activas.forEach { procesar(it) }
@@ -195,6 +204,9 @@ class GestorCompras(context: Context) {
         }
         if (Productos.PASE_COMPLETO in compra.products) {
             _estado.update { it.copy(tienePase = true) }
+        }
+        if (Productos.PASE_LECTURA in compra.products) {
+            _estado.update { it.copy(tieneLectura = true) }
         }
     }
 

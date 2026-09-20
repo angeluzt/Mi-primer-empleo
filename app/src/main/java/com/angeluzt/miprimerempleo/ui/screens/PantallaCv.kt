@@ -55,6 +55,7 @@ private data class Turno(val esUsuario: Boolean, val texto: String)
 fun PantallaCv(
     estado: EstadoApp,
     onPaywall: () -> Unit,
+    onPlantillas: () -> Unit,
     onAtras: () -> Unit,
 ) {
     var turnos by remember {
@@ -97,7 +98,7 @@ fun PantallaCv(
                     .padding(horizontal = 16.dp, vertical = 12.dp),
             ) {
                 if (listo) {
-                    BarraExportar(estado, onPaywall)
+                    BarraExportar(estado, onPaywall, onPlantillas)
                     Spacer(Modifier.height(10.dp))
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -192,7 +193,11 @@ private fun Burbuja(turno: Turno) {
 }
 
 @Composable
-private fun BarraExportar(estado: EstadoApp, onPaywall: () -> Unit) {
+private fun BarraExportar(
+    estado: EstadoApp,
+    onPaywall: () -> Unit,
+    onPlantillas: () -> Unit,
+) {
     val tienePase = estado.compras.tienePase
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -231,6 +236,10 @@ private fun BarraExportar(estado: EstadoApp, onPaywall: () -> Unit) {
             )
             Spacer(Modifier.height(12.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                AssistChip(
+                    onClick = onPlantillas,
+                    label = { Text("Ver formatos") },
+                )
                 AssistChip(
                     onClick = { if (!tienePase) onPaywall() },
                     label = { Text("PDF Español") },

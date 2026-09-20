@@ -51,8 +51,9 @@ data class EstadoApp(
     val siguienteNivel: Nivel?
         get() = indice?.niveles?.firstOrNull { it.puntosMinimos > progreso.puntos }
 
+    /** Leer no exige el pase completo: el de lectura, más barato, alcanza. */
     fun capituloDesbloqueado(modulo: ModuloMeta, capitulo: Capitulo): Boolean =
-        compras.tienePase || modulo.gratis || capitulo.gratis
+        compras.puedeLeerTodo || modulo.gratis || capitulo.gratis
 
     fun capitulosDe(moduloId: String): List<Capitulo> = modulos[moduloId]?.capitulos.orEmpty()
 
@@ -95,6 +96,10 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
 
     fun alternarAccion(accionId: String, puntos: Int) = viewModelScope.launch {
         contexto.progreso.alternarAccion(accionId, puntos)
+    }
+
+    fun elegirPlantilla(plantillaId: String) = viewModelScope.launch {
+        contexto.progreso.elegirPlantilla(plantillaId)
     }
 
     fun comprar(activity: Activity, productoId: String) =

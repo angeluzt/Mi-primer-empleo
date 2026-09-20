@@ -1,0 +1,127 @@
+{
+  "id": "libros",
+  "titulo": "Libros que sí sirven",
+  "intro": "Doce libros, no doscientos. Cada uno está aquí porque resuelve un problema concreto que vas a tener, y te decimos cuál para que no pierdas el tiempo con el que no te toca todavía.",
+  "capitulos": [
+    {
+      "id": "li_como",
+      "titulo": "Cómo leer esto sin gastar de más",
+      "minutos": 3,
+      "gratis": true,
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "El error con los libros de carrera es comprarse cinco de golpe en un arranque de motivación, leer uno y medio, y sentirse culpable un año. Es tirar dinero que no te sobra."
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "clave",
+          "titulo": "Uno a la vez, y solo el que resuelve tu problema de hoy",
+          "texto": "Si estás buscando trabajo, lee uno de búsqueda. Si ya trabajas y no te alcanza, lee uno de dinero. No leas sobre negociar sueldo si todavía no te han hecho una sola entrevista: se te va a olvidar antes de que lo necesites."
+        },
+        {
+          "tipo": "titulo",
+          "texto": "Antes de comprar"
+        },
+        {
+          "tipo": "lista",
+          "items": [
+            "**La biblioteca de tu universidad** tiene varios de estos, y si eres egresado normalmente conservas el acceso. Pregunta.",
+            "**Biblioteca pública digital**: muchas ciudades prestan libros electrónicos gratis con tu credencial.",
+            "**Usado**: los clásicos de esta lista no caducan y se consiguen a una fracción del precio.",
+            "**Audiolibro** si haces trayectos largos. Una hora de camión al día son unos 20 libros al año.",
+            "Busca el título en YouTube antes de comprarlo. Si el resumen de 15 minutos ya te dio lo que necesitabas, te ahorraste el libro."
+          ]
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "aviso",
+          "titulo": "Un libro no sustituye una acción",
+          "texto": "Leer sobre búsqueda de empleo se siente productivo y no lo es. Si en esta semana no has mandado un CV, cierra el libro y manda el CV. El libro sirve para hacer mejor lo que ya estás haciendo, no para posponerlo."
+        }
+      ]
+    },
+    {
+      "id": "li_trabajo",
+      "titulo": "Para conseguir trabajo",
+      "minutos": 5,
+      "gratis": false,
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Si estás buscando ahora mismo, empieza por el primero. Los demás son para cuando ya tengas el proceso andando."
+        },
+        {
+          "tipo": "recursos",
+          "items": [
+            { "nombre": "La búsqueda de empleo en 2 horas — Steve Dalton", "descripcion": "El más práctico de la lista. Un método concreto para investigar empresas y conseguir referidos en vez de mandar CVs a ciegas. Si solo lees uno mientras buscas, que sea este.", "url": "https://www.amazon.com.mx/s?k=The+2-Hour+Job+Search+Steve+Dalton", "afiliado": true },
+            { "nombre": "¿De qué color es tu paracaídas? — Richard Bolles", "descripcion": "El clásico de la búsqueda de empleo, revisado cada año. Largo, pero es el más completo sobre cómo averiguar qué quieres hacer y cómo buscarlo.", "url": "https://www.amazon.com.mx/s?k=De+que+color+es+tu+paracaidas+Bolles", "afiliado": true },
+            { "nombre": "Hazlo tan bien que no puedan ignorarte — Cal Newport", "descripcion": "Desarma el consejo de «sigue tu pasión» y explica por qué la satisfacción viene de volverte bueno en algo raro y valioso. El más útil si no sabes a qué dedicarte.", "url": "https://www.amazon.com.mx/s?k=So+Good+They+Cant+Ignore+You+Cal+Newport", "afiliado": true },
+            { "nombre": "Diseña tu vida — Bill Burnett y Dave Evans", "descripcion": "De un curso de Stanford. Ejercicios para probar caminos de carrera antes de comprometerte con uno. Bueno para quien quiere cambiar de área.", "url": "https://www.amazon.com.mx/s?k=Disena+tu+vida+Burnett+Evans", "afiliado": true },
+            { "nombre": "Nunca comas solo — Keith Ferrazzi", "descripcion": "Sobre construir relaciones profesionales sin sentir que estás usando a la gente. Directo al canal de referidos, que es el que mejor funciona y el que menos usas.", "url": "https://www.amazon.com.mx/s?k=Nunca+comas+solo+Keith+Ferrazzi", "afiliado": true }
+          ]
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "tip",
+          "titulo": "Si estudias software",
+          "texto": "«Cracking the Coding Interview» de Gayle Laakmann McDowell sigue siendo la referencia para entrevistas técnicas. No lo leas de corrido: úsalo como banco de problemas mientras tengas procesos activos."
+        }
+      ]
+    },
+    {
+      "id": "li_dinero",
+      "titulo": "Para que el sueldo te rinda",
+      "minutos": 4,
+      "gratis": false,
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Estos importan más que los de búsqueda a largo plazo. Cuánto ganas lo decide el mercado; qué haces con lo que ganas lo decides tú, y eso compone durante décadas."
+        },
+        {
+          "tipo": "recursos",
+          "items": [
+            { "nombre": "Pequeño Cerdo Capitalista — Sofía Macías", "descripcion": "Finanzas personales escritas para México: Afore, Infonavit, buró de crédito, tandas. El resto de la lista es de Estados Unidos y muchas cosas no aplican igual. Empieza por este.", "url": "https://www.amazon.com.mx/s?k=Pequeno+Cerdo+Capitalista+Sofia+Macias", "afiliado": true },
+            { "nombre": "La psicología del dinero — Morgan Housel", "descripcion": "No enseña productos financieros, enseña por qué tomamos malas decisiones con el dinero. Corto, fácil y de los que cambian cómo piensas.", "url": "https://www.amazon.com.mx/s?k=La+psicologia+del+dinero+Morgan+Housel", "afiliado": true },
+            { "nombre": "Tu dinero o tu vida — Vicki Robin", "descripcion": "La idea central es medir las compras en horas de tu vida, no en pesos. Incómodo y muy útil cuando acabas de empezar a ganar dinero propio.", "url": "https://www.amazon.com.mx/s?k=Tu+dinero+o+tu+vida+Vicki+Robin", "afiliado": true }
+          ]
+        },
+        {
+          "tipo": "alerta",
+          "nivel": "peligro",
+          "titulo": "De lo que hay que huir",
+          "texto": "El pasillo de finanzas está lleno de libros que prometen riqueza rápida, y de «mentores» que venden cursos de inversión por redes. Si un libro o un curso te promete duplicar tu dinero, o te invita a un grupo de trading, es lo mismo que vimos en el módulo de Estafas con otro disfraz."
+        }
+      ]
+    },
+    {
+      "id": "li_crecer",
+      "titulo": "Para crecer una vez dentro",
+      "minutos": 4,
+      "gratis": false,
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Para cuando ya estás trabajando y quieres que el primer año cuente doble."
+        },
+        {
+          "tipo": "recursos",
+          "items": [
+            { "nombre": "Hábitos atómicos — James Clear", "descripcion": "Cómo sostener algo diario sin depender de la motivación. Directamente aplicable a la rutina de inglés y a estudiar después del trabajo.", "url": "https://www.amazon.com.mx/s?k=Habitos+atomicos+James+Clear", "afiliado": true },
+            { "nombre": "Mindset — Carol Dweck", "descripcion": "Por qué creer que la inteligencia se entrena cambia lo que te atreves a intentar. Útil si te frena el miedo a no ser suficiente.", "url": "https://www.amazon.com.mx/s?k=Mindset+Carol+Dweck", "afiliado": true },
+            { "nombre": "Rompe la barrera del no — Chris Voss", "descripcion": "Negociación por un ex negociador del FBI. El que te va a servir el día que tengas que hablar de sueldo, que es el momento donde más dinero se gana por hora invertida.", "url": "https://www.amazon.com.mx/s?k=Rompe+la+barrera+del+no+Chris+Voss", "afiliado": true },
+            { "nombre": "Céntrate (Deep Work) — Cal Newport", "descripcion": "Sobre trabajar concentrado en un mundo de interrupciones. La habilidad que más te va a diferenciar en tus primeros años.", "url": "https://www.amazon.com.mx/s?k=Centrate+Deep+Work+Cal+Newport", "afiliado": true },
+            { "nombre": "Cómo ganar amigos e influir sobre las personas — Dale Carnegie", "descripcion": "Tiene casi un siglo y los ejemplos se sienten viejos, pero lo básico sigue siendo cierto: escuchar, recordar nombres, no criticar de frente. Barato y se consigue usado en todos lados.", "url": "https://www.amazon.com.mx/s?k=Como+ganar+amigos+e+influir+sobre+las+personas", "afiliado": true }
+          ]
+        },
+        {
+          "tipo": "accion",
+          "accionId": "libro_terminado",
+          "texto": "Terminé un libro de esta lista y apliqué algo concreto",
+          "puntos": 15
+        }
+      ]
+    }
+  ]
+}
