@@ -17,6 +17,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import com.angeluzt.miprimerempleo.cv.Cv
+import com.angeluzt.miprimerempleo.cv.ParCv
 import com.angeluzt.miprimerempleo.cv.Plantillas
 import com.angeluzt.miprimerempleo.cv.cvDeMuestra
 import com.angeluzt.miprimerempleo.ui.AppViewModel
@@ -29,6 +33,7 @@ import com.angeluzt.miprimerempleo.ui.screens.PantallaPaywall
 import com.angeluzt.miprimerempleo.ui.screens.PantallaPlantillas
 import com.angeluzt.miprimerempleo.ui.screens.PantallaRuta
 import com.angeluzt.miprimerempleo.ui.theme.MiPrimerEmpleoTheme
+import kotlinx.serialization.json.Json
 
 class MainActivity : ComponentActivity() {
 
@@ -124,9 +129,10 @@ class MainActivity : ComponentActivity() {
                     }
                     composable("plantillas") {
                         PantallaPlantillas(
-                            // Mientras el CV real no esté armado, se previsualiza con un
-                            // perfil de muestra: el formato se ve igual con cualquier contenido.
-                            cv = cvDeMuestra(),
+                            // Con el CV ya generado se previsualiza el real; si todavía no
+                            // existe, un perfil de muestra: el formato se ve igual con
+                            // cualquier contenido.
+                            cv = recordarCv(estado.progreso.cvGenerado),
                             plantillaElegida = estado.progreso.plantillaCv
                                 .ifBlank { Plantillas.porDefecto.id },
                             onElegir = vm::elegirPlantilla,
@@ -137,4 +143,12 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+}
+
+/** Decodifica el CV guardado. Si está vacío o corrupto, cae al perfil de muestra. */
+@Composable
+private fun recordarCv(json: String): Cv = remember(json) {
+    if (json.isBlank()) cvDeMuestra()
+    else runCatching { Json { ignoreUnknownKeys = true }.decodeFromString<ParCv>(json).es }
+        .getOrElse { cvDeMuestra() }
 }

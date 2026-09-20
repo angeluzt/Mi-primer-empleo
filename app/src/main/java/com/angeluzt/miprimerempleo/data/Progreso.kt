@@ -7,6 +7,9 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.angeluzt.miprimerempleo.cv.ParCv
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -22,6 +25,7 @@ data class EstadoProgreso(
     val plantillaCv: String = "",
     val pais: String = "MX",
     val llaveOpenAi: String = "",
+    val cvGenerado: String = "",
 )
 
 class Progreso(private val context: Context) {
@@ -36,6 +40,7 @@ class Progreso(private val context: Context) {
         val plantilla = stringPreferencesKey("plantilla_cv")
         val pais = stringPreferencesKey("pais")
         val llave = stringPreferencesKey("llave_openai")
+        val cvJson = stringPreferencesKey("cv_generado")
     }
 
     val estado: Flow<EstadoProgreso> = context.dataStore.data.map { p ->
@@ -49,6 +54,7 @@ class Progreso(private val context: Context) {
             plantillaCv = p[Llaves.plantilla].orEmpty(),
             pais = p[Llaves.pais] ?: "MX",
             llaveOpenAi = p[Llaves.llave].orEmpty(),
+            cvGenerado = p[Llaves.cvJson].orEmpty(),
         )
     }
 
@@ -98,6 +104,11 @@ class Progreso(private val context: Context) {
 
     suspend fun elegirPlantilla(plantillaId: String) {
         context.dataStore.edit { it[Llaves.plantilla] = plantillaId }
+    }
+
+    /** El CV se guarda para que la vista previa de formatos use el real, no el de muestra. */
+    suspend fun guardarCv(par: ParCv) {
+        context.dataStore.edit { it[Llaves.cvJson] = Json.encodeToString(par) }
     }
 
     suspend fun registrarCvGenerado() {
