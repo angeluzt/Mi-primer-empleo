@@ -23,6 +23,24 @@ android {
             "BACKEND_URL",
             "\"${project.findProperty("backendUrl") ?: "https://TU-PROYECTO.cloudfunctions.net"}\""
         )
+
+        // AdMob. Por defecto van los identificadores PÚBLICOS DE PRUEBA de Google:
+        // la app se puede probar hoy sin cuenta de AdMob, y sobre todo sin arriesgar
+        // que Google suspenda una cuenta real por los clics de uno mismo probando.
+        // Para publicar hay que pasar los propios:
+        //   ./gradlew assembleRelease -PadmobAppId=ca-app-pub-XXX~YYY \
+        //                             -PadmobRecompensado=ca-app-pub-XXX/ZZZ
+        val admobAppId = project.findProperty("admobAppId")?.toString()
+            ?: "ca-app-pub-3940256099942544~3347511713"
+        val admobRecompensado = project.findProperty("admobRecompensado")?.toString()
+            ?: "ca-app-pub-3940256099942544/5224354917"
+        manifestPlaceholders["admobAppId"] = admobAppId
+        buildConfigField("String", "ADMOB_RECOMPENSADO", "\"$admobRecompensado\"")
+        buildConfigField(
+            "boolean",
+            "ADMOB_DE_PRUEBA",
+            "${admobAppId.startsWith("ca-app-pub-3940256099942544")}",
+        )
     }
 
     sourceSets["main"].assets.srcDirs(
@@ -84,6 +102,10 @@ dependencies {
 
     // Pagos: SOLO productos de pago único (INAPP). Esta app no usa suscripciones.
     implementation("com.android.billingclient:billing-ktx:7.1.1")
+
+    // Publicidad: SOLO anuncios con recompensa, que la persona decide ver.
+    // Nunca intersticiales sobre una acción que el usuario pidió.
+    implementation("com.google.android.gms:play-services-ads:23.6.0")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
     implementation("androidx.compose.ui:ui-tooling-preview")

@@ -127,7 +127,7 @@ fun PantallaBienvenida(
             item {
                 Spacer(Modifier.height(14.dp))
                 Text(
-                    text = "Pago único, sin suscripciones y sin anuncios que te interrumpan. La primera parte de cada módulo y todo «Dónde buscar» son gratis.",
+                    text = "Pago único, sin suscripciones. Ningún anuncio te va a interrumpir: si no puedes pagar, tú decides ver uno para abrir un capítulo. La primera parte de cada módulo y todo «Dónde buscar» son gratis.",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

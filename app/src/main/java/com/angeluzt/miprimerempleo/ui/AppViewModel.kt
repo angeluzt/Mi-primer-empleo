@@ -6,7 +6,9 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.angeluzt.miprimerempleo.MiPrimerEmpleoApp
 import com.angeluzt.miprimerempleo.billing.EstadoCompras
+import com.angeluzt.miprimerempleo.data.EstadoAnuncios
 import com.angeluzt.miprimerempleo.data.EstadoProgreso
+import com.angeluzt.miprimerempleo.data.PoliticaAnuncios
 import com.angeluzt.miprimerempleo.model.Capitulo
 import com.angeluzt.miprimerempleo.model.Indice
 import com.angeluzt.miprimerempleo.model.Modulo
@@ -27,6 +29,8 @@ data class EstadoApp(
     val modulos: Map<String, Modulo> = emptyMap(),
     val progreso: EstadoProgreso = EstadoProgreso(),
     val compras: EstadoCompras = EstadoCompras(),
+    val anuncios: EstadoAnuncios = EstadoAnuncios(),
+    val avisoAnuncio: String? = null,
 ) {
     /**
      * NavHost fija su destino inicial en la primera composición. Hasta no saber si la
@@ -51,9 +55,13 @@ data class EstadoApp(
     val siguienteNivel: Nivel?
         get() = indice?.niveles?.firstOrNull { it.puntosMinimos > progreso.puntos }
 
-    /** Leer no exige el pase completo: el de lectura, más barato, alcanza. */
+    /**
+     * Leer no exige el pase completo: el de lectura, más barato, alcanza. Y quien no
+     * puede pagar nada abre capítulos sueltos viendo un anuncio.
+     */
     fun capituloDesbloqueado(modulo: ModuloMeta, capitulo: Capitulo): Boolean =
-        compras.puedeLeerTodo || modulo.gratis || capitulo.gratis
+        compras.puedeLeerTodo || modulo.gratis || capitulo.gratis ||
+            capitulo.id in anuncios.capitulosDesbloqueados
 
     fun capitulosDe(moduloId: String): List<Capitulo> = modulos[moduloId]?.capitulos.orEmpty()
 
@@ -78,13 +86,58 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             _estado.update { it.copy(contenidoListo = true, indice = indice, modulos = modulos) }
         }
         viewModelScope.launch {
-            combine(contexto.progreso.estado, contexto.compras.estado) { progreso, compras ->
-                progreso to compras
-            }.collect { (progreso, compras) ->
-                _estado.update { it.copy(progreso = progreso, compras = compras, progresoListo = true) }
+            combine(
+                contexto.progreso.estado,
+                contexto.compras.estado,
+                contexto.anuncios.estado,
+            ) { progreso, compras, anuncios ->
+                Triple(progreso, compras, anuncios)
+            }.collect { (progreso, compras, anuncios) ->
+                _estado.update {
+                    it.copy(
+                        progreso = progreso,
+                        compras = compras,
+                        anuncios = anuncios,
+                        progresoListo = true,
+                    )
+                }
             }
         }
     }
+
+    /**
+     * Se llama al abrir un capítulo cerrado. Pedir el anuncio aquí y no al arrancar
+     * evita gastarle datos a quien ya pagó y nunca va a ver uno.
+     */
+    fun prepararAnuncio() {
+        if (_estado.value.compras.puedeLeerTodo) return
+        contexto.gestorAnuncios.precargar()
+    }
+
+    /**
+     * Un anuncio visto completo abre un capítulo. No hay intersticiales ni nada que
+     * aparezca solo: esto pasa únicamente cuando la persona toca el botón.
+     */
+    fun verAnuncio(actividad: Activity, capituloId: String) {
+        if (!_estado.value.anuncios.puedeVerOtro) {
+            _estado.update {
+                it.copy(
+                    avisoAnuncio = "Ya viste los ${PoliticaAnuncios.MAXIMO_POR_DIA} anuncios de hoy. " +
+                        "Mañana puedes abrir más capítulos así.",
+                )
+            }
+            return
+        }
+        contexto.gestorAnuncios.mostrar(
+            actividad = actividad,
+            onRecompensa = {
+                viewModelScope.launch { contexto.anuncios.registrarAnuncioVisto(capituloId) }
+            },
+            onSinAnuncio = { motivo -> _estado.update { it.copy(avisoAnuncio = motivo) } },
+        )
+    }
+
+    fun descartarAvisoAnuncio() = _estado.update { it.copy(avisoAnuncio = null) }
 
     fun elegirRuta(rutaId: String) = viewModelScope.launch {
         contexto.progreso.elegirRuta(rutaId)

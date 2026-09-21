@@ -23,6 +23,12 @@
             </intent-filter>
         </activity>
 
+        <!-- Sin este identificador la app se cierra al arrancar. El valor lo pone
+             Gradle: de prueba por omisión, el real al compilar para publicar. -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="${admobAppId}" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

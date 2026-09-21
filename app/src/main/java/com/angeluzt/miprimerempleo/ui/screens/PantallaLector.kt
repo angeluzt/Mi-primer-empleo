@@ -16,13 +16,18 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.angeluzt.miprimerempleo.data.PoliticaAnuncios
 import com.angeluzt.miprimerempleo.ui.EstadoApp
 import com.angeluzt.miprimerempleo.ui.components.BloqueVista
 
@@ -36,17 +41,29 @@ fun PantallaLector(
     onAccion: (String, Int) -> Unit,
     onEnlace: (String) -> Unit,
     onPaywall: () -> Unit,
+    onPrepararAnuncio: () -> Unit,
+    onVerAnuncio: (String) -> Unit,
+    onAvisoVisto: () -> Unit,
     onAtras: () -> Unit,
 ) {
     val meta = estado.indice?.modulos?.firstOrNull { it.id == moduloId } ?: return
     val capitulo = estado.capitulosDe(moduloId).firstOrNull { it.id == capituloId } ?: return
     val desbloqueado = estado.capituloDesbloqueado(meta, capitulo)
+    val avisos = remember { SnackbarHostState() }
 
     LaunchedEffect(capituloId, desbloqueado) {
-        if (desbloqueado) onLeido(capituloId)
+        if (desbloqueado) onLeido(capituloId) else onPrepararAnuncio()
+    }
+
+    LaunchedEffect(estado.avisoAnuncio) {
+        estado.avisoAnuncio?.let {
+            avisos.showSnackbar(it)
+            onAvisoVisto()
+        }
     }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(avisos) },
         topBar = {
             TopAppBar(
                 title = { Text(meta.titulo, style = MaterialTheme.typography.labelLarge) },
@@ -103,14 +120,24 @@ fun PantallaLector(
                         )
                     }
                 }
-                item { CorteDePago(onPaywall) }
+                item {
+                    CorteDePago(
+                        anunciosRestantes = estado.anuncios.restantesHoy,
+                        onPaywall = onPaywall,
+                        onVerAnuncio = { onVerAnuncio(capituloId) },
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-private fun CorteDePago(onPaywall: () -> Unit) {
+private fun CorteDePago(
+    anunciosRestantes: Int,
+    onPaywall: () -> Unit,
+    onVerAnuncio: () -> Unit,
+) {
     androidx.compose.material3.Card(
         modifier = Modifier.fillMaxWidth(),
         colors = androidx.compose.material3.CardDefaults.cardColors(
@@ -136,6 +163,34 @@ private fun CorteDePago(onPaywall: () -> Unit) {
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text("Ver el Pase Completo")
+            }
+
+            // La salida para quien de verdad no puede pagar. El anuncio nunca
+            // aparece solo: se abre porque la persona tocó este botón, y abre
+            // este capítulo, no el módulo entero.
+            if (anunciosRestantes > 0) {
+                Spacer(Modifier.height(10.dp))
+                OutlinedButton(
+                    onClick = onVerAnuncio,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text("Ver un anuncio y abrir este capítulo")
+                }
+                Text(
+                    text = "Te quedan $anunciosRestantes hoy de ${PoliticaAnuncios.MAXIMO_POR_DIA}. " +
+                        "Con el pase no vuelves a ver ninguno.",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.75f),
+                    modifier = Modifier.padding(top = 8.dp),
+                )
+            } else {
+                Spacer(Modifier.height(10.dp))
+                Text(
+                    text = "Hoy ya usaste los ${PoliticaAnuncios.MAXIMO_POR_DIA} anuncios que " +
+                        "desbloquean capítulos. Mañana hay más.",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.75f),
+                )
             }
         }
     }

@@ -108,6 +108,9 @@ class MainActivity : ComponentActivity() {
                             onAccion = vm::alternarAccion,
                             onEnlace = abrirEnlace,
                             onPaywall = { nav.navigate("paywall") },
+                            onPrepararAnuncio = vm::prepararAnuncio,
+                            onVerAnuncio = { vm.verAnuncio(this@MainActivity, it) },
+                            onAvisoVisto = vm::descartarAvisoAnuncio,
                             onAtras = { nav.popBackStack() },
                         )
                     }
