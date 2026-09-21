@@ -48,9 +48,15 @@ object DiagnosticoLocal {
     private const val CORTO = 160
     private const val LARGO = 520
 
+    /**
+     * Apodos que cuestan entrevistas. Todos de cuatro letras o más a propósito: con
+     * fragmentos cortos ("xd") se acusaría de poco serio a un "alexdavid@…", y decirle
+     * eso a alguien que se llama así es peor que no decirle nada. Tampoco se juzga el
+     * dominio: un correo de hotmail no tiene nada de malo.
+     */
     private val CORREO_FLOJO = listOf(
-        "sexy", "loco", "baby", "princes", "chamaco", "morrit", "diablo", "gamer",
-        "xd", "666", "69", "bebe", "cute", "killer", "hotmail.es",
+        "sexy", "loco", "baby", "princes", "chamaco", "morrit", "diablo",
+        "gamer", "bebe", "cute", "killer", "chikis", "hermoso", "hermosa",
     )
 
     fun palabras(cv: Cv): Int = textoPlano(cv).split(Regex("\\s+")).count { it.isNotBlank() }
