@@ -298,6 +298,7 @@ fun PantallaCv(
                         revision = revision,
                         revisando = cv.revisando,
                         onVolverA = { vm.volverA(it) },
+                        onRevisarConIa = { vm.evaluar() },
                     )
                 }
             }
@@ -446,6 +447,7 @@ private fun TarjetaRevision(
     revision: RevisionCv,
     revisando: Boolean,
     onVolverA: (String) -> Unit,
+    onRevisarConIa: () -> Unit,
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -554,6 +556,11 @@ private fun TarjetaRevision(
                         modifier = Modifier.padding(top = 4.dp),
                     )
                 }
+            }
+
+            Spacer(Modifier.height(12.dp))
+            TextButton(onClick = onRevisarConIa, enabled = !revisando) {
+                Text(if (revisando) "Revisando…" else "Que la IA lo revise otra vez")
             }
         }
     }

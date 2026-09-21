@@ -102,10 +102,12 @@ class CvViewModel(app: Application) : AndroidViewModel(app) {
                 respuestas = respuestas,
                 campo = pendiente,
                 cv = cv,
+                // Al volver a la pantalla se muestra la revisión local, que es gratis.
+                // Llamar a la IA en cada entrada gastaría tokens sin que nadie lo pida.
+                revision = cv?.let { par -> DiagnosticoLocal.revision(par.es) },
                 turnos = reconstruirTurnos(respuestas, pendiente, cv != null),
             )
         }
-        if (cv != null) evaluar()
     }
 
     /** Rearma la conversación desde las respuestas guardadas, para no aparecer en blanco. */
