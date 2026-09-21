@@ -110,6 +110,10 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         contexto.progreso.elegirPlantilla(plantillaId)
     }
 
+    fun elegirFotoCv(ruta: String) = viewModelScope.launch {
+        contexto.progreso.guardarFotoCv(ruta)
+    }
+
     fun comprar(activity: Activity, productoId: String) =
         contexto.compras.comprar(activity, productoId)
 

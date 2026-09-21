@@ -46,6 +46,21 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
+      # La IA no respeta siempre el esquema JSON y eso ya tiró una generación pagada.
+      # Estas pruebas cubren cada forma torcida que hemos visto; corren antes del APK
+      # porque son segundos y fallan con un mensaje claro.
+      - name: Pruebas del normalizador de CV
+        run: |
+          set -o pipefail
+          ./gradlew testDebugUnitTest --no-daemon 2>&1 | tee test.log
+
+      - name: Mostrar pruebas que fallaron
+        if: failure()
+        run: |
+          echo "=== Pruebas ==="
+          grep -E "^e: |FAILED|expected:|What went wrong" -A 3 test.log || echo "(nada en test.log)"
+          find app/build/reports/tests -name "*.html" -newer test.log 2>/dev/null | head -5 || true
+
       # Sin --stacktrace: el volcado de Gradle entierra las líneas "e:" del compilador,
       # que son lo único que sirve para arreglar el fallo.
       - name: Construir APK de depuración

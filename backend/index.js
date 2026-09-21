@@ -12,7 +12,9 @@ const admin = require("firebase-admin");
 const { google } = require("googleapis");
 const {
   sistemaGenerar,
+  sistemaEvaluar,
   entradaGenerar,
+  entradaEvaluar,
   MODELO,
 } = require("./prompts");
 
@@ -129,6 +131,35 @@ exports.generarCv = onRequest(opciones, async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "No pudimos generar tu CV." });
+  }
+});
+
+/**
+ * Revisa un CV ya generado: si se quedó corto, si el correo se ve serio, qué falta.
+ *
+ * No consume una generación a propósito. Cuesta una fracción de lo que cuesta redactar
+ * el CV, y la persona necesita poder revisarlo cada vez que le agrega algo; cobrárselo
+ * la haría mandar el CV a medias, que es justo lo que esta pantalla intenta evitar.
+ */
+exports.evaluarCv = onRequest(opciones, async (req, res) => {
+  try {
+    const { purchaseToken, cv } = req.body || {};
+    if (!cv) return res.status(400).json({ error: "Falta el CV a revisar." });
+
+    const compra = await verificarCompra(purchaseToken);
+    if (!compra.valido) {
+      return res.status(402).json({ error: "Se requiere el Pase Completo.", motivo: compra.motivo });
+    }
+
+    const salida = await llamarOpenAI([
+      { role: "system", content: sistemaEvaluar() },
+      { role: "user", content: entradaEvaluar(cv) },
+    ]);
+
+    res.json(salida);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "No pudimos revisar tu CV." });
   }
 });
 

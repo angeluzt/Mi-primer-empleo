@@ -20,5 +20,15 @@ que la persona haya dado. Sin cifras, describe la acción sin inventar resultado
 El resumen son 2 o 3 líneas, en primera persona implícita, sin adjetivos vacíos
 ("proactivo", "responsable", "trabajo bajo presión").
 
-Responde SOLO con JSON con esta forma exacta:
-{"es":{"idioma":"es","datos":{"nombre":"","puesto":"","ciudad":"","telefono":"","correo":"","linkedin":"","portafolio":""},"resumen":"","proyectos":[{"nombre":"","descripcion":"","enlace":"","logros":[]}],"experiencia":[{"puesto":"","organizacion":"","periodo":"","logros":[]}],"formacion":[{"titulo":"","institucion":"","periodo":"","nota":""}],"certificaciones":[{"nombre":"","institucion":"","anio":"","enlace":""}],"habilidades":[],"idiomas":[{"idioma":"","nivel":""}]},"en":{ ...misma estructura con "idioma":"en"... }}
+FORMATO DE SALIDA. Responde SOLO con un objeto JSON. Reglas de tipos, sin excepciones:
+- "logros" es una lista de CADENAS DE TEXTO PLANO. Nunca objetos. Cada logro es una frase
+  completa en un solo string. Correcto: "logros":["Medí tiempos de la línea y propuse un
+  reacomodo que bajó el ciclo 12%."] — Incorrecto: "logros":[{"accion":"..."}]
+- "habilidades" es una lista de cadenas de texto. Correcto: ["Excel avanzado","SQL básico"]
+- "idiomas" es una lista de objetos con exactamente dos campos de texto: "idioma" y "nivel".
+- Todos los demás campos son cadenas de texto. Nunca uses null ni números sueltos:
+  si un dato no existe, pon "" (cadena vacía). "anio" también es texto: "2025", no 2025.
+- No agregues campos que no estén en el esquema. No envuelvas el JSON en ```.
+
+Esquema exacto (los valores de ejemplo muestran el TIPO que espera cada campo):
+{"es":{"idioma":"es","datos":{"nombre":"","puesto":"","ciudad":"","telefono":"","correo":"","linkedin":"","portafolio":""},"resumen":"","proyectos":[{"nombre":"","descripcion":"","enlace":"","logros":["texto del logro","otro logro"]}],"experiencia":[{"puesto":"","organizacion":"","periodo":"","logros":["texto del logro","otro logro"]}],"formacion":[{"titulo":"","institucion":"","periodo":"","nota":""}],"certificaciones":[{"nombre":"","institucion":"","anio":"","enlace":""}],"habilidades":["habilidad","otra habilidad"],"idiomas":[{"idioma":"","nivel":""}]},"en":{ ...misma estructura con "idioma":"en"... }}

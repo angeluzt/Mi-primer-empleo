@@ -14,7 +14,9 @@ const fs = require("fs");
 const path = require("path");
 const {
   sistemaGenerar,
+  sistemaEvaluar,
   entradaGenerar,
+  entradaEvaluar,
   MODELO,
 } = require("../backend/prompts");
 
@@ -74,6 +76,66 @@ function costo(uso) {
   // Precios de gpt-4o-mini por millón de tokens. Verifícalos en la página de OpenAI.
   const usd = (uso.prompt_tokens / 1e6) * 0.15 + (uso.completion_tokens / 1e6) * 0.6;
   return `${uso.total_tokens} tokens ≈ $${usd.toFixed(5)} USD`;
+}
+
+/**
+ * Endereza lo que la IA devolvió, igual que hace la app en NormalizadorCv.kt.
+ *
+ * Existe porque un usuario perdió una generación con este error en el teléfono:
+ *   Expected beginning of the string, but got { at path: $.es.experiencia[0].logros[0]
+ * La IA había mandado los logros como objetos. Aquí, además de enderezarlo, se anota
+ * cada desvío para ver de un vistazo si el prompt está sirviendo o no.
+ */
+function enderezar(par) {
+  const desvios = [];
+
+  const aTexto = (valor, donde) => {
+    if (valor === null || valor === undefined) return "";
+    if (typeof valor === "string") return valor.trim();
+    if (typeof valor === "number" || typeof valor === "boolean") {
+      desvios.push(`${donde}: vino como ${typeof valor}, se esperaba texto`);
+      return String(valor);
+    }
+    if (Array.isArray(valor)) {
+      desvios.push(`${donde}: vino como lista, se esperaba texto`);
+      return valor.map((v, i) => aTexto(v, `${donde}[${i}]`)).filter(Boolean).join(", ");
+    }
+    desvios.push(`${donde}: vino como objeto, se esperaba texto`);
+    return Object.values(valor)
+      .map((v) => aTexto(v, donde))
+      .filter(Boolean)
+      .map((t) => t.replace(/[. ]+$/, ""))
+      .join(". ");
+  };
+
+  const aTextos = (valor, donde) => {
+    if (!valor) return [];
+    if (typeof valor === "string") return valor.split(/[,;\n]/).map((t) => t.trim()).filter(Boolean);
+    if (!Array.isArray(valor)) return Object.values(valor).map((v, i) => aTexto(v, `${donde}[${i}]`));
+    return valor.map((v, i) => aTexto(v, `${donde}[${i}]`)).filter(Boolean);
+  };
+
+  const arreglarCv = (cv, idioma) => {
+    if (!cv) return cv;
+    (cv.experiencia || []).forEach((e, i) => {
+      e.logros = aTextos(e.logros, `${idioma}.experiencia[${i}].logros`);
+    });
+    (cv.proyectos || []).forEach((p, i) => {
+      p.logros = aTextos(p.logros, `${idioma}.proyectos[${i}].logros`);
+    });
+    (cv.certificaciones || []).forEach((c, i) => {
+      c.anio = aTexto(c.anio, `${idioma}.certificaciones[${i}].anio`);
+    });
+    cv.habilidades = aTextos(cv.habilidades, `${idioma}.habilidades`);
+    Object.keys(cv.datos || {}).forEach((k) => {
+      cv.datos[k] = aTexto(cv.datos[k], `${idioma}.datos.${k}`);
+    });
+    return cv;
+  };
+
+  arreglarCv(par.es, "es");
+  arreglarCv(par.en, "en");
+  return desvios;
 }
 
 /** Revisa que la IA no se haya inventado cosas que la persona nunca dijo. */
@@ -153,6 +215,24 @@ ul{margin:6px 0;padding-left:18px}
 </style></head><body>${bloque(par.es)}${bloque(par.en)}</body></html>`;
 }
 
+/**
+ * La respuesta torcida que de verdad devolvió la IA y tiró una generación:
+ * logros como objetos, año numérico, habilidades en una sola cadena.
+ * Sirve para comprobar que enderezar() la endereza, sin gastar un token.
+ */
+function simuladoRoto() {
+  const { contenido } = simulado();
+  contenido.es.experiencia[0].logros = [
+    { accion: "Medí tiempos de una línea de empaque y propuse un reacomodo" },
+    { accion: "Bajé el tiempo de ciclo", resultado: "alrededor de 12%." },
+  ];
+  contenido.es.proyectos[0].logros = "Ordené un catálogo de 120 productos";
+  contenido.es.certificaciones[0].anio = 2025;
+  contenido.es.habilidades = "Excel avanzado, Power BI; SQL básico";
+  contenido.es.datos.telefono = 3312345678;
+  return { contenido, uso: null };
+}
+
 /** Respuesta enlatada para revisar el HTML y la auditoría sin gastar tokens. */
 function simulado() {
   const es = {
@@ -222,11 +302,13 @@ function simulado() {
 }
 
 async function main() {
-  const simular = process.argv.includes("--simular");
+  const roto = process.argv.includes("--simular-roto");
+  const simular = roto || process.argv.includes("--simular");
 
   if (!CLAVE && !simular) {
     console.error("Falta la llave. Ejecuta:  export OPENAI_API_KEY=sk-...");
     console.error("O prueba el formato de salida sin gastar nada:  node tools/probar_cv.js --simular");
+    console.error("O prueba que aguante una respuesta torcida:     node tools/probar_cv.js --simular-roto");
     process.exit(1);
   }
 
@@ -239,13 +321,17 @@ async function main() {
   console.log("Generando CV en español e inglés…\n");
 
   const inicio = Date.now();
-  const { contenido, uso } = simular
+  const { contenido, uso } = roto
+    ? simuladoRoto()
+    : simular
     ? simulado()
     : await llamar([
         { role: "system", content: sistemaGenerar() },
         { role: "user", content: entradaGenerar(respuestas, "") },
       ]);
   const segundos = ((Date.now() - inicio) / 1000).toFixed(1);
+
+  const desvios = enderezar(contenido);
 
   fs.mkdirSync(SALIDA, { recursive: true });
   fs.writeFileSync(path.join(SALIDA, "cv.json"), JSON.stringify(contenido, null, 2));
@@ -255,6 +341,14 @@ async function main() {
   console.log(`  salida_cv/cv.json`);
   console.log(`  salida_cv/cv.html   ← ábrelo en el navegador\n`);
 
+  if (desvios.length) {
+    console.log("⚠  La IA se salió del esquema (la app lo endereza, pero conviene saberlo):");
+    desvios.forEach((d) => console.log("   ·", d));
+    console.log("");
+  } else {
+    console.log("✓ El JSON respetó el esquema.");
+  }
+
   const sospechas = auditarInventos(contenido.es, respuestas);
   if (sospechas.length) {
     console.log("⚠  Cifras que podrían ser inventadas (revísalas):");
@@ -262,6 +356,29 @@ async function main() {
   } else {
     console.log("✓ No se detectaron cifras inventadas.");
   }
+
+  if (!simular) await revisar(contenido.es);
+}
+
+/** Prueba el segundo prompt: el reclutador que revisa el CV ya armado. */
+async function revisar(cv) {
+  console.log("\nPidiendo la revisión del CV…");
+  const { contenido, uso } = await llamar([
+    { role: "system", content: sistemaEvaluar() },
+    { role: "user", content: entradaEvaluar(cv) },
+  ]);
+
+  fs.writeFileSync(path.join(SALIDA, "revision.json"), JSON.stringify(contenido, null, 2));
+  console.log(`Revisión lista · ${costo(uso)}`);
+  console.log(`  Puntaje: ${contenido.puntaje}/100 · extensión: ${contenido.extension}`);
+  console.log(`  ${contenido.veredicto || ""}`);
+  if (contenido.correoSirve === false) {
+    console.log(`  Correo: ${contenido.notaCorreo || "no se ve profesional"}`);
+  }
+  (contenido.faltantes || []).forEach((f) =>
+    console.log(`  Falta [${f.campo}]: ${f.porque}`)
+  );
+  console.log(`  salida_cv/revision.json`);
 }
 
 main().catch((e) => {

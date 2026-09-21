@@ -5,7 +5,8 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.Rect
+import android.graphics.Path
+import android.graphics.RectF
 import android.graphics.Typeface
 import android.graphics.pdf.PdfDocument
 import java.io.File
@@ -16,31 +17,9 @@ import java.io.File
  */
 class RenderizadorCv(private val context: Context) {
 
-    private companion object {
-        const val ANCHO = 595   // A4 a 72 dpi
-        const val ALTO = 842
-        const val MARGEN = 44f
-        const val LATERAL_ANCHO = 186f
-
-        val TINTA = Color.parseColor("#0F172A")
-        val CUERPO = Color.parseColor("#1E293B")
-        val SUAVE = Color.parseColor("#64748B")
-        val LINEA = Color.parseColor("#CBD5E1")
-    }
-
     fun exportar(cv: Cv, plantilla: Plantilla, foto: Bitmap?, nombreArchivo: String): File {
-        fuenteActiva = plantilla.fuente
-
         val documento = PdfDocument()
-        val pagina = documento.startPage(PdfDocument.PageInfo.Builder(ANCHO, ALTO, 1).create())
-
-        when (plantilla.diseno) {
-            Diseno.CLASICA -> dibujarClasica(pagina.canvas, cv, plantilla, foto)
-            Diseno.BANDA -> dibujarBanda(pagina.canvas, cv, plantilla, foto)
-            Diseno.LATERAL -> dibujarLateral(pagina.canvas, cv, plantilla, foto)
-        }
-
-        documento.finishPage(pagina)
+        Dibujo(documento, cv, plantilla, foto).ejecutar()
 
         val carpeta = File(context.cacheDir, "cv").apply { mkdirs() }
         val archivo = File(carpeta, "$nombreArchivo.pdf")
@@ -48,348 +27,582 @@ class RenderizadorCv(private val context: Context) {
         documento.close()
         return archivo
     }
+}
 
-    // ---------- Diseño 1: una columna, sobrio ----------
+/**
+ * Un dibujo por exportación. Antes el estado de la página vivía en el renderizador,
+ * y dos vistas previas a la vez se pisaban la fuente activa.
+ */
+private class Dibujo(
+    private val documento: PdfDocument,
+    private val cv: Cv,
+    private val plantilla: Plantilla,
+    private val foto: Bitmap?,
+) {
 
-    private fun dibujarClasica(lienzo: Canvas, cv: Cv, plantilla: Plantilla, foto: Bitmap?) {
-        var y = MARGEN + 16f
-        val anchoUtil = ANCHO - MARGEN * 2
-        var anchoTexto = anchoUtil
+    private var pagina: PdfDocument.Page = abrirPagina(1)
+    private var numeroDePagina = 1
+    private var lienzo: Canvas = pagina.canvas
 
-        if (plantilla.conFoto && foto != null) {
+    /** Cursor vertical de la columna principal. */
+    private var y = MARGEN
+
+    private var xCuerpo = MARGEN
+    private var anchoCuerpo = ANCHO - MARGEN * 2
+
+    private val acento get() = plantilla.acento
+
+    fun ejecutar() {
+        when (plantilla.diseno.barra) {
+            Barra.NINGUNA -> {
+                xCuerpo = MARGEN
+                anchoCuerpo = ANCHO - MARGEN * 2
+            }
+            Barra.IZQUIERDA -> {
+                xCuerpo = BARRA_ANCHO + 26f
+                anchoCuerpo = ANCHO - xCuerpo - MARGEN
+            }
+            Barra.DERECHA -> {
+                xCuerpo = MARGEN
+                anchoCuerpo = ANCHO - BARRA_ANCHO - 26f - MARGEN
+            }
+        }
+
+        if (plantilla.diseno.barra == Barra.NINGUNA) {
+            y = dibujarEncabezado()
+        } else {
+            dibujarBarraLateral()
+            y = 44f
+        }
+
+        dibujarCuerpo()
+        documento.finishPage(pagina)
+    }
+
+    // ---------- Encabezados ----------
+
+    private fun dibujarEncabezado(): Float = when (plantilla.diseno.encabezado) {
+        Encabezado.SIMPLE -> encabezadoSimple()
+        Encabezado.BANDA -> encabezadoBanda()
+        Encabezado.CENTRADO -> encabezadoCentrado()
+        Encabezado.BLOQUE -> encabezadoBloque()
+        Encabezado.MINIMAL -> encabezadoMinimal()
+        Encabezado.LINEAS -> encabezadoLineas()
+    }
+
+    private fun encabezadoSimple(): Float {
+        var cursor = MARGEN + 16f
+        var ancho = anchoCuerpo
+        if (usaFoto()) {
             val lado = 74f
-            dibujarFoto(lienzo, foto, ANCHO - MARGEN - lado, MARGEN, lado)
-            anchoTexto = anchoUtil - lado - 14f
+            dibujarFoto(ANCHO - MARGEN - lado, MARGEN, lado, circular = false)
+            ancho = anchoCuerpo - lado - 14f
         }
-
-        lienzo.drawText(cv.datos.nombre, MARGEN, y, texto(19f, true, TINTA))
-        y += 18f
-        lienzo.drawText(cv.datos.puesto, MARGEN, y, texto(12f, false, plantilla.acento))
-        y += 16f
-        y = dibujarContacto(lienzo, cv, MARGEN, y, anchoTexto)
-        y += 10f
-
-        y = dibujarCuerpo(lienzo, cv, plantilla, MARGEN, y, anchoUtil, incluirHabilidades = true)
-        pieDePagina(lienzo, y)
+        lienzo.drawText(cv.datos.nombre, MARGEN, cursor, texto(19f, true, TINTA))
+        cursor += 18f
+        if (cv.datos.puesto.isNotBlank()) {
+            lienzo.drawText(cv.datos.puesto, MARGEN, cursor, texto(12f, false, acento))
+            cursor += 16f
+        }
+        lineasDeContacto().forEach {
+            cursor = escribirEnvuelto(it, MARGEN, cursor, ancho, texto(8.5f, false, SUAVE))
+        }
+        return cursor + 10f
     }
 
-    // ---------- Diseño 2: banda de color en el encabezado ----------
-
-    private fun dibujarBanda(lienzo: Canvas, cv: Cv, plantilla: Plantilla, foto: Bitmap?) {
-        val altoBanda = 116f
-        lienzo.drawRect(0f, 0f, ANCHO.toFloat(), altoBanda, Paint().apply { color = plantilla.acento })
-
-        if (plantilla.conFoto && foto != null) {
+    private fun encabezadoBanda(): Float {
+        val alto = 116f
+        lienzo.drawRect(0f, 0f, ANCHO.toFloat(), alto, relleno(acento))
+        if (usaFoto()) {
             val lado = 72f
-            dibujarFoto(lienzo, foto, ANCHO - MARGEN - lado, (altoBanda - lado) / 2, lado)
+            dibujarFoto(ANCHO - MARGEN - lado, (alto - lado) / 2, lado, circular = true)
         }
-
         lienzo.drawText(cv.datos.nombre, MARGEN, 46f, texto(21f, true, Color.WHITE))
-        lienzo.drawText(cv.datos.puesto, MARGEN, 66f, texto(12f, false, Color.parseColor("#E8EEFF")))
-
-        val contacto = listOfNotNull(
-            cv.datos.ciudad.ifBlank { null },
-            cv.datos.telefono.ifBlank { null },
-            cv.datos.correo.ifBlank { null },
-        ).joinToString("  ·  ")
-        if (contacto.isNotBlank()) {
-            lienzo.drawText(contacto, MARGEN, 88f, texto(8.5f, false, Color.parseColor("#DCE5FF")))
+        if (cv.datos.puesto.isNotBlank()) {
+            lienzo.drawText(cv.datos.puesto, MARGEN, 66f, texto(12f, false, aclarar(acento, 0.85f)))
         }
-        val enlaces = listOfNotNull(
-            cv.datos.linkedin.ifBlank { null },
-            cv.datos.portafolio.ifBlank { null },
-        ).joinToString("  ·  ")
-        if (enlaces.isNotBlank()) {
-            lienzo.drawText(enlaces, MARGEN, 101f, texto(8.5f, false, Color.parseColor("#DCE5FF")))
+        var cursor = 88f
+        lineasDeContacto().forEach {
+            lienzo.drawText(it, MARGEN, cursor, texto(8.5f, false, aclarar(acento, 0.78f)))
+            cursor += 13f
         }
-
-        var y = altoBanda + 26f
-        y = dibujarCuerpo(lienzo, cv, plantilla, MARGEN, y, ANCHO - MARGEN * 2, incluirHabilidades = true)
-        pieDePagina(lienzo, y)
+        return alto + 26f
     }
 
-    // ---------- Diseño 3: barra lateral ----------
-
-    private fun dibujarLateral(lienzo: Canvas, cv: Cv, plantilla: Plantilla, foto: Bitmap?) {
-        lienzo.drawRect(
-            0f, 0f, LATERAL_ANCHO, ALTO.toFloat(),
-            Paint().apply { color = plantilla.acento },
-        )
-
-        val margenLat = 22f
-        val anchoLat = LATERAL_ANCHO - margenLat * 2
-        var yl = 40f
-
-        if (plantilla.conFoto && foto != null) {
-            val lado = 88f
-            dibujarFoto(lienzo, foto, (LATERAL_ANCHO - lado) / 2, yl, lado)
-            yl += lado + 22f
+    private fun encabezadoCentrado(): Float {
+        val centro = ANCHO / 2f
+        var cursor = MARGEN + 22f
+        if (usaFoto()) {
+            val lado = 76f
+            dibujarFoto(centro - lado / 2, MARGEN, lado, circular = true)
+            cursor = MARGEN + lado + 26f
         }
+        lienzo.drawText(cv.datos.nombre, centro, cursor, centrado(texto(22f, true, TINTA)))
+        cursor += 12f
+        lienzo.drawLine(centro - 46f, cursor, centro + 46f, cursor, trazo(acento, 1.4f))
+        cursor += 18f
+        if (cv.datos.puesto.isNotBlank()) {
+            lienzo.drawText(cv.datos.puesto, centro, cursor, centrado(texto(11.5f, false, acento)))
+            cursor += 16f
+        }
+        lineasDeContacto().forEach {
+            lienzo.drawText(it, centro, cursor, centrado(texto(8.5f, false, SUAVE)))
+            cursor += 12f
+        }
+        return cursor + 12f
+    }
 
-        val blanco = Color.WHITE
+    private fun encabezadoBloque(): Float {
+        val alto = 112f
+        lienzo.drawRect(0f, 0f, ANCHO.toFloat(), alto, relleno(TINTA))
+        lienzo.drawRect(0f, alto - 5f, ANCHO.toFloat(), alto, relleno(acento))
+        if (usaFoto()) {
+            val lado = 70f
+            dibujarFoto(ANCHO - MARGEN - lado, (alto - 5f - lado) / 2, lado, circular = true)
+        }
+        lienzo.drawText(cv.datos.nombre, MARGEN, 44f, texto(20f, true, Color.WHITE))
+        if (cv.datos.puesto.isNotBlank()) {
+            lienzo.drawText(
+                cv.datos.puesto.uppercase(), MARGEN, 62f,
+                espaciado(texto(9f, false, aclarar(acento, 0.6f)), 0.14f),
+            )
+        }
+        var cursor = 84f
+        lineasDeContacto().forEach {
+            lienzo.drawText(it, MARGEN, cursor, texto(8.5f, false, Color.parseColor("#CBD5E1")))
+            cursor += 12f
+        }
+        return alto + 26f
+    }
+
+    private fun encabezadoMinimal(): Float {
+        var cursor = MARGEN + 34f
+        lienzo.drawText(
+            cv.datos.nombre.uppercase(), MARGEN, cursor,
+            espaciado(texto(23f, true, TINTA), 0.06f),
+        )
+        cursor += 20f
+        if (cv.datos.puesto.isNotBlank()) {
+            lienzo.drawText(
+                cv.datos.puesto.uppercase(), MARGEN, cursor,
+                espaciado(texto(9.5f, false, SUAVE), 0.16f),
+            )
+            cursor += 20f
+        }
+        lienzo.drawLine(MARGEN, cursor, ANCHO - MARGEN, cursor, trazo(acento, 1.2f))
+        cursor += 16f
+        lineasDeContacto().forEach {
+            cursor = escribirEnvuelto(it, MARGEN, cursor, anchoCuerpo, texto(8.5f, false, SUAVE))
+        }
+        return cursor + 18f
+    }
+
+    private fun encabezadoLineas(): Float {
+        var cursor = MARGEN + 18f
+        var ancho = anchoCuerpo
+        if (usaFoto()) {
+            val lado = 68f
+            dibujarFoto(ANCHO - MARGEN - lado, MARGEN, lado, circular = true)
+            ancho = anchoCuerpo - lado - 14f
+        }
+        lienzo.drawText(cv.datos.nombre, MARGEN, cursor, texto(20f, true, TINTA))
+        cursor += 10f
+        lienzo.drawLine(MARGEN, cursor, ANCHO - MARGEN, cursor, trazo(acento, 2f))
+        cursor += 3.5f
+        lienzo.drawLine(MARGEN, cursor, ANCHO - MARGEN, cursor, trazo(acento, 0.8f))
+        cursor += 16f
+        if (cv.datos.puesto.isNotBlank()) {
+            lienzo.drawText(cv.datos.puesto, MARGEN, cursor, texto(11.5f, false, acento))
+            cursor += 15f
+        }
+        lineasDeContacto().forEach {
+            cursor = escribirEnvuelto(it, MARGEN, cursor, ancho, texto(8.5f, false, SUAVE))
+        }
+        return cursor + 12f
+    }
+
+    // ---------- Barra lateral ----------
+
+    /**
+     * La barra se pinta en cada página para que una segunda hoja no se vea partida.
+     * Su contenido (contacto, habilidades, idiomas) solo va en la primera.
+     */
+    private fun pintarFondoDeBarra() {
+        val izquierda = if (plantilla.diseno.barra == Barra.IZQUIERDA) 0f else ANCHO - BARRA_ANCHO
+        lienzo.drawRect(izquierda, 0f, izquierda + BARRA_ANCHO, ALTO.toFloat(), relleno(acento))
+    }
+
+    private fun dibujarBarraLateral() {
+        pintarFondoDeBarra()
+
+        val origen = if (plantilla.diseno.barra == Barra.IZQUIERDA) 0f else ANCHO - BARRA_ANCHO
+        val margen = origen + 22f
+        val ancho = BARRA_ANCHO - 44f
+        var cursor = 40f
         val tenue = Color.parseColor("#E2E8F0")
 
-        yl = parrafo(lienzo, cv.datos.nombre, margenLat, yl, anchoLat, texto(16f, true, blanco))
-        yl += 4f
-        yl = parrafo(lienzo, cv.datos.puesto, margenLat, yl, anchoLat, texto(10f, false, tenue))
-        yl += 18f
+        if (usaFoto()) {
+            val lado = 88f
+            dibujarFoto(origen + (BARRA_ANCHO - lado) / 2, cursor, lado, circular = true)
+            cursor += lado + 22f
+        }
 
-        yl = tituloLateral(lienzo, seccion("contacto", cv.idioma), margenLat, yl, anchoLat)
-        listOfNotNull(
-            cv.datos.ciudad.ifBlank { null },
-            cv.datos.telefono.ifBlank { null },
-            cv.datos.correo.ifBlank { null },
-            cv.datos.linkedin.ifBlank { null },
-            cv.datos.portafolio.ifBlank { null },
-        ).forEach {
-            yl = parrafo(lienzo, it, margenLat, yl, anchoLat, texto(8.5f, false, tenue))
-            yl += 4f
+        cursor = escribirEnvuelto(cv.datos.nombre, margen, cursor, ancho, texto(16f, true, Color.WHITE))
+        cursor += 4f
+        if (cv.datos.puesto.isNotBlank()) {
+            cursor = escribirEnvuelto(cv.datos.puesto, margen, cursor, ancho, texto(10f, false, tenue))
+        }
+        cursor += 18f
+
+        cursor = tituloDeBarra(seccion("contacto"), margen, cursor, ancho)
+        datosDeContacto().forEach {
+            cursor = escribirEnvuelto(it, margen, cursor, ancho, texto(8.5f, false, tenue)) + 4f
         }
 
         if (cv.habilidades.isNotEmpty()) {
-            yl += 14f
-            yl = tituloLateral(lienzo, seccion("habilidades", cv.idioma), margenLat, yl, anchoLat)
+            cursor += 14f
+            cursor = tituloDeBarra(seccion("habilidades"), margen, cursor, ancho)
             cv.habilidades.forEach {
-                yl = parrafo(lienzo, "· $it", margenLat, yl, anchoLat, texto(8.5f, false, tenue))
-                yl += 3f
+                cursor = escribirEnvuelto("·  $it", margen, cursor, ancho, texto(8.5f, false, tenue)) + 3f
             }
         }
 
         if (cv.idiomas.isNotEmpty()) {
-            yl += 14f
-            yl = tituloLateral(lienzo, seccion("idiomas", cv.idioma), margenLat, yl, anchoLat)
+            cursor += 14f
+            cursor = tituloDeBarra(seccion("idiomas"), margen, cursor, ancho)
             cv.idiomas.forEach {
-                yl = parrafo(lienzo, "${it.idioma}: ${it.nivel}", margenLat, yl, anchoLat, texto(8.5f, false, tenue))
-                yl += 3f
+                val linea = listOf(it.idioma, it.nivel).filter { parte -> parte.isNotBlank() }
+                    .joinToString(": ")
+                cursor = escribirEnvuelto(linea, margen, cursor, ancho, texto(8.5f, false, tenue)) + 3f
             }
         }
-
-        val x = LATERAL_ANCHO + 26f
-        val ancho = ANCHO - x - MARGEN
-        var y = 44f
-        y = dibujarCuerpo(lienzo, cv, plantilla, x, y, ancho, incluirHabilidades = false)
-        pieDePagina(lienzo, y)
     }
 
-    // ---------- Cuerpo compartido ----------
+    private fun tituloDeBarra(titulo: String, x: Float, y: Float, ancho: Float): Float {
+        lienzo.drawText(titulo.uppercase(), x, y, texto(9f, true, Color.WHITE))
+        val bajo = y + 4f
+        lienzo.drawLine(x, bajo, x + ancho, bajo, trazo(Color.parseColor("#80FFFFFF"), 0.8f))
+        return bajo + 13f
+    }
 
-    private fun dibujarCuerpo(
-        lienzo: Canvas,
-        cv: Cv,
-        plantilla: Plantilla,
-        x: Float,
-        inicio: Float,
-        ancho: Float,
-        incluirHabilidades: Boolean,
-    ): Float {
-        var y = inicio
+    // ---------- Cuerpo ----------
+
+    private fun dibujarCuerpo() {
+        val hayBarra = plantilla.diseno.barra != Barra.NINGUNA
         val pCuerpo = texto(9.5f, false, CUERPO)
         val pCargo = texto(10f, true, TINTA)
         val pMeta = texto(8.5f, false, SUAVE)
 
         if (cv.resumen.isNotBlank()) {
-            y = parrafo(lienzo, cv.resumen, x, y, ancho, pCuerpo)
+            parrafo(cv.resumen, xCuerpo, anchoCuerpo, pCuerpo)
             y += 10f
         }
 
         if (cv.proyectos.isNotEmpty()) {
-            y = tituloSeccion(lienzo, seccion("proyectos", cv.idioma), x, y, ancho, plantilla.acento)
+            tituloDeSeccion(seccion("proyectos"))
             cv.proyectos.forEach { p ->
-                lienzo.drawText(p.nombre, x, y, pCargo)
-                y += 12f
-                if (p.enlace.isNotBlank()) {
-                    y = parrafo(lienzo, p.enlace, x, y, ancho, pMeta)
-                    y += 1f
+                conRiel { x, ancho ->
+                    reservar(34f)
+                    lienzo.drawText(recortar(p.nombre, ancho, pCargo), x, y, pCargo)
+                    y += 12f
+                    if (p.enlace.isNotBlank()) {
+                        parrafo(p.enlace, x, ancho, pMeta)
+                        y += 1f
+                    }
+                    if (p.descripcion.isNotBlank()) parrafo(p.descripcion, x, ancho, pCuerpo)
+                    dibujarVinetas(p.logros, x, ancho, pCuerpo)
+                    y += 7f
                 }
-                if (p.descripcion.isNotBlank()) y = parrafo(lienzo, p.descripcion, x, y, ancho, pCuerpo)
-                y = vinetas(lienzo, p.logros, x, y, ancho, pCuerpo)
-                y += 7f
             }
         }
 
         if (cv.experiencia.isNotEmpty()) {
-            y = tituloSeccion(lienzo, seccion("experiencia", cv.idioma), x, y, ancho, plantilla.acento)
+            tituloDeSeccion(seccion("experiencia"))
             cv.experiencia.forEach { e ->
-                lienzo.drawText(e.puesto, x, y, pCargo)
-                y += 12f
-                y = parrafo(lienzo, "${e.organizacion}  ·  ${e.periodo}", x, y, ancho, pMeta)
-                y += 2f
-                y = vinetas(lienzo, e.logros, x, y, ancho, pCuerpo)
-                y += 7f
+                conRiel { x, ancho ->
+                    reservar(34f)
+                    lienzo.drawText(recortar(e.puesto, ancho, pCargo), x, y, pCargo)
+                    y += 12f
+                    val meta = listOf(e.organizacion, e.periodo).filter { it.isNotBlank() }
+                        .joinToString("  ·  ")
+                    if (meta.isNotBlank()) {
+                        parrafo(meta, x, ancho, pMeta)
+                        y += 2f
+                    }
+                    dibujarVinetas(e.logros, x, ancho, pCuerpo)
+                    y += 7f
+                }
             }
         }
 
         if (cv.formacion.isNotEmpty()) {
-            y = tituloSeccion(lienzo, seccion("formacion", cv.idioma), x, y, ancho, plantilla.acento)
+            tituloDeSeccion(seccion("formacion"))
             cv.formacion.forEach { f ->
-                lienzo.drawText(f.titulo, x, y, pCargo)
+                reservar(30f)
+                lienzo.drawText(recortar(f.titulo, anchoCuerpo, pCargo), xCuerpo, y, pCargo)
                 y += 12f
-                y = parrafo(lienzo, "${f.institucion}  ·  ${f.periodo}", x, y, ancho, pMeta)
+                val meta = listOf(f.institucion, f.periodo, f.nota).filter { it.isNotBlank() }
+                    .joinToString("  ·  ")
+                if (meta.isNotBlank()) parrafo(meta, xCuerpo, anchoCuerpo, pMeta)
                 y += 8f
             }
         }
 
         if (cv.certificaciones.isNotEmpty()) {
-            y = tituloSeccion(lienzo, seccion("certificaciones", cv.idioma), x, y, ancho, plantilla.acento)
+            tituloDeSeccion(seccion("certificaciones"))
             cv.certificaciones.forEach { c ->
-                y = parrafo(lienzo, "${c.nombre} — ${c.institucion}, ${c.anio}", x, y, ancho, pCuerpo)
+                val emisor = listOf(c.institucion, c.anio).filter { it.isNotBlank() }
+                    .joinToString(", ")
+                val linea = listOf(c.nombre, emisor).filter { it.isNotBlank() }.joinToString(" — ")
+                parrafo(linea, xCuerpo, anchoCuerpo, pCuerpo)
                 y += 3f
             }
             y += 6f
         }
 
-        if (incluirHabilidades) {
+        // Con barra lateral, habilidades e idiomas ya viven allá.
+        if (!hayBarra) {
             if (cv.habilidades.isNotEmpty()) {
-                y = tituloSeccion(lienzo, seccion("habilidades", cv.idioma), x, y, ancho, plantilla.acento)
-                y = parrafo(lienzo, cv.habilidades.joinToString("  ·  "), x, y, ancho, pCuerpo)
+                tituloDeSeccion(seccion("habilidades"))
+                parrafo(cv.habilidades.joinToString("  ·  "), xCuerpo, anchoCuerpo, pCuerpo)
                 y += 8f
             }
             if (cv.idiomas.isNotEmpty()) {
-                y = tituloSeccion(lienzo, seccion("idiomas", cv.idioma), x, y, ancho, plantilla.acento)
-                y = parrafo(
-                    lienzo,
-                    cv.idiomas.joinToString("  ·  ") { "${it.idioma}: ${it.nivel}" },
-                    x, y, ancho, pCuerpo,
-                )
+                tituloDeSeccion(seccion("idiomas"))
+                val linea = cv.idiomas.joinToString("  ·  ") {
+                    listOf(it.idioma, it.nivel).filter { parte -> parte.isNotBlank() }
+                        .joinToString(": ")
+                }
+                parrafo(linea, xCuerpo, anchoCuerpo, pCuerpo)
             }
         }
-        return y
     }
 
-    // ---------- Utilidades de dibujo ----------
+    /**
+     * La línea de tiempo del diseño Cronología. Si la entrada se partió entre dos
+     * páginas no se dibuja el riel: una línea que empieza en una hoja y termina en
+     * otra se ve como un error de impresión.
+     */
+    private fun conRiel(bloque: (Float, Float) -> Unit) {
+        if (!plantilla.diseno.riel) {
+            bloque(xCuerpo, anchoCuerpo)
+            return
+        }
+        val sangria = 16f
+        val paginaInicial = numeroDePagina
+        val yInicio = y
+        bloque(xCuerpo + sangria, anchoCuerpo - sangria)
+        if (paginaInicial != numeroDePagina) return
+        lienzo.drawLine(xCuerpo + 4f, yInicio - 2f, xCuerpo + 4f, y - 10f, trazo(aclarar(acento, 0.55f), 1.4f))
+        lienzo.drawCircle(xCuerpo + 4f, yInicio - 4f, 3.6f, relleno(acento))
+    }
 
-    /** La plantilla activa decide familia y escala de TODO el texto de la página. */
-    private var fuenteActiva: Fuente = Fuente.MODERNA
+    // ---------- Títulos de sección ----------
+
+    private fun tituloDeSeccion(titulo: String) {
+        reservar(48f)
+        when (plantilla.diseno.estiloTitulo) {
+            EstiloTitulo.SUBRAYADO -> {
+                y += 8f
+                lienzo.drawText(titulo.uppercase(), xCuerpo, y, texto(9.5f, true, acento))
+                y += 4f
+                lienzo.drawLine(xCuerpo, y, xCuerpo + anchoCuerpo, y, trazo(LINEA, 0.8f))
+                y += 13f
+            }
+            EstiloTitulo.LIMPIO -> {
+                y += 16f
+                lienzo.drawText(
+                    titulo.uppercase(), xCuerpo, y,
+                    espaciado(texto(9f, true, TINTA), 0.14f),
+                )
+                y += 15f
+            }
+            EstiloTitulo.BARRA -> {
+                y += 12f
+                lienzo.drawRect(xCuerpo, y - 8.5f, xCuerpo + 3f, y + 1.5f, relleno(acento))
+                lienzo.drawText(titulo.uppercase(), xCuerpo + 9f, y, texto(9.5f, true, TINTA))
+                y += 14f
+            }
+            EstiloTitulo.CHIP -> {
+                y += 12f
+                val pintura = texto(8.5f, true, Color.WHITE)
+                val ancho = pintura.measureText(titulo.uppercase()) + 18f
+                lienzo.drawRoundRect(
+                    RectF(xCuerpo, y - 9f, xCuerpo + ancho, y + 4f), 6.5f, 6.5f, relleno(acento),
+                )
+                lienzo.drawText(titulo.uppercase(), xCuerpo + 9f, y, pintura)
+                y += 17f
+            }
+            EstiloTitulo.BLOQUE -> {
+                y += 12f
+                lienzo.drawRect(
+                    xCuerpo, y - 10f, xCuerpo + anchoCuerpo, y + 4f, relleno(aclarar(acento, 0.86f)),
+                )
+                lienzo.drawRect(xCuerpo, y - 10f, xCuerpo + 3.5f, y + 4f, relleno(acento))
+                lienzo.drawText(titulo.uppercase(), xCuerpo + 11f, y, texto(9f, true, acento))
+                y += 18f
+            }
+        }
+    }
+
+    // ---------- Páginas ----------
+
+    private fun abrirPagina(numero: Int): PdfDocument.Page =
+        documento.startPage(PdfDocument.PageInfo.Builder(ANCHO, ALTO, numero).create())
+
+    /** Si lo que viene no cabe, se pasa a la hoja siguiente en vez de recortarlo. */
+    private fun reservar(alto: Float) {
+        if (y + alto <= ALTO - MARGEN) return
+        documento.finishPage(pagina)
+        numeroDePagina += 1
+        pagina = abrirPagina(numeroDePagina)
+        lienzo = pagina.canvas
+        if (plantilla.diseno.barra != Barra.NINGUNA) pintarFondoDeBarra()
+        y = MARGEN + 12f
+    }
+
+    // ---------- Texto ----------
 
     private fun texto(tamano: Float, negrita: Boolean, color: Int) = Paint().apply {
         this.color = color
-        textSize = tamano * fuenteActiva.escala
+        textSize = tamano * plantilla.fuente.escala
         isAntiAlias = true
         typeface = Typeface.create(
-            fuenteActiva.familia,
+            plantilla.fuente.familia,
             if (negrita) Typeface.BOLD else Typeface.NORMAL,
         )
     }
 
-    private fun dibujarFoto(lienzo: Canvas, foto: Bitmap, x: Float, y: Float, lado: Float) {
-        val escalada = Bitmap.createScaledBitmap(foto, lado.toInt(), lado.toInt(), true)
-        lienzo.drawBitmap(escalada, x, y, null)
+    private fun centrado(pintura: Paint) = pintura.apply { textAlign = Paint.Align.CENTER }
+
+    private fun espaciado(pintura: Paint, espacio: Float) = pintura.apply { letterSpacing = espacio }
+
+    private fun relleno(color: Int) = Paint().apply {
+        this.color = color
+        isAntiAlias = true
     }
 
-    private fun dibujarContacto(lienzo: Canvas, cv: Cv, x: Float, inicio: Float, ancho: Float): Float {
-        var y = inicio
-        val pintura = texto(8.5f, false, SUAVE)
-        val contacto = listOfNotNull(
-            cv.datos.ciudad.ifBlank { null },
-            cv.datos.telefono.ifBlank { null },
-            cv.datos.correo.ifBlank { null },
-        ).joinToString("  ·  ")
-        if (contacto.isNotBlank()) y = parrafo(lienzo, contacto, x, y, ancho, pintura)
-        val enlaces = listOfNotNull(
-            cv.datos.linkedin.ifBlank { null },
-            cv.datos.portafolio.ifBlank { null },
-        ).joinToString("  ·  ")
-        if (enlaces.isNotBlank()) y = parrafo(lienzo, enlaces, x, y, ancho, pintura)
-        return y
+    private fun trazo(color: Int, grosor: Float) = Paint().apply {
+        this.color = color
+        strokeWidth = grosor
+        isAntiAlias = true
     }
 
-    private fun tituloSeccion(
-        lienzo: Canvas,
-        titulo: String,
-        x: Float,
-        y: Float,
-        ancho: Float,
-        acento: Int,
-    ): Float {
-        var cursor = y + 8f
-        lienzo.drawText(titulo.uppercase(), x, cursor, texto(9.5f, true, acento))
-        cursor += 4f
-        lienzo.drawLine(x, cursor, x + ancho, cursor, Paint().apply { color = LINEA; strokeWidth = 0.8f })
-        return cursor + 13f
-    }
-
-    private fun tituloLateral(lienzo: Canvas, titulo: String, x: Float, y: Float, ancho: Float): Float {
-        lienzo.drawText(titulo.uppercase(), x, y, texto(9f, true, Color.WHITE))
-        val bajo = y + 4f
-        lienzo.drawLine(
-            x, bajo, x + ancho, bajo,
-            Paint().apply { color = Color.parseColor("#80FFFFFF"); strokeWidth = 0.8f },
-        )
-        return bajo + 13f
-    }
-
-    private fun parrafo(
-        lienzo: Canvas,
+    /**
+     * Texto con su propio cursor, sin saltos de página. Lo usan el encabezado y la
+     * barra lateral, que siempre caben en la primera hoja.
+     */
+    private fun escribirEnvuelto(
         contenido: String,
         x: Float,
-        y: Float,
+        inicio: Float,
         ancho: Float,
         pintura: Paint,
     ): Float {
-        var cursor = y
-        cortar(contenido, ancho, pintura).forEach { linea ->
+        var cursor = inicio
+        partirEnLineas(contenido, ancho, pintura).forEach { linea ->
             lienzo.drawText(linea, x, cursor, pintura)
             cursor += pintura.textSize + 3.5f
         }
         return cursor
     }
 
-    private fun vinetas(
-        lienzo: Canvas,
-        items: List<String>,
-        x: Float,
-        y: Float,
-        ancho: Float,
-        pintura: Paint,
-    ): Float {
-        var cursor = y
-        items.forEach { item ->
-            cortar(item, ancho - 12f, pintura).forEachIndexed { indice, linea ->
-                lienzo.drawText(if (indice == 0) "•  $linea" else "    $linea", x, cursor, pintura)
-                cursor += pintura.textSize + 3.5f
-            }
+    /** Texto de la columna principal: avanza el cursor de página y salta de hoja si no cabe. */
+    private fun parrafo(contenido: String, x: Float, ancho: Float, pintura: Paint) {
+        partirEnLineas(contenido, ancho, pintura).forEach { linea ->
+            reservar(pintura.textSize + 6f)
+            lienzo.drawText(linea, x, y, pintura)
+            y += pintura.textSize + 3.5f
         }
-        return cursor
     }
 
-    private fun cortar(contenido: String, ancho: Float, pintura: Paint): List<String> {
-        val lineas = mutableListOf<String>()
-        var actual = StringBuilder()
-        val limites = Rect()
-        contenido.split(" ").forEach { palabra ->
-            val prueba = if (actual.isEmpty()) palabra else "$actual $palabra"
-            pintura.getTextBounds(prueba, 0, prueba.length, limites)
-            if (limites.width() > ancho && actual.isNotEmpty()) {
-                lineas += actual.toString()
-                actual = StringBuilder(palabra)
-            } else {
-                actual = StringBuilder(prueba)
+    private fun dibujarVinetas(items: List<String>, x: Float, ancho: Float, pintura: Paint) {
+        items.forEach { item ->
+            partirEnLineas(item, ancho - 12f, pintura).forEachIndexed { indice, linea ->
+                reservar(pintura.textSize + 6f)
+                lienzo.drawText(if (indice == 0) "•  $linea" else "     $linea", x, y, pintura)
+                y += pintura.textSize + 3.5f
             }
         }
-        if (actual.isNotEmpty()) lineas += actual.toString()
+    }
+
+    private fun partirEnLineas(contenido: String, ancho: Float, pintura: Paint): List<String> {
+        val lineas = mutableListOf<String>()
+        contenido.split("\n").forEach { crudo ->
+            var actual = StringBuilder()
+            crudo.split(" ").filter { it.isNotEmpty() }.forEach { palabra ->
+                val prueba = if (actual.isEmpty()) palabra else "$actual $palabra"
+                if (pintura.measureText(prueba) > ancho && actual.isNotEmpty()) {
+                    lineas += actual.toString()
+                    actual = StringBuilder(palabra)
+                } else {
+                    actual = StringBuilder(prueba)
+                }
+            }
+            if (actual.isNotEmpty()) lineas += actual.toString()
+        }
         return lineas
     }
 
-    /** Avisa cuando el contenido ya no cupo en la página, en vez de recortarlo en silencio. */
-    private fun pieDePagina(lienzo: Canvas, y: Float) {
-        if (y <= ALTO - MARGEN) return
-        val aviso = Paint().apply {
-            color = Color.parseColor("#B91C1C")
-            textSize = 8f
-            isAntiAlias = true
-        }
-        lienzo.drawRect(
-            0f, ALTO - 20f, ANCHO.toFloat(), ALTO.toFloat(),
-            Paint().apply { color = Color.parseColor("#FEE2E2") },
-        )
-        lienzo.drawText(
-            "El contenido no cabe en una página. Recorta texto o elige la plantilla Clásica.",
-            MARGEN, ALTO - 7f, aviso,
-        )
+    private fun recortar(contenido: String, ancho: Float, pintura: Paint): String {
+        if (pintura.measureText(contenido) <= ancho) return contenido
+        var corte = contenido.length
+        while (corte > 1 && pintura.measureText(contenido.take(corte) + "…") > ancho) corte--
+        return contenido.take(corte).trimEnd() + "…"
     }
 
-    private fun seccion(clave: String, idioma: String): String {
-        val es = idioma.startsWith("es", ignoreCase = true)
+    // ---------- Datos ----------
+
+    private fun datosDeContacto(): List<String> = listOf(
+        cv.datos.ciudad, cv.datos.telefono, cv.datos.correo,
+        cv.datos.linkedin, cv.datos.portafolio,
+    ).filter { it.isNotBlank() }
+
+    /** Dos renglones: primero cómo contactarte, luego dónde verte. */
+    private fun lineasDeContacto(): List<String> = listOfNotNull(
+        listOf(cv.datos.ciudad, cv.datos.telefono, cv.datos.correo)
+            .filter { it.isNotBlank() }.joinToString("  ·  ").ifBlank { null },
+        listOf(cv.datos.linkedin, cv.datos.portafolio)
+            .filter { it.isNotBlank() }.joinToString("  ·  ").ifBlank { null },
+    )
+
+    private fun usaFoto() = plantilla.conFoto && plantilla.admiteFoto && foto != null
+
+    private fun dibujarFoto(x: Float, y: Float, lado: Float, circular: Boolean) {
+        val original = foto ?: return
+        // Recorte cuadrado desde el centro: escalar de frente deforma la cara.
+        val corte = minOf(original.width, original.height)
+        val cuadrada = Bitmap.createBitmap(
+            original,
+            (original.width - corte) / 2,
+            (original.height - corte) / 2,
+            corte,
+            corte,
+        )
+        val escalada = Bitmap.createScaledBitmap(cuadrada, lado.toInt(), lado.toInt(), true)
+
+        if (circular) {
+            lienzo.save()
+            lienzo.clipPath(
+                Path().apply {
+                    addCircle(x + lado / 2, y + lado / 2, lado / 2, Path.Direction.CW)
+                },
+            )
+            lienzo.drawBitmap(escalada, x, y, null)
+            lienzo.restore()
+        } else {
+            lienzo.drawBitmap(escalada, x, y, null)
+        }
+    }
+
+    private fun aclarar(color: Int, factor: Float): Int = Color.rgb(
+        (Color.red(color) + (255 - Color.red(color)) * factor).toInt().coerceIn(0, 255),
+        (Color.green(color) + (255 - Color.green(color)) * factor).toInt().coerceIn(0, 255),
+        (Color.blue(color) + (255 - Color.blue(color)) * factor).toInt().coerceIn(0, 255),
+    )
+
+    private fun seccion(clave: String): String {
+        val es = cv.idioma.startsWith("es", ignoreCase = true)
         return when (clave) {
             "proyectos" -> if (es) "Proyectos" else "Projects"
             "experiencia" -> if (es) "Experiencia" else "Experience"
@@ -400,5 +613,17 @@ class RenderizadorCv(private val context: Context) {
             "contacto" -> if (es) "Contacto" else "Contact"
             else -> clave
         }
+    }
+
+    private companion object {
+        const val ANCHO = 595   // A4 a 72 dpi
+        const val ALTO = 842
+        const val MARGEN = 44f
+        const val BARRA_ANCHO = 186f
+
+        val TINTA: Int = Color.parseColor("#0F172A")
+        val CUERPO: Int = Color.parseColor("#1E293B")
+        val SUAVE: Int = Color.parseColor("#64748B")
+        val LINEA: Int = Color.parseColor("#CBD5E1")
     }
 }

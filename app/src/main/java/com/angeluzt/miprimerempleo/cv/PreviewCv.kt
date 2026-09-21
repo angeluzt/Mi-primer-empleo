@@ -14,16 +14,19 @@ import java.io.File
  * antes de decidir. Se dibuja el PDF de verdad, no una maqueta parecida:
  * lo que se ve aquí es exactamente lo que se exporta.
  */
+/** La primera hoja dibujada, y cuántas hojas ocupa el CV completo. */
+data class Vista(val imagen: Bitmap?, val paginas: Int = 1)
+
 class PreviewCv(private val context: Context) {
 
     private val renderizador = RenderizadorCv(context)
 
     /** Miniatura para la cuadrícula de plantillas. */
-    suspend fun miniatura(cv: Cv, plantilla: Plantilla, foto: Bitmap?, ancho: Int = 320): Bitmap? =
+    suspend fun miniatura(cv: Cv, plantilla: Plantilla, foto: Bitmap?, ancho: Int = 320): Vista =
         generar(cv, plantilla, foto, ancho, "preview_${plantilla.id}")
 
     /** Vista grande para revisar el resultado antes de exportar. */
-    suspend fun completa(cv: Cv, plantilla: Plantilla, foto: Bitmap?, ancho: Int = 1080): Bitmap? =
+    suspend fun completa(cv: Cv, plantilla: Plantilla, foto: Bitmap?, ancho: Int = 1080): Vista =
         generar(cv, plantilla, foto, ancho, "preview_grande_${plantilla.id}")
 
     private suspend fun generar(
@@ -32,7 +35,7 @@ class PreviewCv(private val context: Context) {
         foto: Bitmap?,
         ancho: Int,
         nombre: String,
-    ): Bitmap? = withContext(Dispatchers.IO) {
+    ): Vista = withContext(Dispatchers.IO) {
         var archivo: File? = null
         try {
             archivo = renderizador.exportar(cv, plantilla, foto, nombre)
@@ -44,12 +47,12 @@ class PreviewCv(private val context: Context) {
                         // Sin esto las zonas sin tinta salen transparentes y se ven negras.
                         bitmap.eraseColor(Color.WHITE)
                         pagina.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
-                        bitmap
+                        Vista(bitmap, pdf.pageCount)
                     }
                 }
             }
         } catch (e: Exception) {
-            null
+            Vista(null)
         } finally {
             archivo?.delete()
         }

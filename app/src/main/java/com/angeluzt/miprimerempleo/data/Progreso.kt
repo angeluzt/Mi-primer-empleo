@@ -26,6 +26,8 @@ data class EstadoProgreso(
     val pais: String = "MX",
     val llaveOpenAi: String = "",
     val cvGenerado: String = "",
+    val respuestasCv: String = "",
+    val fotoCv: String = "",
 )
 
 class Progreso(private val context: Context) {
@@ -41,6 +43,8 @@ class Progreso(private val context: Context) {
         val pais = stringPreferencesKey("pais")
         val llave = stringPreferencesKey("llave_openai")
         val cvJson = stringPreferencesKey("cv_generado")
+        val respuestasCv = stringPreferencesKey("respuestas_cv")
+        val fotoCv = stringPreferencesKey("foto_cv")
     }
 
     val estado: Flow<EstadoProgreso> = context.dataStore.data.map { p ->
@@ -55,6 +59,8 @@ class Progreso(private val context: Context) {
             pais = p[Llaves.pais] ?: "MX",
             llaveOpenAi = p[Llaves.llave].orEmpty(),
             cvGenerado = p[Llaves.cvJson].orEmpty(),
+            respuestasCv = p[Llaves.respuestasCv].orEmpty(),
+            fotoCv = p[Llaves.fotoCv].orEmpty(),
         )
     }
 
@@ -109,6 +115,26 @@ class Progreso(private val context: Context) {
     /** El CV se guarda para que la vista previa de formatos use el real, no el de muestra. */
     suspend fun guardarCv(par: ParCv) {
         context.dataStore.edit { it[Llaves.cvJson] = Json.encodeToString(par) }
+    }
+
+    /**
+     * La entrevista se guarda respuesta por respuesta.
+     *
+     * Son diez minutos de escribir en el teléfono: si la persona toca «atrás», le entra
+     * una llamada o Android mata la app, perder todo sería motivo suficiente para no
+     * volver a abrirla.
+     */
+    suspend fun guardarRespuestasCv(respuestas: Map<String, String>) {
+        context.dataStore.edit { it[Llaves.respuestasCv] = Json.encodeToString(respuestas) }
+    }
+
+    fun leerRespuestasCv(crudo: String): Map<String, String> =
+        if (crudo.isBlank()) emptyMap()
+        else runCatching { Json.decodeFromString<Map<String, String>>(crudo) }.getOrDefault(emptyMap())
+
+    /** Ruta del archivo propio, no el URI del selector: ese permiso se pierde al reiniciar. */
+    suspend fun guardarFotoCv(ruta: String) {
+        context.dataStore.edit { it[Llaves.fotoCv] = ruta }
     }
 
     suspend fun registrarCvGenerado() {

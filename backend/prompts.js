@@ -13,6 +13,7 @@ const DIR = path.resolve(__dirname, "..", "prompts");
 const leer = (archivo) => fs.readFileSync(path.join(DIR, archivo), "utf8").trim();
 
 const sistemaGenerar = () => leer("generar_cv.txt");
+const sistemaEvaluar = () => leer("evaluar_cv.txt");
 
 const entradaGenerar = (respuestas, cvPegado) =>
   [
@@ -20,8 +21,12 @@ const entradaGenerar = (respuestas, cvPegado) =>
     cvPegado ? `\nCV o texto que la persona pegó:\n${cvPegado}` : "",
   ].join("");
 
+const entradaEvaluar = (cv) => JSON.stringify(cv || {}, null, 2);
+
 module.exports = {
   sistemaGenerar,
+  sistemaEvaluar,
   entradaGenerar,
+  entradaEvaluar,
   MODELO: "gpt-4o-mini",
 };

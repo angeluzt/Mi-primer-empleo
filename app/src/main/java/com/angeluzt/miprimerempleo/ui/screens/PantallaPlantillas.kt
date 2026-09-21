@@ -1,13 +1,14 @@
 package com.angeluzt.miprimerempleo.ui.screens
 
 import android.graphics.Bitmap
-import androidx.compose.foundation.BorderStroke
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,7 +19,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -38,12 +38,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -55,10 +58,14 @@ import androidx.compose.ui.unit.dp
 import com.angeluzt.miprimerempleo.cv.ColorAcento
 import com.angeluzt.miprimerempleo.cv.Cv
 import com.angeluzt.miprimerempleo.cv.Diseno
+import com.angeluzt.miprimerempleo.cv.FotoCv
 import com.angeluzt.miprimerempleo.cv.Fuente
 import com.angeluzt.miprimerempleo.cv.Plantilla
 import com.angeluzt.miprimerempleo.cv.Plantillas
 import com.angeluzt.miprimerempleo.cv.PreviewCv
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * En vez de una lista cerrada de plantillas, la persona combina cuatro cosas.
@@ -70,21 +77,41 @@ import com.angeluzt.miprimerempleo.cv.PreviewCv
 fun PantallaPlantillas(
     cv: Cv,
     plantillaElegida: String,
+    fotoRuta: String,
     onElegir: (String) -> Unit,
+    onElegirFoto: (String) -> Unit,
     onAtras: () -> Unit,
 ) {
     val contexto = LocalContext.current
+    val alcance = rememberCoroutineScope()
     val preview = remember { PreviewCv(contexto) }
 
     var plantilla by remember(plantillaElegida) {
         mutableStateOf(Plantillas.porId(plantillaElegida))
     }
     var imagen by remember { mutableStateOf<Bitmap?>(null) }
+    var paginas by remember { mutableStateOf(1) }
     var generando by remember { mutableStateOf(true) }
 
-    LaunchedEffect(plantilla, cv) {
+    val foto by produceState<Bitmap?>(initialValue = null, fotoRuta) {
+        value = withContext(Dispatchers.IO) { FotoCv.cargar(fotoRuta) }
+    }
+
+    val elegirFoto = rememberLauncherForActivityResult(
+        ActivityResultContracts.PickVisualMedia(),
+    ) { origen ->
+        if (origen == null) return@rememberLauncherForActivityResult
+        alcance.launch {
+            val ruta = withContext(Dispatchers.IO) { FotoCv.guardar(contexto, origen) }
+            if (ruta != null) onElegirFoto(ruta)
+        }
+    }
+
+    LaunchedEffect(plantilla, cv, foto) {
         generando = true
-        imagen = preview.completa(cv, plantilla, null, ancho = 720)
+        val vista = preview.completa(cv, plantilla, foto, ancho = 720)
+        imagen = vista.imagen
+        paginas = vista.paginas
         generando = false
         onElegir(plantilla.id)
     }
@@ -110,6 +137,16 @@ fun PantallaPlantillas(
         ) {
             VistaPrevia(imagen, generando)
 
+            if (paginas > 1) {
+                Text(
+                    text = "Tu CV ocupa $paginas hojas. Para un primer empleo conviene que quepa " +
+                        "en una: prueba la letra Compacta o quita lo que menos aporte.",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 10.dp),
+                )
+            }
+
             Spacer(Modifier.height(16.dp))
             AvisoFiltros(plantilla)
             Spacer(Modifier.height(20.dp))
@@ -124,6 +161,12 @@ fun PantallaPlantillas(
                     )
                 }
             }
+            Text(
+                text = plantilla.diseno.descripcion,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(bottom = 18.dp),
+            )
 
             Grupo("Letra") {
                 Fuente.entries.forEach { fuente ->
@@ -146,29 +189,23 @@ fun PantallaPlantillas(
                 }
             }
 
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(top = 18.dp, bottom = 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Column(Modifier.weight(1f)) {
-                    Text(
-                        text = "Incluir foto",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
+            Foto(
+                plantilla = plantilla,
+                hayFoto = foto != null,
+                onCambiar = {
+                    plantilla = plantilla.copy(conFoto = it)
+                    if (it && foto == null) {
+                        elegirFoto.launch(
+                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
+                        )
+                    }
+                },
+                onElegirArchivo = {
+                    elegirFoto.launch(
+                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
                     )
-                    Text(
-                        text = "Déjala apagada para bolsas de trabajo. Enciéndela solo si vas a entregar en mano.",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-                Switch(
-                    checked = plantilla.conFoto,
-                    onCheckedChange = { plantilla = plantilla.copy(conFoto = it) },
-                )
-            }
+                },
+            )
 
             Text(
                 text = "${Plantillas.combinaciones} combinaciones posibles. " +
@@ -235,6 +272,45 @@ private fun AvisoFiltros(plantilla: Plantilla) {
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.padding(start = 12.dp),
             )
+        }
+    }
+}
+
+@Composable
+private fun Foto(
+    plantilla: Plantilla,
+    hayFoto: Boolean,
+    onCambiar: (Boolean) -> Unit,
+    onElegirArchivo: () -> Unit,
+) {
+    Column(Modifier.padding(top = 18.dp, bottom = 8.dp)) {
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                Text(
+                    text = "Incluir foto",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+                Text(
+                    text = if (plantilla.admiteFoto) {
+                        "Déjala apagada para bolsas de trabajo. Enciéndela solo si vas a entregar en mano."
+                    } else {
+                        "El diseño «${plantilla.diseno.etiqueta}» no lleva foto: no hay dónde ponerla sin apretar el texto."
+                    },
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Switch(
+                checked = plantilla.conFoto && plantilla.admiteFoto,
+                enabled = plantilla.admiteFoto,
+                onCheckedChange = onCambiar,
+            )
+        }
+        if (plantilla.conFoto && plantilla.admiteFoto) {
+            TextButton(onClick = onElegirArchivo) {
+                Text(if (hayFoto) "Cambiar la foto" else "Elegir una foto")
+            }
         }
     }
 }

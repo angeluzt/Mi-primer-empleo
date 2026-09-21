@@ -135,7 +135,9 @@ class MainActivity : ComponentActivity() {
                             cv = recordarCv(estado.progreso.cvGenerado),
                             plantillaElegida = estado.progreso.plantillaCv
                                 .ifBlank { Plantillas.porDefecto.id },
+                            fotoRuta = estado.progreso.fotoCv,
                             onElegir = vm::elegirPlantilla,
+                            onElegirFoto = vm::elegirFotoCv,
                             onAtras = { nav.popBackStack() },
                         )
                     }

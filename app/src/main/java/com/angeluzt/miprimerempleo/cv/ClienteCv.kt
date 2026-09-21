@@ -24,6 +24,12 @@ private data class PeticionCv(
     val cvPegado: String = "",
 )
 
+@Serializable
+private data class PeticionRevision(
+    val purchaseToken: String,
+    val cv: Cv,
+)
+
 /**
  * Habla con nuestro backend, que es quien guarda la llave de OpenAI y verifica la compra.
  *
@@ -52,12 +58,34 @@ class ClienteCv(private val context: Context) {
                 if (cvPegado.isNotBlank()) append("\n\nCV o texto que la persona pegó:\n$cvPegado")
             }
             directo(llaveLocal, prompt("generar_cv.txt"), entrada)
-                .mapCatching { json.decodeFromString<ParCv>(it) }
+                .mapCatching { NormalizadorCv.aParCv(it, respuestas) }
         } else {
             llamar(
                 ruta = "generarCv",
                 cuerpo = json.encodeToString(PeticionCv(purchaseToken, respuestas, cvPegado)),
-            ).mapCatching { json.decodeFromString<ParCv>(it) }
+            ).mapCatching { NormalizadorCv.aParCv(it, respuestas) }
+        }
+
+    /**
+     * Le pide a la IA que revise el CV ya armado: si se quedó corto, si sobra relleno,
+     * si el correo se ve serio y qué falta por contar.
+     *
+     * No gasta una generación: cuesta una fracción de lo que cuesta redactar el CV y
+     * la persona necesita poder revisarlo cuantas veces quiera mientras lo mejora.
+     */
+    suspend fun evaluar(
+        purchaseToken: String,
+        cv: Cv,
+        llaveLocal: String = "",
+    ): Result<RevisionCv> =
+        if (usaLlaveLocal(llaveLocal)) {
+            directo(llaveLocal, prompt("evaluar_cv.txt"), json.encodeToString(cv))
+                .mapCatching { NormalizadorCv.aRevision(it) }
+        } else {
+            llamar(
+                ruta = "evaluarCv",
+                cuerpo = json.encodeToString(PeticionRevision(purchaseToken, cv)),
+            ).mapCatching { NormalizadorCv.aRevision(it) }
         }
 
     private fun usaLlaveLocal(llave: String) =
