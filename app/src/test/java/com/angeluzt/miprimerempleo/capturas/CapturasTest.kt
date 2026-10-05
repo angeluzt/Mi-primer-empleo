@@ -2,12 +2,35 @@ package com.angeluzt.miprimerempleo.capturas
 
 import android.app.Application
 import android.content.Context
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.test.core.app.ApplicationProvider
+import com.angeluzt.miprimerempleo.R
 import com.angeluzt.miprimerempleo.cv.cvDeMuestra
+import com.angeluzt.miprimerempleo.ui.EstadoApp
+import com.angeluzt.miprimerempleo.ui.EstadoCv
+import com.angeluzt.miprimerempleo.ui.EstadoVacante
 import com.angeluzt.miprimerempleo.ui.screens.ContenidoCv
 import com.angeluzt.miprimerempleo.ui.screens.ContenidoVacante
 import com.angeluzt.miprimerempleo.ui.screens.PantallaAjustes
@@ -21,9 +44,6 @@ import com.angeluzt.miprimerempleo.ui.screens.PantallaPaywall
 import com.angeluzt.miprimerempleo.ui.screens.PantallaPlantillas
 import com.angeluzt.miprimerempleo.ui.screens.PantallaRuta
 import com.angeluzt.miprimerempleo.ui.theme.MiPrimerEmpleoTheme
-import com.angeluzt.miprimerempleo.ui.EstadoApp
-import com.angeluzt.miprimerempleo.ui.EstadoCv
-import com.angeluzt.miprimerempleo.ui.EstadoVacante
 import com.github.takahirom.roborazzi.captureRoboImage
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -53,6 +73,43 @@ class CapturasTest {
             MiPrimerEmpleoTheme(oscuro = oscuro) { pantalla() }
         }
 
+    // ---------- Ícono ----------
+
+    /**
+     * El ícono adaptable como lo recortan los launchers: cada capa mide 108 dp y solo se ven
+     * los 72 del centro, con la forma que elija el teléfono (círculo, gota, cuadro redondeado).
+     */
+    @Test
+    @Config(qualifiers = "w393dp-h200dp-xhdpi")
+    fun icono() = capturar("00-icono") {
+        Row(
+            Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(24.dp),
+            horizontalArrangement = Arrangement.spacedBy(28.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icono(CircleShape, 96.dp)
+            Icono(RoundedCornerShape(28), 72.dp)
+            Icono(CircleShape, 48.dp)
+            Image(
+                painter = painterResource(R.drawable.ic_launcher_respaldo),
+                contentDescription = "Android 7",
+                modifier = Modifier.size(48.dp),
+            )
+        }
+    }
+
+    @Composable
+    private fun Icono(forma: Shape, lado: Dp) {
+        Box(Modifier.size(lado).clip(forma), contentAlignment = Alignment.Center) {
+            listOf(R.drawable.ic_launcher_background, R.drawable.ic_launcher_foreground).forEach { capa ->
+                Image(painterResource(capa), contentDescription = null, modifier = Modifier.requiredSize(lado * 1.5f))
+            }
+        }
+    }
+
     // ---------- Bienvenida e inicio ----------
 
     @Test
@@ -67,7 +124,7 @@ class CapturasTest {
     fun inicioOscuro() = capturar("02o-inicio-oscuro", oscuro = true) { Inicio(Escenarios.enCamino(contexto)) }
 
     @Test
-    @Config(qualifiers = LARGO)
+    @Config(qualifiers = MUY_LARGO)
     fun inicioCompleto() = capturar("02b-inicio-completo") { Inicio(Escenarios.enCamino(contexto)) }
 
     @Test
@@ -139,7 +196,7 @@ class CapturasTest {
     )
 
     @Test
-    @Config(qualifiers = LARGO)
+    @Config(qualifiers = MUY_LARGO)
     fun editor() = capturar("08-editor") { PantallaEditorCv(Escenarios.par, {}, {}) }
 
     @Test
@@ -178,7 +235,7 @@ class CapturasTest {
     // ---------- Bitácora ----------
 
     @Test
-    @Config(qualifiers = LARGO)
+    @Config(qualifiers = MUY_LARGO)
     fun bitacora() = capturar("11-bitacora") {
         PantallaBitacora(Escenarios.entrevistas, {}, {}, { _, _ -> }, {})
     }
@@ -189,7 +246,7 @@ class CapturasTest {
     }
 
     @Test
-    @Config(qualifiers = LARGO)
+    @Config(qualifiers = MUY_LARGO)
     fun entrevista() = capturar("12-entrevista") {
         PantallaEntrevista(Escenarios.entrevistas.last(), {}, {}, {})
     }
@@ -197,7 +254,7 @@ class CapturasTest {
     @Test
     @Config(qualifiers = LARGO)
     fun ajustes() = capturar("13-ajustes") {
-        PantallaAjustes(Escenarios.enCamino(contexto), {}, {}, {}, {}, {})
+        PantallaAjustes(Escenarios.enCamino(contexto), {}, {}, {}, {}, {}, {})
     }
 }
 
@@ -206,3 +263,6 @@ const val TELEFONO = "w393dp-h852dp-xhdpi"
 
 /** Para ver una pantalla entera de un vistazo, sin el corte del primer scroll. */
 const val LARGO = "w393dp-h1900dp-xhdpi"
+
+/** Para las pantallas que no caben ni en [LARGO]: el inicio completo, el editor, la bitácora. */
+const val MUY_LARGO = "w393dp-h2600dp-xhdpi"

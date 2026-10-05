@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
@@ -123,9 +123,10 @@ fun PantallaRuta(
                 Hueco(8.dp)
                 EncabezadoSeccion(titulo = "Tu ruta", subtitulo = ruta.mensaje)
             }
-            items(estado.modulosEnOrden, key = { it.id }) { modulo ->
+            itemsIndexed(estado.modulosEnOrden, key = { _, modulo -> modulo.id }) { indice, modulo ->
                 FilaModulo(
                     modulo = modulo,
+                    paso = indice + 1,
                     avance = estado.avanceDe(modulo.id),
                     desbloqueado = estado.compras.puedeLeerTodo || modulo.gratis,
                     onClick = { onModulo(modulo.id) },
@@ -318,6 +319,7 @@ private fun TarjetaCv(estado: EstadoApp, onCv: () -> Unit) {
 @Composable
 private fun FilaModulo(
     modulo: ModuloMeta,
+    paso: Int,
     avance: Float,
     desbloqueado: Boolean,
     onClick: () -> Unit,
@@ -340,7 +342,7 @@ private fun FilaModulo(
                     )
                 } else {
                     Text(
-                        text = "${modulo.numero}",
+                        text = "$paso",
                         style = MaterialTheme.typography.titleSmall,
                         color = MaterialTheme.colorScheme.primary,
                     )

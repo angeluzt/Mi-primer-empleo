@@ -72,8 +72,8 @@
     },
     {
       "id": "egresado",
-      "titulo": "Soy recién egresado",
-      "subtitulo": "Ya terminé y busco mi primer empleo",
+      "titulo": "Ya terminé mis estudios",
+      "subtitulo": "Y busco mi primer empleo",
       "icono": "diploma",
       "promesa": "Tu desventaja es real pero temporal. En 90 días puedes presentarte como alguien que ya produjo algo.",
       "mensaje": "Vas a leer casi lo mismo que un estudiante, pero con urgencia distinta: tú construyes evidencia y buscas al mismo tiempo, no uno después del otro.",
@@ -93,7 +93,7 @@
     {
       "id": "ganar_mas",
       "titulo": "Tengo experiencia y quiero ganar más",
-      "subtitulo": "Ya trabajo, pero siento que estoy estancado",
+      "subtitulo": "Ya trabajo, pero siento que no avanzo",
       "icono": "crecer",
       "promesa": "Tu experiencia ya vale más de lo que te pagan. El problema es que no sabes cuánto pedir y tu CV no cuenta lo que hiciste.",
       "mensaje": "Para ti el orden se invierte: primero entiende el mercado y el movimiento, luego arregla tus materiales. Los módulos de evidencia y cursos siguen aplicando, solo que ahora son para saltar de nivel, no para entrar.",

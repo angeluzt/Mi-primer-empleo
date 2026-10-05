@@ -88,7 +88,7 @@ object Escenarios {
             TurnoCv(true, "Ingeniería Industrial en la UdeG, de 2020 a 2025"),
             TurnoCv(false, "¿Qué herramientas o habilidades manejas?"),
             TurnoCv(true, "Excel avanzado, Power BI, SQL básico"),
-            TurnoCv(false, "¿Qué idiomas hablas y en qué nivel?\n\nSé honesto: si pones inglés avanzado, te van a entrevistar en inglés."),
+            TurnoCv(false, "¿Qué idiomas hablas y en qué nivel?\n\nDi la verdad: si pones inglés avanzado, te van a entrevistar en inglés."),
         ),
         respuestas = mapOf("nombre" to "Ana López", "puesto_buscado" to "Analista", "formacion" to "Ingeniería"),
         campo = GuionEntrevista.campos.first { it.id == "idiomas" },

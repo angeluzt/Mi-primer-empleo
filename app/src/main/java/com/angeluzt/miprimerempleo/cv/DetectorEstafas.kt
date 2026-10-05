@@ -68,8 +68,11 @@ object DetectorEstafas {
 
     /** El fragmento original (con acentos) alrededor de lo encontrado, para mostrarlo. */
     private fun recortar(original: String, rango: IntRange): String {
-        val inicio = (rango.first - 20).coerceAtLeast(0)
-        val fin = (rango.last + 20).coerceAtMost(original.length - 1)
+        var inicio = (rango.first - 24).coerceAtLeast(0)
+        var fin = (rango.last + 24).coerceAtMost(original.length - 1)
+        // Sin palabras partidas en las orillas: «…ncia. Solo cubre tu…» parece un error.
+        while (inicio in 1 until rango.first && !original[inicio - 1].isWhitespace()) inicio++
+        while (fin in rango.last + 1 until original.length - 1 && !original[fin + 1].isWhitespace()) fin--
         val pedazo = original.substring(inicio, fin + 1).replace(Regex("\\s+"), " ").trim()
         return (if (inicio > 0) "…" else "") + pedazo + (if (fin < original.length - 1) "…" else "")
     }

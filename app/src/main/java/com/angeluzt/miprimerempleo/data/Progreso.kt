@@ -163,6 +163,20 @@ class Progreso(private val context: Context) {
         context.dataStore.edit { it[Llaves.fotoCv] = ruta }
     }
 
+    /**
+     * Lo que la persona escribió sobre sí misma: su CV, sus respuestas, su foto y la llave de
+     * pruebas. El avance en la guía y el conteo de generaciones se quedan: no son datos
+     * personales y borrarlos regalaría generaciones que el backend igual no daría.
+     */
+    suspend fun borrarDatosPersonales() {
+        context.dataStore.edit {
+            it.remove(Llaves.cvJson)
+            it.remove(Llaves.respuestasCv)
+            it.remove(Llaves.fotoCv)
+            it.remove(Llaves.llave)
+        }
+    }
+
     suspend fun registrarCvGenerado() {
         context.dataStore.edit { it[Llaves.cvs] = (it[Llaves.cvs] ?: 0) + 1 }
     }

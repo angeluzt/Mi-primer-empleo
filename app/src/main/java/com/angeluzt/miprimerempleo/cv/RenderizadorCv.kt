@@ -21,11 +21,16 @@ class RenderizadorCv(private val context: Context) {
         val documento = PdfDocument()
         Dibujo(documento, cv, plantilla, foto).ejecutar()
 
-        val carpeta = File(context.cacheDir, "cv").apply { mkdirs() }
+        val carpeta = File(context.cacheDir, CARPETA).apply { mkdirs() }
         val archivo = File(carpeta, "$nombreArchivo.pdf")
         archivo.outputStream().use { documento.writeTo(it) }
         documento.close()
         return archivo
+    }
+
+    companion object {
+        /** Dentro de la caché; file_paths.xml la comparte con el FileProvider. */
+        const val CARPETA = "cv"
     }
 }
 

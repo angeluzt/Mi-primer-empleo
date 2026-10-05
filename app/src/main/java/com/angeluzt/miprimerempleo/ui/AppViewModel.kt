@@ -10,6 +10,8 @@ import com.angeluzt.miprimerempleo.billing.Productos
 import com.angeluzt.miprimerempleo.bitacora.AnalisisBitacora
 import com.angeluzt.miprimerempleo.bitacora.Entrevista
 import com.angeluzt.miprimerempleo.cv.Adaptacion
+import com.angeluzt.miprimerempleo.cv.ExportadorCv
+import com.angeluzt.miprimerempleo.cv.FotoCv
 import com.angeluzt.miprimerempleo.cv.ParCv
 import com.angeluzt.miprimerempleo.data.EstadoAnuncios
 import com.angeluzt.miprimerempleo.data.EstadoProgreso
@@ -21,12 +23,15 @@ import com.angeluzt.miprimerempleo.model.Modulo
 import com.angeluzt.miprimerempleo.model.ModuloMeta
 import com.angeluzt.miprimerempleo.model.Nivel
 import com.angeluzt.miprimerempleo.model.Ruta
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 
 /** El siguiente capítulo que le toca leer a la persona según su ruta. */
@@ -62,6 +67,12 @@ data class EstadoApp(
             val orden = ruta?.orden ?: return todos
             return todos.sortedBy { orden.indexOf(it.id).takeIf { i -> i >= 0 } ?: Int.MAX_VALUE }
         }
+
+    /**
+     * En qué paso de SU ruta va un módulo. Cada etapa los ordena distinto, así que el número
+     * fijo del módulo salía desordenado en la lista (1, 3, 4, 2…) y parecía un error.
+     */
+    fun pasoDe(moduloId: String): Int = modulosEnOrden.indexOfFirst { it.id == moduloId } + 1
 
     val nivel: Nivel?
         get() = indice?.niveles?.lastOrNull { progreso.puntos >= it.puntosMinimos }
@@ -304,6 +315,18 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
 
     fun borrarAdaptacion(id: String) = viewModelScope.launch {
         contexto.adaptaciones.borrar(id)
+    }
+
+    /** Borra del teléfono todo lo que la persona escribió sobre sí misma. No se puede deshacer. */
+    fun borrarMisDatos() = viewModelScope.launch {
+        val foto = contexto.progreso.estado.first().fotoCv
+        withContext(Dispatchers.IO) {
+            FotoCv.borrar(foto)
+            ExportadorCv.borrarExportados(contexto)
+        }
+        contexto.progreso.borrarDatosPersonales()
+        contexto.bitacora.borrarTodas()
+        contexto.adaptaciones.borrarTodas()
     }
 
     fun comprar(activity: Activity, productoId: String) =

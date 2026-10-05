@@ -25,6 +25,11 @@ object ExportadorCv {
         archivo to "$nombre.pdf"
     }
 
+    /** Los PDF ya exportados: llevan nombre, teléfono y correo, así que se borran con lo demás. */
+    fun borrarExportados(context: Context) {
+        runCatching { File(context.cacheDir, RenderizadorCv.CARPETA).deleteRecursively() }
+    }
+
     /** "CV_Ana_López_ES": sin símbolos ni espacios, que algunos correos y bolsas rechazan. */
     fun nombreDeArchivo(nombre: String, sufijo: String): String {
         val limpio = nombre.trim().ifBlank { "CV" }

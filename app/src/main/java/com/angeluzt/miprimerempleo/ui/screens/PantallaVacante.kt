@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,6 +27,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -46,6 +48,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -134,11 +137,24 @@ fun ContenidoVacante(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        text = resultado?.titulo ?: "Revisar una vacante",
-                        style = MaterialTheme.typography.titleMedium,
-                        maxLines = 1,
-                    )
+                    // Puesto y empresa en dos líneas: juntos en una se cortaban a media palabra.
+                    Column {
+                        Text(
+                            text = resultado?.puesto?.ifBlank { null } ?: if (resultado != null) "Tu postulación" else "Revisar una vacante",
+                            style = MaterialTheme.typography.titleMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                        if (!resultado?.empresa.isNullOrBlank()) {
+                            Text(
+                                text = resultado!!.empresa,
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
+                    }
                 },
                 navigationIcon = {
                     IconButton(onClick = onAtras) {
@@ -221,18 +237,13 @@ private fun androidx.compose.foundation.lazy.LazyListScope.entrada(
     }
 
     item {
-        Button(
-            onClick = onAdaptar,
-            enabled = vacante.textoSuficiente && !vacante.adaptando,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(52.dp),
-        ) {
+        val sospechosa = vacante.senales.isNotEmpty()
+        val contenido: @Composable RowScope.() -> Unit = {
             if (vacante.adaptando) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(18.dp),
                     strokeWidth = 2.dp,
-                    color = MaterialTheme.colorScheme.onPrimary,
+                    color = LocalContentColor.current,
                 )
                 HuecoH(10.dp)
                 Text("Leyendo la vacante…")
@@ -241,10 +252,22 @@ private fun androidx.compose.foundation.lazy.LazyListScope.entrada(
                     when {
                         estado.cv == null -> "Primero arma tu CV"
                         !estado.compras.tienePase -> "Adaptar mi CV · con el Pase Completo"
+                        sospechosa -> "Adaptarlo de todos modos"
                         else -> "Adaptar mi CV a esta vacante"
                     },
                 )
             }
+        }
+        val habilitado = vacante.textoSuficiente && !vacante.adaptando
+        val forma = Modifier
+            .fillMaxWidth()
+            .height(52.dp)
+        // Si huele a fraude, adaptar deja de ser lo más llamativo de la pantalla: gastar una
+        // generación en una estafa, y animarse a mandarle el CV, es justo lo que hay que evitar.
+        if (sospechosa) {
+            OutlinedButton(onClick = onAdaptar, enabled = habilitado, modifier = forma, content = contenido)
+        } else {
+            Button(onClick = onAdaptar, enabled = habilitado, modifier = forma, content = contenido)
         }
         if (estado.compras.tienePase && estado.cv != null) {
             Text(

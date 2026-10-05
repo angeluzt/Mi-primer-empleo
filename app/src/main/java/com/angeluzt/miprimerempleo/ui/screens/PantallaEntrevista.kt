@@ -19,6 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material3.AlertDialog
@@ -27,6 +28,7 @@ import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -304,6 +306,17 @@ private fun FilaPregunta(pregunta: Pregunta, onAlternar: () -> Unit, onQuitar: (
                 selected = pregunta.laSupe,
                 onClick = { if (!pregunta.laSupe) onAlternar() },
                 label = { Text("La supe") },
+                leadingIcon = if (pregunta.laSupe) {
+                    { Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(16.dp)) }
+                } else {
+                    null
+                },
+                // Verde la que salió bien; la que no, en el naranja de "por estudiar".
+                colors = FilterChipDefaults.filterChipColors(
+                    selectedContainerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                    selectedLabelColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                    selectedLeadingIconColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                ),
             )
             FilterChip(
                 selected = !pregunta.laSupe,

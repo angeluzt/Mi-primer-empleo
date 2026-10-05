@@ -30,7 +30,7 @@ object GuionEntrevista {
         Campo(
             id = "puesto_buscado",
             pregunta = "¿Qué puesto estás buscando?",
-            ayuda = "Aunque no te sientas listo todavía, escribe el que quieres.",
+            ayuda = "Escribe el que quieres, aunque sientas que todavía te falta.",
             opcional = false,
         ),
         Campo(
@@ -82,7 +82,7 @@ object GuionEntrevista {
         Campo(
             id = "idiomas",
             pregunta = "¿Qué idiomas hablas y en qué nivel?",
-            ayuda = "Sé honesto: si pones inglés avanzado, te van a entrevistar en inglés.",
+            ayuda = "Di la verdad: si pones inglés avanzado, te van a entrevistar en inglés.",
             sugerencias = listOf(
                 "Español nativo",
                 "Español nativo, inglés básico",

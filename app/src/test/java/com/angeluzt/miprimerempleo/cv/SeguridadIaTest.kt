@@ -201,4 +201,17 @@ class SeguridadIaTest {
         )
         assertTrue(senales.toString(), senales.isEmpty())
     }
+
+    @Test
+    fun `el fragmento de una senal no corta palabras a la mitad`() {
+        val vacante = "¡URGENTE! Gana hasta \$5,000 a la semana desde casa, sin experiencia. " +
+            "Solo cubre tu pago de capacitación de \$350 y envía tu INE por WhatsApp para apartar tu lugar."
+
+        DetectorEstafas.revisar(vacante).forEach { senal ->
+            val palabras = senal.fragmento.removePrefix("…").removeSuffix("…").split(" ")
+            val todas = vacante.split(Regex("\\s+")).toSet()
+            assertTrue("empieza a media palabra: ${senal.fragmento}", palabras.first() in todas)
+            assertTrue("termina a media palabra: ${senal.fragmento}", palabras.last() in todas)
+        }
+    }
 }

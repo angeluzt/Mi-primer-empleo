@@ -45,6 +45,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -627,23 +628,28 @@ private fun BarraExportar(
         }
 
         Hueco(8.dp)
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedButton(onClick = onEditor, modifier = Modifier.weight(1f)) {
+        // Compartir va como ícono: con tres botones de texto del mismo ancho, «Editar» y
+        // «Formato» no cabían y se partían a media palabra.
+        val compacto = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            OutlinedButton(onClick = onEditor, contentPadding = compacto, modifier = Modifier.weight(1f)) {
                 Icon(Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(16.dp))
                 HuecoH(6.dp)
-                Text("Editar")
+                Text("Editar", maxLines = 1)
             }
-            OutlinedButton(onClick = onPlantillas, modifier = Modifier.weight(1f)) {
+            OutlinedButton(onClick = onPlantillas, contentPadding = compacto, modifier = Modifier.weight(1f)) {
                 Icon(Icons.Default.Palette, contentDescription = null, modifier = Modifier.size(16.dp))
                 HuecoH(6.dp)
-                Text("Formato")
+                Text("Formato", maxLines = 1)
             }
-            OutlinedButton(
+            OutlinedIconButton(
                 onClick = { if (tienePase) onExportar("es", AccionArchivo.COMPARTIR) else onPaywall() },
                 enabled = !exportando,
-                modifier = Modifier.weight(1f),
             ) {
-                Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(16.dp))
+                Icon(Icons.Default.Share, contentDescription = "Compartir el PDF", modifier = Modifier.size(18.dp))
             }
         }
 

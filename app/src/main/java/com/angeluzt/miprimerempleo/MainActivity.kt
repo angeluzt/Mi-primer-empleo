@@ -90,6 +90,7 @@ class MainActivity : ComponentActivity() {
                             onElegirPais = vm::elegirPais,
                             onGuardarLlave = vm::guardarLlaveOpenAi,
                             onRestaurar = vm::restaurarCompras,
+                            onBorrarDatos = vm::borrarMisDatos,
                             onAtras = { nav.popBackStack() },
                         )
                     }

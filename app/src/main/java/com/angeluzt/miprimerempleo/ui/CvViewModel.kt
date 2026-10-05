@@ -81,10 +81,17 @@ class CvViewModel(app: Application) : AndroidViewModel(app) {
             recuperarLoGuardado()
             // El CV guardado es la fuente de verdad: si el editor lo cambia, aquí se ve al volver.
             contexto.progreso.estado
-                .map { it.cvGenerado }
+                .map { it.cvGenerado to it.respuestasCv }
                 .distinctUntilChanged()
                 .drop(1)
-                .collect { crudo -> decodificar(crudo)?.let { alCambiarCv(it) } }
+                .collect { (crudo, respuestas) ->
+                    if (crudo.isBlank() && respuestas.isBlank()) {
+                        // Borró sus datos desde Ajustes: que no queden en memoria.
+                        _estado.value = estadoInicial()
+                    } else {
+                        decodificar(crudo)?.let { alCambiarCv(it) }
+                    }
+                }
         }
     }
 

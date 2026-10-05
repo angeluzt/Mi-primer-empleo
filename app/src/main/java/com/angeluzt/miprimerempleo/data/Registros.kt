@@ -60,6 +60,7 @@ class RepositorioBitacora(context: Context) {
     suspend fun guardar(entrevista: Entrevista) = registros.guardar(entrevista)
     suspend fun borrar(id: String) = registros.borrar(id)
     suspend fun reemplazar(entrevistas: List<Entrevista>) = registros.reemplazar(entrevistas)
+    suspend fun borrarTodas() = registros.reemplazar(emptyList())
 }
 
 class RepositorioAdaptaciones(context: Context) {
@@ -69,4 +70,5 @@ class RepositorioAdaptaciones(context: Context) {
     val adaptaciones: Flow<List<Adaptacion>> = registros.todos.map { lista -> lista.sortedByDescending { it.creada } }
     suspend fun guardar(adaptacion: Adaptacion) = registros.guardar(adaptacion)
     suspend fun borrar(id: String) = registros.borrar(id)
+    suspend fun borrarTodas() = registros.reemplazar(emptyList())
 }
