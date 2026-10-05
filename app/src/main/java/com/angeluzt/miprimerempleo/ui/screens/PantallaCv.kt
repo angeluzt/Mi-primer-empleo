@@ -43,7 +43,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -76,6 +75,7 @@ import com.angeluzt.miprimerempleo.ui.AccionArchivo
 import com.angeluzt.miprimerempleo.ui.CvViewModel
 import com.angeluzt.miprimerempleo.ui.EstadoApp
 import com.angeluzt.miprimerempleo.ui.TurnoCv
+import com.angeluzt.miprimerempleo.ui.components.BarraProgreso
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -475,10 +475,7 @@ private fun TarjetaRevision(
 
             if (revision.puntaje > 0) {
                 Spacer(Modifier.height(8.dp))
-                LinearProgressIndicator(
-                    progress = { revision.puntaje / 100f },
-                    modifier = Modifier.fillMaxWidth(),
-                )
+                BarraProgreso(valor = revision.puntaje / 100f, alto = 6.dp)
             }
 
             Spacer(Modifier.height(10.dp))

@@ -78,6 +78,59 @@ object NormalizadorCv {
         )
     }
 
+    /**
+     * La adaptación a una vacante. Si el modelo no devolvió un CV legible se conserva el
+     * original: el análisis sigue sirviendo aunque el CV no haya cambiado.
+     */
+    fun aAdaptacion(crudo: String, original: Cv, vacante: String, id: String, ahora: Long): Adaptacion {
+        val o = objetoRaiz(crudo)
+        val idioma = if (texto(o["idioma"]).lowercase().startsWith("en")) "en" else "es"
+        val adaptado = (o["cv"] ?: o["cvAdaptado"])
+            ?.let { aCv(it) }
+            ?.takeIf { it.resumen.isNotBlank() || it.experiencia.isNotEmpty() || it.proyectos.isNotEmpty() }
+
+        val cv = if (adaptado == null) {
+            original
+        } else {
+            // Nombre, teléfono y correo no se adaptan: si el modelo los tocó, valen los de la persona.
+            // El puesto sí puede tomar el nombre de la vacante: es al que se está postulando.
+            adaptado.copy(
+                idioma = idioma,
+                datos = original.datos.copy(puesto = adaptado.datos.puesto.ifBlank { original.datos.puesto }),
+            )
+        }
+
+        return Adaptacion(
+            id = id,
+            creada = ahora,
+            puesto = texto(o["puesto"]),
+            empresa = texto(o["empresa"]),
+            idioma = cv.idioma,
+            coincidencia = entero(o["coincidencia"]).coerceIn(0, 100),
+            cubres = lista(
+                o["cubres"],
+                { r -> Requisito(texto(r["requisito"]), texto(r["evidencia"] ?: r["detalle"])) },
+                { t -> Requisito(t) },
+            ).filter { it.requisito.isNotBlank() },
+            teFalta = lista(
+                o["teFalta"] ?: o["faltan"],
+                { r ->
+                    Requisito(
+                        requisito = texto(r["requisito"]),
+                        detalle = texto(r["comoCubrirlo"] ?: r["detalle"]),
+                        indispensable = booleano(r["indispensable"], porDefecto = false),
+                    )
+                },
+                { t -> Requisito(t) },
+            ).filter { it.requisito.isNotBlank() },
+            palabrasClave = textos(o["palabrasClave"]),
+            alertas = textos(o["alertas"]),
+            mensaje = texto(o["mensaje"]),
+            cv = cv,
+            vacante = vacante.take(4000),
+        )
+    }
+
     // ---------- CV ----------
 
     private fun aCv(crudo: JsonElement?): Cv {

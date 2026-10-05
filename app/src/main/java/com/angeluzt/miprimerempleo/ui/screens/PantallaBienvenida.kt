@@ -55,7 +55,7 @@ fun PantallaBienvenida(
         ) {
             item {
                 Text(
-                    text = "MI PRIMER EMPLEO",
+                    text = "CONSEGUIR TRABAJO · MI PRIMER EMPLEO",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.primary,
                 )

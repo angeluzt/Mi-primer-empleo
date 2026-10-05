@@ -26,7 +26,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -40,6 +39,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.angeluzt.miprimerempleo.model.ModuloMeta
 import com.angeluzt.miprimerempleo.ui.EstadoApp
+import com.angeluzt.miprimerempleo.ui.components.BarraProgreso
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -142,13 +142,10 @@ private fun TarjetaNivel(estado: EstadoApp) {
                 color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.85f),
                 modifier = Modifier.padding(top = 6.dp, bottom = 16.dp),
             )
-            LinearProgressIndicator(
-                progress = { avance },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(8.dp),
+            BarraProgreso(
+                valor = avance,
                 color = MaterialTheme.colorScheme.onPrimary,
-                trackColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.25f),
+                fondo = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.25f),
             )
             Text(
                 text = if (siguiente != null) {
@@ -264,14 +261,10 @@ private fun TarjetaModulo(
                     modifier = Modifier.padding(top = 2.dp),
                 )
                 if (avance > 0f) {
-                    LinearProgressIndicator(
-                        progress = { avance },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(4.dp)
-                            .padding(top = 8.dp),
-                        color = MaterialTheme.colorScheme.primary,
-                        trackColor = MaterialTheme.colorScheme.outline,
+                    BarraProgreso(
+                        valor = avance,
+                        modifier = Modifier.padding(top = 8.dp),
+                        alto = 4.dp,
                     )
                 }
             }

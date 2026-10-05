@@ -1,23 +1,27 @@
 #!/usr/bin/env node
 /**
- * Prueba el generador de CV en tu máquina, sin desplegar nada y sin Android.
- * Usa los MISMOS prompts que la Cloud Function (backend/prompts.js).
+ * Prueba la IA del CV en tu máquina, sin desplegar nada y sin Android.
+ * Usa los MISMOS prompts, esquemas y armado de mensajes que la Cloud Function.
  *
  *   export OPENAI_API_KEY=sk-...
- *   node tools/probar_cv.js                        # con el perfil de ejemplo
- *   node tools/probar_cv.js mis_respuestas.json    # con tus propios datos
+ *   node tools/probar_cv.js                          # genera y revisa el perfil de ejemplo
+ *   node tools/probar_cv.js mis_respuestas.json      # con tus propios datos
+ *   node tools/probar_cv.js --adaptar vacante.txt    # además lo adapta a una vacante
+ *   node tools/probar_cv.js --simular                # sin gastar tokens
+ *   node tools/probar_cv.js --simular-roto           # con una respuesta fuera de esquema
  *
- * Deja dos archivos en salida_cv/: el JSON crudo y un HTML para verlo.
+ * Deja en salida_cv/ el JSON crudo, un HTML para verlo y, si aplica, la revisión y la adaptación.
  */
 
 const fs = require("fs");
 const path = require("path");
 const {
-  sistemaGenerar,
-  sistemaEvaluar,
-  entradaGenerar,
-  entradaEvaluar,
-  MODELO,
+  config,
+  esquema,
+  mensajesGenerar,
+  mensajesEvaluar,
+  mensajesAdaptar,
+  MODELOS,
 } = require("../backend/prompts");
 
 const CLAVE = process.env.OPENAI_API_KEY;
@@ -28,10 +32,8 @@ const RESPUESTAS_EJEMPLO = {
   nombre: "Ana López Ramírez",
   puesto_buscado: "Analista de datos junior",
   ciudad: "Guadalajara",
-  telefono: "33 1234 5678",
-  correo: "ana.lopez.datos@gmail.com",
-  linkedin: "linkedin.com/in/analopezr",
-  portafolio: "github.com/analopezr",
+  contacto: "33 1234 5678, ana.lopez.datos@gmail.com",
+  enlaces: "linkedin.com/in/analopezr y github.com/analopezr",
   formacion: "Ingeniería Industrial, Universidad de Guadalajara, 2020 a 2025",
   experiencia:
     "Practicante de mejora continua en Manufacturas del Valle, de enero a junio 2025. " +
@@ -45,37 +47,47 @@ const RESPUESTAS_EJEMPLO = {
   idiomas: "Español nativo. Inglés B2, puedo tener una junta.",
 };
 
-async function llamar(mensajes) {
-  const respuesta = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${CLAVE}`,
-    },
-    body: JSON.stringify({
-      model: MODELO,
-      messages: mensajes,
-      temperature: 0.3,
-      response_format: { type: "json_object" },
-    }),
-  });
+/** Precios por millón de tokens (entrada, salida). Verifícalos en la página de OpenAI. */
+const PRECIOS = { "gpt-4.1-mini": [0.4, 1.6], "gpt-4o-mini": [0.15, 0.6] };
 
-  if (!respuesta.ok) {
-    throw new Error(`OpenAI respondió ${respuesta.status}: ${await respuesta.text()}`);
+/**
+ * Salidas estructuradas: el modelo no puede devolver otra forma que la del esquema.
+ * Prueba los modelos en orden, igual que el backend.
+ */
+async function llamar(mensajes, nombreEsquema, tarea) {
+  let ultimo;
+  for (const modelo of MODELOS) {
+    const respuesta = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${CLAVE}` },
+      body: JSON.stringify({
+        model: modelo,
+        messages: mensajes,
+        temperature: config.temperatura[tarea] ?? 0.3,
+        response_format: { type: "json_schema", json_schema: esquema(nombreEsquema) },
+      }),
+    });
+    if (!respuesta.ok) {
+      const detalle = await respuesta.text();
+      ultimo = new Error(`OpenAI respondió ${respuesta.status} con ${modelo}: ${detalle}`);
+      if (respuesta.status === 404 || /model_not_found|does not exist|not supported/.test(detalle)) {
+        console.log(`  (${modelo} no está disponible en tu cuenta, probando el siguiente)`);
+        continue;
+      }
+      throw ultimo;
+    }
+    const datos = await respuesta.json();
+    return { contenido: JSON.parse(datos.choices[0].message.content), uso: datos.usage, modelo };
   }
-  const datos = await respuesta.json();
-  return {
-    contenido: JSON.parse(datos.choices[0].message.content),
-    uso: datos.usage,
-  };
+  throw ultimo;
 }
 
-/** Lo que realmente cuesta generar un CV, para que no sea una sorpresa. */
-function costo(uso) {
+/** Lo que realmente cuesta cada llamada, para que no sea una sorpresa. */
+function costo(uso, modelo) {
   if (!uso) return "desconocido";
-  // Precios de gpt-4o-mini por millón de tokens. Verifícalos en la página de OpenAI.
-  const usd = (uso.prompt_tokens / 1e6) * 0.15 + (uso.completion_tokens / 1e6) * 0.6;
-  return `${uso.total_tokens} tokens ≈ $${usd.toFixed(5)} USD`;
+  const [entrada, salida] = PRECIOS[modelo] || PRECIOS["gpt-4o-mini"];
+  const usd = (uso.prompt_tokens / 1e6) * entrada + (uso.completion_tokens / 1e6) * salida;
+  return `${modelo} · ${uso.total_tokens} tokens ≈ $${usd.toFixed(5)} USD`;
 }
 
 /**
@@ -321,14 +333,12 @@ async function main() {
   console.log("Generando CV en español e inglés…\n");
 
   const inicio = Date.now();
-  const { contenido, uso } = roto
+  const pais = (process.argv.find((a) => a.startsWith("--pais=")) || "--pais=MX").slice(7);
+  const { contenido, uso, modelo } = roto
     ? simuladoRoto()
     : simular
     ? simulado()
-    : await llamar([
-        { role: "system", content: sistemaGenerar() },
-        { role: "user", content: entradaGenerar(respuestas, "") },
-      ]);
+    : await llamar(mensajesGenerar(respuestas, pais, ""), "cv", "generar");
   const segundos = ((Date.now() - inicio) / 1000).toFixed(1);
 
   const desvios = enderezar(contenido);
@@ -337,7 +347,7 @@ async function main() {
   fs.writeFileSync(path.join(SALIDA, "cv.json"), JSON.stringify(contenido, null, 2));
   fs.writeFileSync(path.join(SALIDA, "cv.html"), aHtml(contenido));
 
-  console.log(`Listo en ${segundos}s · ${costo(uso)}`);
+  console.log(`Listo en ${segundos}s · ${costo(uso, modelo)}`);
   console.log(`  salida_cv/cv.json`);
   console.log(`  salida_cv/cv.html   ← ábrelo en el navegador\n`);
 
@@ -357,19 +367,22 @@ async function main() {
     console.log("✓ No se detectaron cifras inventadas.");
   }
 
-  if (!simular) await revisar(contenido.es);
+  if (simular) return;
+  await revisar(contenido.es);
+
+  const indice = process.argv.indexOf("--adaptar");
+  if (indice > 0 && process.argv[indice + 1]) {
+    await adaptar(contenido.es, fs.readFileSync(process.argv[indice + 1], "utf8"), pais);
+  }
 }
 
 /** Prueba el segundo prompt: el reclutador que revisa el CV ya armado. */
 async function revisar(cv) {
   console.log("\nPidiendo la revisión del CV…");
-  const { contenido, uso } = await llamar([
-    { role: "system", content: sistemaEvaluar() },
-    { role: "user", content: entradaEvaluar(cv) },
-  ]);
+  const { contenido, uso, modelo } = await llamar(mensajesEvaluar(cv), "revision", "evaluar");
 
   fs.writeFileSync(path.join(SALIDA, "revision.json"), JSON.stringify(contenido, null, 2));
-  console.log(`Revisión lista · ${costo(uso)}`);
+  console.log(`Revisión lista · ${costo(uso, modelo)}`);
   console.log(`  Puntaje: ${contenido.puntaje}/100 · extensión: ${contenido.extension}`);
   console.log(`  ${contenido.veredicto || ""}`);
   if (contenido.correoSirve === false) {
@@ -379,6 +392,28 @@ async function revisar(cv) {
     console.log(`  Falta [${f.campo}]: ${f.porque}`)
   );
   console.log(`  salida_cv/revision.json`);
+}
+
+/** Prueba el tercer prompt: adaptar el CV a una vacante, sin inventar, buscando fraudes. */
+async function adaptar(cv, vacante, pais) {
+  console.log("\nAdaptando el CV a la vacante…");
+  const { contenido, uso, modelo } = await llamar(mensajesAdaptar(cv, vacante, pais), "adaptacion", "adaptar");
+
+  fs.writeFileSync(path.join(SALIDA, "adaptacion.json"), JSON.stringify(contenido, null, 2));
+  console.log(`Adaptación lista · ${costo(uso, modelo)}`);
+  console.log(`  ${contenido.puesto || "(sin puesto)"} · ${contenido.empresa || "(sin empresa)"} · coincidencia ${contenido.coincidencia}%`);
+  (contenido.teFalta || []).forEach((r) =>
+    console.log(`  Te falta${r.indispensable ? " (indispensable)" : ""}: ${r.requisito} → ${r.comoCubrirlo}`)
+  );
+  (contenido.alertas || []).forEach((a) => console.log(`  ⚠ ${a}`));
+
+  // Lo mismo que hace la app: toda cifra del CV adaptado tiene que estar en el CV original.
+  const sospechas = auditarInventos(contenido.cv, { original: JSON.stringify(cv) });
+  if (sospechas.length) {
+    console.log("  ⚠ Cifras del CV adaptado que no estaban en el original:");
+    sospechas.forEach((s) => console.log("     ·", s));
+  }
+  console.log(`  salida_cv/adaptacion.json`);
 }
 
 main().catch((e) => {

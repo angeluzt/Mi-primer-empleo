@@ -7,21 +7,24 @@ import com.angeluzt.miprimerempleo.BuildConfig
 import com.angeluzt.miprimerempleo.MiPrimerEmpleoApp
 import com.angeluzt.miprimerempleo.cv.Campo
 import com.angeluzt.miprimerempleo.cv.Cv
+import com.angeluzt.miprimerempleo.cv.DatoSensible
 import com.angeluzt.miprimerempleo.cv.DiagnosticoLocal
-import com.angeluzt.miprimerempleo.cv.FotoCv
+import com.angeluzt.miprimerempleo.cv.ExportadorCv
 import com.angeluzt.miprimerempleo.cv.GuionEntrevista
 import com.angeluzt.miprimerempleo.cv.ParCv
-import com.angeluzt.miprimerempleo.cv.Plantillas
-import com.angeluzt.miprimerempleo.cv.RenderizadorCv
+import com.angeluzt.miprimerempleo.cv.ProteccionDatos
 import com.angeluzt.miprimerempleo.cv.RevisionCv
-import kotlinx.coroutines.Dispatchers
+import com.angeluzt.miprimerempleo.cv.Sospecha
+import com.angeluzt.miprimerempleo.cv.VerificadorCv
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import java.io.File
 
@@ -52,6 +55,12 @@ data class EstadoCv(
     val exportando: Boolean = false,
     val archivo: ArchivoCv? = null,
     val aviso: String? = null,
+    /** Identificadores que se quitaron de las respuestas antes de mandarlas a la IA. */
+    val tachados: List<DatoSensible> = emptyList(),
+    /** Cifras o habilidades del CV que no aparecen en lo que la persona dijo. */
+    val sospechas: List<Sospecha> = emptyList(),
+    /** Datos personales que están en el CV y no deberían (los pudo escribir en el editor). */
+    val sensibles: List<DatoSensible> = emptyList(),
 ) {
     val puedeGenerar: Boolean get() = GuionEntrevista.sePuedeGenerar(respuestas)
     val posicion: Int get() = campo?.let { GuionEntrevista.posicionDe(it.id) } ?: GuionEntrevista.campos.size
@@ -65,8 +74,33 @@ class CvViewModel(app: Application) : AndroidViewModel(app) {
     private val _estado = MutableStateFlow(estadoInicial())
     val estado: StateFlow<EstadoCv> = _estado.asStateFlow()
 
+    private val lector = Json { ignoreUnknownKeys = true }
+
     init {
-        viewModelScope.launch { recuperarLoGuardado() }
+        viewModelScope.launch {
+            recuperarLoGuardado()
+            // El CV guardado es la fuente de verdad: si el editor lo cambia, aquí se ve al volver.
+            contexto.progreso.estado
+                .map { it.cvGenerado }
+                .distinctUntilChanged()
+                .drop(1)
+                .collect { crudo -> decodificar(crudo)?.let { alCambiarCv(it) } }
+        }
+    }
+
+    private fun decodificar(crudo: String): ParCv? =
+        crudo.takeIf { it.isNotBlank() }?.let { runCatching { lector.decodeFromString<ParCv>(it) }.getOrNull() }
+
+    /** Revisión local de lo que no depende de la IA: inventos y datos personales. */
+    private fun revisarLocal(par: ParCv, respuestas: Map<String, String>) =
+        VerificadorCv.revisar(par.es, respuestas) to ProteccionDatos.revisarCv(par.es)
+
+    private fun alCambiarCv(par: ParCv) {
+        if (par == _estado.value.cv) return
+        _estado.update {
+            val (sospechas, sensibles) = revisarLocal(par, it.respuestas)
+            it.copy(cv = par, sospechas = sospechas, sensibles = sensibles, revision = DiagnosticoLocal.revision(par.es))
+        }
     }
 
     private fun estadoInicial(): EstadoCv {
@@ -90,9 +124,7 @@ class CvViewModel(app: Application) : AndroidViewModel(app) {
     private suspend fun recuperarLoGuardado() {
         val guardado = contexto.progreso.estado.first()
         val respuestas = contexto.progreso.leerRespuestasCv(guardado.respuestasCv)
-        val cv = guardado.cvGenerado.takeIf { it.isNotBlank() }?.let { crudo ->
-            runCatching { Json { ignoreUnknownKeys = true }.decodeFromString<ParCv>(crudo) }.getOrNull()
-        }
+        val cv = decodificar(guardado.cvGenerado)
         if (respuestas.isEmpty() && cv == null) return
         if (_estado.value.respuestas.isNotEmpty()) return
 
@@ -105,6 +137,8 @@ class CvViewModel(app: Application) : AndroidViewModel(app) {
                 // Al volver a la pantalla se muestra la revisión local, que es gratis.
                 // Llamar a la IA en cada entrada gastaría tokens sin que nadie lo pida.
                 revision = cv?.let { par -> DiagnosticoLocal.revision(par.es) },
+                sospechas = cv?.let { par -> VerificadorCv.revisar(par.es, respuestas) }.orEmpty(),
+                sensibles = cv?.let { par -> ProteccionDatos.revisarCv(par.es) }.orEmpty(),
                 turnos = reconstruirTurnos(respuestas, pendiente, cv != null),
             )
         }
@@ -203,16 +237,22 @@ class CvViewModel(app: Application) : AndroidViewModel(app) {
                 .generar(
                     purchaseToken = contexto.compras.tokenDelPase().orEmpty(),
                     respuestas = estado.respuestas,
+                    pais = contexto.progreso.estado.first().pais,
                     llaveLocal = llave,
                 )
-                .onSuccess { par ->
+                .onSuccess { generacion ->
+                    val par = generacion.par
                     contexto.progreso.registrarCvGenerado()
                     contexto.progreso.guardarCv(par)
+                    val (sospechas, sensibles) = revisarLocal(par, estado.respuestas)
                     _estado.update {
                         it.copy(
                             generando = false,
                             cv = par,
                             revision = null,
+                            tachados = generacion.tachados,
+                            sospechas = sospechas,
+                            sensibles = sensibles,
                             cambiosSinGenerar = false,
                             turnos = it.turnos + TurnoCv(
                                 false,
@@ -282,22 +322,14 @@ class CvViewModel(app: Application) : AndroidViewModel(app) {
 
         viewModelScope.launch {
             val guardado = contexto.progreso.estado.first()
-            val plantilla = Plantillas.porId(guardado.plantillaCv)
             val cv = if (idioma == "en") par.en else par.es
-            val nombre = nombreDeArchivo(cv.datos.nombre, idioma)
 
             runCatching {
-                withContext(Dispatchers.IO) {
-                    RenderizadorCv(contexto)
-                        .exportar(cv, plantilla, FotoCv.cargar(guardado.fotoCv), nombre)
-                }
+                ExportadorCv.pdf(contexto, cv, guardado.plantillaCv, guardado.fotoCv, idioma.uppercase())
             }
-                .onSuccess { archivo ->
+                .onSuccess { (archivo, nombre) ->
                     _estado.update {
-                        it.copy(
-                            exportando = false,
-                            archivo = ArchivoCv(archivo, "$nombre.pdf", accion),
-                        )
+                        it.copy(exportando = false, archivo = ArchivoCv(archivo, nombre, accion))
                     }
                 }
                 .onFailure {
@@ -315,14 +347,6 @@ class CvViewModel(app: Application) : AndroidViewModel(app) {
     fun descartarAviso() = _estado.update { it.copy(aviso = null) }
 
     fun descartarError() = _estado.update { it.copy(error = null) }
-
-    private fun nombreDeArchivo(nombre: String, idioma: String): String {
-        val limpio = nombre.trim().ifBlank { "CV" }
-            .replace(Regex("[^\\p{L}\\p{N} ]"), "")
-            .replace(' ', '_')
-            .take(40)
-        return "CV_${limpio}_${idioma.uppercase()}"
-    }
 
     private suspend fun llaveLocal(): String =
         if (BuildConfig.LLAVE_LOCAL_PERMITIDA) contexto.progreso.estado.first().llaveOpenAi else ""

@@ -1,0 +1,45 @@
+{
+  "name": "adaptacion_cv",
+  "strict": true,
+  "schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["puesto", "empresa", "idioma", "coincidencia", "cubres", "teFalta", "palabrasClave", "alertas", "mensaje", "cv"],
+    "properties": {
+      "puesto": { "type": "string" },
+      "empresa": { "type": "string" },
+      "idioma": { "type": "string", "enum": ["es", "en"] },
+      "coincidencia": { "type": "integer" },
+      "cubres": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["requisito", "evidencia"],
+          "properties": {
+            "requisito": { "type": "string" },
+            "evidencia": { "type": "string" }
+          }
+        }
+      },
+      "teFalta": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["requisito", "comoCubrirlo", "indispensable"],
+          "properties": {
+            "requisito": { "type": "string" },
+            "comoCubrirlo": { "type": "string" },
+            "indispensable": { "type": "boolean" }
+          }
+        }
+      },
+      "palabrasClave": { "type": "array", "items": { "type": "string" } },
+      "alertas": { "type": "array", "items": { "type": "string" } },
+      "mensaje": { "type": "string" },
+      "cv": { "$ref": "#/$defs/cv" }
+    },
+    "$defs": {}
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "name": "par_cv",
+  "strict": true,
+  "schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["es", "en"],
+    "properties": {
+      "es": { "$ref": "#/$defs/cv" },
+      "en": { "$ref": "#/$defs/cv" }
+    },
+    "$defs": {
+      "cv": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["idioma", "datos", "resumen", "proyectos", "experiencia", "formacion", "certificaciones", "habilidades", "idiomas"],
+        "properties": {
+          "idioma": { "type": "string", "enum": ["es", "en"] },
+          "datos": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["nombre", "puesto", "ciudad", "telefono", "correo", "linkedin", "portafolio"],
+            "properties": {
+              "nombre": { "type": "string" },
+              "puesto": { "type": "string" },
+              "ciudad": { "type": "string" },
+              "telefono": { "type": "string" },
+              "correo": { "type": "string" },
+              "linkedin": { "type": "string" },
+              "portafolio": { "type": "string" }
+            }
+          },
+          "resumen": { "type": "string" },
+          "proyectos": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["nombre", "descripcion", "enlace", "logros"],
+              "properties": {
+                "nombre": { "type": "string" },
+                "descripcion": { "type": "string" },
+                "enlace": { "type": "string" },
+                "logros": { "type": "array", "items": { "type": "string" } }
+              }
+            }
+          },
+          "experiencia": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["puesto", "organizacion", "periodo", "logros"],
+              "properties": {
+                "puesto": { "type": "string" },
+                "organizacion": { "type": "string" },
+                "periodo": { "type": "string" },
+                "logros": { "type": "array", "items": { "type": "string" } }
+              }
+            }
+          },
+          "formacion": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["titulo", "institucion", "periodo", "nota"],
+              "properties": {
+                "titulo": { "type": "string" },
+                "institucion": { "type": "string" },
+                "periodo": { "type": "string" },
+                "nota": { "type": "string" }
+              }
+            }
+          },
+          "certificaciones": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["nombre", "institucion", "anio", "enlace"],
+              "properties": {
+                "nombre": { "type": "string" },
+                "institucion": { "type": "string" },
+                "anio": { "type": "string" },
+                "enlace": { "type": "string" }
+              }
+            }
+          },
+          "habilidades": { "type": "array", "items": { "type": "string" } },
+          "idiomas": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["idioma", "nivel"],
+              "properties": {
+                "idioma": { "type": "string" },
+                "nivel": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
