@@ -6,6 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.angeluzt.miprimerempleo.MiPrimerEmpleoApp
 import com.angeluzt.miprimerempleo.billing.EstadoCompras
+import com.angeluzt.miprimerempleo.billing.Productos
 import com.angeluzt.miprimerempleo.data.EstadoAnuncios
 import com.angeluzt.miprimerempleo.data.EstadoProgreso
 import com.angeluzt.miprimerempleo.data.PoliticaAnuncios
@@ -54,6 +55,15 @@ data class EstadoApp(
 
     val siguienteNivel: Nivel?
         get() = indice?.niveles?.firstOrNull { it.puntosMinimos > progreso.puntos }
+
+    /** Generaciones que le quedan: las del pase más las recargas acreditadas. */
+    val creditosCv: Int
+        get() {
+            if (!compras.tienePase) return 0
+            val total = Productos.CVS_INCLUIDOS_EN_PASE +
+                progreso.recargasAcreditadas * Productos.CVS_POR_RECARGA
+            return (total - progreso.cvsGenerados).coerceAtLeast(0)
+        }
 
     /**
      * Leer no exige el pase completo: el de lectura, más barato, alcanza. Y quien no

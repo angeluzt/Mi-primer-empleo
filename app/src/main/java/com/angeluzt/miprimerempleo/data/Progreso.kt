@@ -28,6 +28,7 @@ data class EstadoProgreso(
     val cvGenerado: String = "",
     val respuestasCv: String = "",
     val fotoCv: String = "",
+    val recargasAcreditadas: Int = 0,
 )
 
 class Progreso(private val context: Context) {
@@ -45,6 +46,7 @@ class Progreso(private val context: Context) {
         val cvJson = stringPreferencesKey("cv_generado")
         val respuestasCv = stringPreferencesKey("respuestas_cv")
         val fotoCv = stringPreferencesKey("foto_cv")
+        val recargas = stringSetPreferencesKey("recargas_acreditadas")
     }
 
     val estado: Flow<EstadoProgreso> = context.dataStore.data.map { p ->
@@ -61,7 +63,16 @@ class Progreso(private val context: Context) {
             cvGenerado = p[Llaves.cvJson].orEmpty(),
             respuestasCv = p[Llaves.respuestasCv].orEmpty(),
             fotoCv = p[Llaves.fotoCv].orEmpty(),
+            recargasAcreditadas = p[Llaves.recargas]?.size ?: 0,
         )
+    }
+
+    /**
+     * Se guarda el token de cada recarga, no un contador: si la acreditación se
+     * reintenta (sin red, la app se cerró a medias), la misma compra no cuenta dos veces.
+     */
+    suspend fun registrarRecarga(tokenRecarga: String) {
+        context.dataStore.edit { it[Llaves.recargas] = (it[Llaves.recargas] ?: emptySet()) + tokenRecarga }
     }
 
     suspend fun elegirRuta(rutaId: String) {

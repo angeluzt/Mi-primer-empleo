@@ -64,8 +64,11 @@ en PDF sin reescribir nada.
 |---|---|---|
 | `pase_completo` | Pago único, no consumible | Los 10 módulos, generador de CV, 15 generaciones, exportar PDF, sin anuncios |
 | `pase_lectura` | Pago único, no consumible | Solo la lectura completa, más barato |
-| `recarga_cv_10` | Pago único, consumible | 10 generaciones más de CV |
-| `plantillas_extra` | Pago único, consumible | Sin uso hoy: las 640 combinaciones van incluidas |
+| `recarga_cv_10` | Pago único, consumible | 10 generaciones más, para generar o adaptar el CV a vacantes |
+
+> Ya no existe `plantillas_extra`: los formatos van todos incluidos, y un producto que
+> se puede comprar y no entrega nada es tomarle el dinero a alguien. Si lo creaste en Play
+> Console, desactívalo.
 
 **No hay suscripciones.** `billing/Billing.kt` consulta únicamente `ProductType.INAPP`;
 `SUBS` no aparece en el código. El público son estudiantes sin dinero: un cobro recurrente

@@ -192,7 +192,7 @@ private fun TarjetaCv(estado: EstadoApp, onCv: () -> Unit) {
                 )
                 Text(
                     text = if (tienePase) {
-                        "Te quedan ${estado.compras.creditosCv(estado.progreso.cvsGenerados)} generaciones"
+                        "Te quedan ${estado.creditosCv} generaciones"
                     } else {
                         "Gratis de armar. Se paga solo al exportar el PDF."
                     },
@@ -319,7 +319,8 @@ private fun TarjetaPase(estado: EstadoApp, onPaywall: () -> Unit) {
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
             )
             Text(
-                text = "Un solo pago. Los 9 módulos, el generador de CV y todas las herramientas, para siempre.",
+                text = "Un solo pago. Los ${estado.indice?.modulos?.size ?: 10} módulos, " +
+                    "el generador de CV y todas las herramientas, para siempre.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.85f),
                 modifier = Modifier.padding(top = 6.dp, bottom = 14.dp),

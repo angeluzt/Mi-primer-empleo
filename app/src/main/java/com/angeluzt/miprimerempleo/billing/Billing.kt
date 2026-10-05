@@ -42,14 +42,15 @@ object Productos {
     /** Pago único que desbloquea todo, incluido el generador de CV. No consumible. */
     const val PASE_COMPLETO = "pase_completo"
 
-    /** Consumible: 10 generaciones más de CV para quien agote las incluidas. */
+    /**
+     * Consumible: 10 generaciones más, para generar o adaptar el CV a vacantes.
+     * Es la única compra que se repite, y la única que puede repetirse sin suscripción.
+     */
     const val RECARGA_CV = "recarga_cv_10"
 
-    /** Consumible: paquete de plantillas extra de CV. */
-    const val PLANTILLAS_EXTRA = "plantillas_extra"
-
-    val todos = listOf(PASE_LECTURA, PASE_COMPLETO, RECARGA_CV, PLANTILLAS_EXTRA)
-    val consumibles = setOf(RECARGA_CV, PLANTILLAS_EXTRA)
+    // Antes existía "plantillas_extra". Se quitó: los formatos van todos incluidos y
+    // vender un paquete que no entrega nada es tomarle el dinero a alguien.
+    val todos = listOf(PASE_LECTURA, PASE_COMPLETO, RECARGA_CV)
 
     /** Generaciones de CV incluidas en el pase, suficientes para un proceso de búsqueda normal. */
     const val CVS_INCLUIDOS_EN_PASE = 15
@@ -60,21 +61,21 @@ data class EstadoCompras(
     val conectado: Boolean = false,
     val tienePase: Boolean = BuildConfig.DESBLOQUEO_PRUEBA,
     val tieneLectura: Boolean = BuildConfig.DESBLOQUEO_PRUEBA,
-    val recargasCompradas: Int = 0,
     val precios: Map<String, String> = emptyMap(),
     val error: String? = null,
 ) {
     /** El pase completo incluye la lectura, así que quien lo tiene no necesita el otro. */
     val puedeLeerTodo: Boolean get() = tienePase || tieneLectura
-
-    fun creditosCv(cvsGenerados: Int): Int {
-        if (!tienePase) return 0
-        val total = Productos.CVS_INCLUIDOS_EN_PASE + recargasCompradas * Productos.CVS_POR_RECARGA
-        return (total - cvsGenerados).coerceAtLeast(0)
-    }
 }
 
-class GestorCompras(context: Context) {
+/**
+ * @param acreditarRecarga Avisa al backend de una recarga comprada y la cuenta en el
+ * teléfono. Devuelve true solo si quedó acreditada; mientras no, la compra no se consume.
+ */
+class GestorCompras(
+    context: Context,
+    private val acreditarRecarga: suspend (tokenRecarga: String) -> Boolean,
+) {
 
     private val alcance = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val _estado = MutableStateFlow(EstadoCompras())
@@ -184,13 +185,16 @@ class GestorCompras(context: Context) {
     private suspend fun procesar(compra: Purchase) {
         if (compra.purchaseState != Purchase.PurchaseState.PURCHASED) return
 
-        val esConsumible = compra.products.any { it in Productos.consumibles }
-        if (esConsumible) {
-            cliente.consumePurchase(
-                ConsumeParams.newBuilder().setPurchaseToken(compra.purchaseToken).build()
-            )
-            if (Productos.RECARGA_CV in compra.products) {
-                _estado.update { it.copy(recargasCompradas = it.recargasCompradas + 1) }
+        if (Productos.RECARGA_CV in compra.products) {
+            // Primero se acredita y DESPUÉS se consume. Antes era al revés y además
+            // el backend nunca se enteraba: quien compraba una recarga la perdía al
+            // reiniciar la app y el servidor le seguía diciendo que no tenía saldo.
+            // Mientras no se acredite (sin red, backend caído), la compra queda sin
+            // consumir y restaurarCompras() la vuelve a intentar en la siguiente apertura.
+            if (acreditarRecarga(compra.purchaseToken)) {
+                cliente.consumePurchase(
+                    ConsumeParams.newBuilder().setPurchaseToken(compra.purchaseToken).build()
+                )
             }
             return
         }

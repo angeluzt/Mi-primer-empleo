@@ -30,6 +30,12 @@ private data class PeticionRevision(
     val cv: Cv,
 )
 
+@Serializable
+private data class PeticionRecarga(
+    val purchaseToken: String,
+    val recargaToken: String,
+)
+
 /**
  * Habla con nuestro backend, que es quien guarda la llave de OpenAI y verifica la compra.
  *
@@ -87,6 +93,16 @@ class ClienteCv(private val context: Context) {
                 cuerpo = json.encodeToString(PeticionRevision(purchaseToken, cv)),
             ).mapCatching { NormalizadorCv.aRevision(it) }
         }
+
+    /**
+     * Le avisa al backend que esta persona compró una recarga, para que suba su límite
+     * de generaciones. El backend verifica la compra con Google y no la cuenta dos veces.
+     */
+    suspend fun acreditarRecarga(tokenPase: String, tokenRecarga: String): Result<Unit> =
+        llamar(
+            ruta = "acreditarRecarga",
+            cuerpo = json.encodeToString(PeticionRecarga(tokenPase, tokenRecarga)),
+        ).map { }
 
     private fun usaLlaveLocal(llave: String) =
         BuildConfig.LLAVE_LOCAL_PERMITIDA && llave.isNotBlank()
