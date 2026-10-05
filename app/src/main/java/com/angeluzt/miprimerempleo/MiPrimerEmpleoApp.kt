@@ -6,6 +6,8 @@ import com.angeluzt.miprimerempleo.cv.ClienteCv
 import com.angeluzt.miprimerempleo.data.Anuncios
 import com.angeluzt.miprimerempleo.data.GestorAnuncios
 import com.angeluzt.miprimerempleo.data.Progreso
+import com.angeluzt.miprimerempleo.data.RepositorioAdaptaciones
+import com.angeluzt.miprimerempleo.data.RepositorioBitacora
 import com.angeluzt.miprimerempleo.data.RepositorioContenido
 import com.google.android.gms.ads.MobileAds
 
@@ -23,6 +25,10 @@ class MiPrimerEmpleoApp : Application() {
         private set
     lateinit var gestorAnuncios: GestorAnuncios
         private set
+    lateinit var bitacora: RepositorioBitacora
+        private set
+    lateinit var adaptaciones: RepositorioAdaptaciones
+        private set
 
     override fun onCreate() {
         super.onCreate()
@@ -31,6 +37,8 @@ class MiPrimerEmpleoApp : Application() {
         clienteCv = ClienteCv(this)
         anuncios = Anuncios(this)
         gestorAnuncios = GestorAnuncios(this)
+        bitacora = RepositorioBitacora(this)
+        adaptaciones = RepositorioAdaptaciones(this)
         compras = GestorCompras(this, ::acreditarRecarga).also { it.conectar() }
 
         // Arrancar el SDK de anuncios bloquea el hilo principal cerca de un segundo,

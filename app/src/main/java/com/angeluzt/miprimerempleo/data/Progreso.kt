@@ -110,6 +110,21 @@ class Progreso(private val context: Context) {
         }
     }
 
+    /**
+     * Marca una acción como hecha sin poder desmarcarla: la usan las herramientas cuando la
+     * persona hizo algo real (registró su primera entrevista). A diferencia de alternarAccion,
+     * llamarla dos veces no resta los puntos.
+     */
+    suspend fun completarAccion(accionId: String, puntos: Int) {
+        context.dataStore.edit { p ->
+            val actuales = p[Llaves.acciones] ?: emptySet()
+            if (accionId !in actuales) {
+                p[Llaves.acciones] = actuales + accionId
+                p[Llaves.puntos] = (p[Llaves.puntos] ?: 0) + puntos
+            }
+        }
+    }
+
     /** Solo la usa la pantalla de Ajustes, y solo en compilaciones de depuración. */
     suspend fun guardarLlaveOpenAi(llave: String) {
         context.dataStore.edit { it[Llaves.llave] = llave.trim() }
