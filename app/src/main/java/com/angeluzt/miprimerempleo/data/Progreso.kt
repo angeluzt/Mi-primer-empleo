@@ -7,6 +7,9 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.angeluzt.miprimerempleo.cv.ParCv
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -19,6 +22,13 @@ data class EstadoProgreso(
     val puntos: Int = 0,
     val onboardingHecho: Boolean = false,
     val cvsGenerados: Int = 0,
+    val plantillaCv: String = "",
+    val pais: String = "MX",
+    val llaveOpenAi: String = "",
+    val cvGenerado: String = "",
+    val respuestasCv: String = "",
+    val fotoCv: String = "",
+    val recargasAcreditadas: Int = 0,
 )
 
 class Progreso(private val context: Context) {
@@ -30,6 +40,13 @@ class Progreso(private val context: Context) {
         val puntos = intPreferencesKey("puntos")
         val onboarding = booleanPreferencesKey("onboarding_hecho")
         val cvs = intPreferencesKey("cvs_generados")
+        val plantilla = stringPreferencesKey("plantilla_cv")
+        val pais = stringPreferencesKey("pais")
+        val llave = stringPreferencesKey("llave_openai")
+        val cvJson = stringPreferencesKey("cv_generado")
+        val respuestasCv = stringPreferencesKey("respuestas_cv")
+        val fotoCv = stringPreferencesKey("foto_cv")
+        val recargas = stringSetPreferencesKey("recargas_acreditadas")
     }
 
     val estado: Flow<EstadoProgreso> = context.dataStore.data.map { p ->
@@ -40,7 +57,22 @@ class Progreso(private val context: Context) {
             puntos = p[Llaves.puntos] ?: 0,
             onboardingHecho = p[Llaves.onboarding] ?: false,
             cvsGenerados = p[Llaves.cvs] ?: 0,
+            plantillaCv = p[Llaves.plantilla].orEmpty(),
+            pais = p[Llaves.pais] ?: "MX",
+            llaveOpenAi = p[Llaves.llave].orEmpty(),
+            cvGenerado = p[Llaves.cvJson].orEmpty(),
+            respuestasCv = p[Llaves.respuestasCv].orEmpty(),
+            fotoCv = p[Llaves.fotoCv].orEmpty(),
+            recargasAcreditadas = p[Llaves.recargas]?.size ?: 0,
         )
+    }
+
+    /**
+     * Se guarda el token de cada recarga, no un contador: si la acreditación se
+     * reintenta (sin red, la app se cerró a medias), la misma compra no cuenta dos veces.
+     */
+    suspend fun registrarRecarga(tokenRecarga: String) {
+        context.dataStore.edit { it[Llaves.recargas] = (it[Llaves.recargas] ?: emptySet()) + tokenRecarga }
     }
 
     suspend fun elegirRuta(rutaId: String) {
@@ -78,11 +110,83 @@ class Progreso(private val context: Context) {
         }
     }
 
+    /**
+     * Marca una acción como hecha sin poder desmarcarla: la usan las herramientas cuando la
+     * persona hizo algo real (registró su primera entrevista). A diferencia de alternarAccion,
+     * llamarla dos veces no resta los puntos.
+     */
+    suspend fun completarAccion(accionId: String, puntos: Int) {
+        context.dataStore.edit { p ->
+            val actuales = p[Llaves.acciones] ?: emptySet()
+            if (accionId !in actuales) {
+                p[Llaves.acciones] = actuales + accionId
+                p[Llaves.puntos] = (p[Llaves.puntos] ?: 0) + puntos
+            }
+        }
+    }
+
+    /** Solo la usa la pantalla de Ajustes, y solo en compilaciones de depuración. */
+    suspend fun guardarLlaveOpenAi(llave: String) {
+        context.dataStore.edit { it[Llaves.llave] = llave.trim() }
+    }
+
+    suspend fun elegirPais(codigo: String) {
+        context.dataStore.edit { it[Llaves.pais] = codigo }
+    }
+
+    suspend fun elegirPlantilla(plantillaId: String) {
+        context.dataStore.edit { it[Llaves.plantilla] = plantillaId }
+    }
+
+    /** El CV se guarda para que la vista previa de formatos use el real, no el de muestra. */
+    suspend fun guardarCv(par: ParCv) {
+        context.dataStore.edit { it[Llaves.cvJson] = Json.encodeToString(par) }
+    }
+
+    /**
+     * La entrevista se guarda respuesta por respuesta.
+     *
+     * Son diez minutos de escribir en el teléfono: si la persona toca «atrás», le entra
+     * una llamada o Android mata la app, perder todo sería motivo suficiente para no
+     * volver a abrirla.
+     */
+    suspend fun guardarRespuestasCv(respuestas: Map<String, String>) {
+        context.dataStore.edit { it[Llaves.respuestasCv] = Json.encodeToString(respuestas) }
+    }
+
+    fun leerRespuestasCv(crudo: String): Map<String, String> =
+        if (crudo.isBlank()) emptyMap()
+        else runCatching { Json.decodeFromString<Map<String, String>>(crudo) }.getOrDefault(emptyMap())
+
+    /** Ruta del archivo propio, no el URI del selector: ese permiso se pierde al reiniciar. */
+    suspend fun guardarFotoCv(ruta: String) {
+        context.dataStore.edit { it[Llaves.fotoCv] = ruta }
+    }
+
+    /**
+     * Lo que la persona escribió sobre sí misma: su CV, sus respuestas, su foto y la llave de
+     * pruebas. El avance en la guía y el conteo de generaciones se quedan: no son datos
+     * personales y borrarlos regalaría generaciones que el backend igual no daría.
+     */
+    suspend fun borrarDatosPersonales() {
+        context.dataStore.edit {
+            it.remove(Llaves.cvJson)
+            it.remove(Llaves.respuestasCv)
+            it.remove(Llaves.fotoCv)
+            it.remove(Llaves.llave)
+        }
+    }
+
     suspend fun registrarCvGenerado() {
         context.dataStore.edit { it[Llaves.cvs] = (it[Llaves.cvs] ?: 0) + 1 }
     }
 
     companion object {
-        const val PUNTOS_POR_CAPITULO = 5
+        /**
+         * Leer vale poco a propósito. El nivel de empleabilidad tiene que reflejar
+         * lo que la persona hizo en el mundo real, no cuánto avanzó en la app:
+         * leer la guía completa no te hace contratable.
+         */
+        const val PUNTOS_POR_CAPITULO = 2
     }
 }

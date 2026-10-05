@@ -77,13 +77,13 @@
         },
         {
           "tipo": "parrafo",
-          "texto": "Este es el más peligroso porque no te piden dinero — te piden documentos. Antes de siquiera entrevistarte te solicitan INE por ambos lados, CURP, comprobante de domicilio, foto tuya sosteniendo tu identificación, y a veces datos bancarios «para la nómina»."
+          "texto": "Este es el más peligroso porque no te piden dinero — te piden documentos. Antes de siquiera entrevistarte te piden tu identificación oficial por ambos lados, tu número de identidad, comprobante de domicilio, una foto tuya sosteniendo el documento, y a veces datos bancarios «para la nómina»."
         },
         {
           "tipo": "alerta",
           "nivel": "peligro",
           "titulo": "Para qué los usan",
-          "texto": "Con esos documentos abren créditos, cuentas y contratos a tu nombre. Te enteras meses después, cuando ya estás en buró de crédito con una deuda que no hiciste. Tus documentos se entregan CUANDO YA HAY OFERTA FORMAL POR ESCRITO y estás firmando contrato, nunca antes. Y jamás mandes una selfie sosteniendo tu identificación: ninguna contratación real lo necesita."
+          "texto": "Con esos documentos abren créditos, cuentas y contratos a tu nombre. Te enteras meses después, cuando ya apareces en el historial crediticio con una deuda que no hiciste. Tus documentos se entregan CUANDO YA HAY OFERTA FORMAL POR ESCRITO y estás firmando contrato, nunca antes. Y jamás mandes una selfie sosteniendo tu identificación: ninguna contratación real lo necesita."
         },
         {
           "tipo": "titulo",
@@ -202,7 +202,7 @@
           "tipo": "lista",
           "items": [
             "**Qué tipo de contrato es.** Si te contratan «por honorarios» o «por asimilados» pero trabajas con horario fijo, en su oficina y bajo sus órdenes, eso es una relación laboral disfrazada: te están quitando prestaciones e IMSS.",
-            "**Que te den de alta en el IMSS** y que el sueldo declarado sea el real, no un mínimo con el resto «por fuera». Si te registran con menos, tu incapacidad, tu crédito de vivienda y tu pensión se calculan sobre esa cifra menor.",
+            "**Que te inscriban en la seguridad social** y que el sueldo declarado sea el real, no un mínimo con el resto «por fuera». Si te registran con menos, tu incapacidad, tu crédito de vivienda y tu pensión se calculan sobre esa cifra menor.",
             "**El sueldo escrito con número y letra**, la periodicidad de pago y el puesto.",
             "**Periodo de prueba**: existe y es legal, pero tiene límites de duración y durante él te pagan igual.",
             "Que te entreguen **una copia firmada**. Si no te la dan, es una bandera roja enorme."
@@ -229,17 +229,121 @@
             "**Guarda todo**: capturas de la conversación, números, comprobantes de depósito, nombres, la publicación de la vacante.",
             "**Si diste datos bancarios**, habla hoy mismo a tu banco y bloquea la tarjeta o cuenta.",
             "**Si entregaste identificaciones**, revisa tu reporte de crédito (puedes pedir uno gratis al año) y vigila movimientos nuevos.",
-            "**Si ya trabajaste y no te pagaron**, en México la PROFEDET da asesoría laboral gratuita.",
-            "**Si fue fraude financiero**, acude a la CONDUSEF; si fue por internet, a la Policía Cibernética de tu estado.",
+            "**Si ya trabajaste y no te pagaron**, tu país tiene una autoridad laboral que da asesoría gratuita. Abajo está la de cada país.",
+            "**Si fue fraude financiero o por internet**, hay una autoridad específica. También está abajo.",
             "**Repórtalo en la plataforma** donde viste la vacante. Evita que le pase al siguiente."
           ]
         },
         {
-          "tipo": "recursos",
-          "items": [
-            { "nombre": "PROFEDET (México)", "descripcion": "Procuraduría Federal de la Defensa del Trabajo. Asesoría y representación laboral gratuita.", "url": "https://www.gob.mx/profedet", "afiliado": false, "gratis": true },
-            { "nombre": "CONDUSEF (México)", "descripcion": "Para fraudes financieros y problemas con bancos.", "url": "https://www.condusef.gob.mx/", "afiliado": false, "gratis": true }
-          ]
+          "tipo": "regional",
+          "titulo": "A dónde acudir en tu país",
+          "porPais": {
+            "MX": {
+              "texto": "**Trabajo**: PROFEDET, asesoría y representación laboral gratuita.\n**Fraude financiero**: CONDUSEF.\n**Delito por internet**: Guardia Nacional, Policía Cibernética.",
+              "recursos": [
+                {
+                  "nombre": "PROFEDET",
+                  "descripcion": "Procuraduría Federal de la Defensa del Trabajo.",
+                  "url": "https://www.gob.mx/profedet",
+                  "gratis": true
+                },
+                {
+                  "nombre": "CONDUSEF",
+                  "descripcion": "Para fraudes financieros y problemas con bancos.",
+                  "url": "https://www.condusef.gob.mx/",
+                  "gratis": true
+                }
+              ]
+            },
+            "CO": {
+              "texto": "**Trabajo**: Ministerio del Trabajo, línea de atención gratuita.\n**Fraude financiero**: Superintendencia Financiera.\n**Delito por internet**: CAI Virtual de la Policía Nacional.",
+              "recursos": [
+                {
+                  "nombre": "Ministerio del Trabajo",
+                  "descripcion": "Denuncias laborales y asesoría.",
+                  "url": "https://www.mintrabajo.gov.co/",
+                  "gratis": true
+                },
+                {
+                  "nombre": "CAI Virtual",
+                  "descripcion": "Denuncia de delitos informáticos.",
+                  "url": "https://caivirtual.policia.gov.co/",
+                  "gratis": true
+                }
+              ]
+            },
+            "AR": {
+              "texto": "**Trabajo**: Ministerio de Trabajo, Empleo y Seguridad Social.\n**Consumo y fraude**: Defensa del Consumidor.\n**Delito por internet**: Ministerio Público Fiscal, denuncias de ciberdelito.",
+              "recursos": [
+                {
+                  "nombre": "Ministerio de Trabajo",
+                  "descripcion": "Consultas y denuncias laborales.",
+                  "url": "https://www.argentina.gob.ar/trabajo",
+                  "gratis": true
+                },
+                {
+                  "nombre": "Defensa del Consumidor",
+                  "descripcion": "Reclamos por fraude y estafas.",
+                  "url": "https://www.argentina.gob.ar/produccion/defensadelconsumidor",
+                  "gratis": true
+                }
+              ]
+            },
+            "CL": {
+              "texto": "**Trabajo**: Dirección del Trabajo, denuncia en línea.\n**Fraude financiero**: SERNAC y tu banco.\n**Delito por internet**: PDI, Brigada de Cibercrimen.",
+              "recursos": [
+                {
+                  "nombre": "Dirección del Trabajo",
+                  "descripcion": "Denuncias y consultas laborales.",
+                  "url": "https://www.dt.gob.cl/",
+                  "gratis": true
+                },
+                {
+                  "nombre": "SERNAC",
+                  "descripcion": "Reclamos de consumo y fraude.",
+                  "url": "https://www.sernac.cl/",
+                  "gratis": true
+                }
+              ]
+            },
+            "PE": {
+              "texto": "**Trabajo**: SUNAFIL, inspección laboral.\n**Consumo y fraude**: INDECOPI.\n**Delito por internet**: División de Investigación de Delitos de Alta Tecnología de la PNP.",
+              "recursos": [
+                {
+                  "nombre": "SUNAFIL",
+                  "descripcion": "Denuncias laborales.",
+                  "url": "https://www.gob.pe/sunafil",
+                  "gratis": true
+                },
+                {
+                  "nombre": "INDECOPI",
+                  "descripcion": "Reclamos por fraude al consumidor.",
+                  "url": "https://www.gob.pe/indecopi",
+                  "gratis": true
+                }
+              ]
+            },
+            "EC": {
+              "texto": "**Trabajo**: Ministerio del Trabajo.\n**Fraude y delito**: Fiscalía General del Estado.",
+              "recursos": [
+                {
+                  "nombre": "Ministerio del Trabajo",
+                  "descripcion": "Denuncias y asesoría laboral.",
+                  "url": "https://www.trabajo.gob.ec/",
+                  "gratis": true
+                }
+              ]
+            },
+            "generico": {
+              "texto": "Busca en internet estos tres nombres con el de tu país y guarda los teléfonos antes de necesitarlos:",
+              "items": [
+                "**Ministerio o Secretaría de Trabajo** de tu país: denuncias laborales y asesoría gratuita.",
+                "**Autoridad de protección al consumidor**: fraudes y estafas.",
+                "**Unidad de delitos informáticos de la policía**: si el fraude fue por internet.",
+                "Si el trámite es por un banco, repórtalo también directamente con tu banco."
+              ]
+            }
+          }
         },
         {
           "tipo": "alerta",

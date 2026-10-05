@@ -2,12 +2,14 @@ package com.angeluzt.miprimerempleo.billing
 
 import android.app.Activity
 import android.content.Context
+import com.angeluzt.miprimerempleo.BuildConfig
 import com.android.billingclient.api.AcknowledgePurchaseParams
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.ConsumeParams
+import com.android.billingclient.api.PendingPurchasesParams
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesUpdatedListener
@@ -34,17 +36,21 @@ import kotlinx.coroutines.launch
  * reembolsos y malas reseñas. Se paga una vez y se queda para siempre.
  */
 object Productos {
-    /** Pago único que desbloquea los 9 módulos y todas las herramientas. No consumible. */
+    /** Barato: abre los 10 módulos de lectura, sin el generador de CV. No consumible. */
+    const val PASE_LECTURA = "pase_lectura"
+
+    /** Pago único que desbloquea todo, incluido el generador de CV. No consumible. */
     const val PASE_COMPLETO = "pase_completo"
 
-    /** Consumible: 10 generaciones más de CV para quien agote las incluidas. */
+    /**
+     * Consumible: 10 generaciones más, para generar o adaptar el CV a vacantes.
+     * Es la única compra que se repite, y la única que puede repetirse sin suscripción.
+     */
     const val RECARGA_CV = "recarga_cv_10"
 
-    /** Consumible: paquete de plantillas extra de CV. */
-    const val PLANTILLAS_EXTRA = "plantillas_extra"
-
-    val todos = listOf(PASE_COMPLETO, RECARGA_CV, PLANTILLAS_EXTRA)
-    val consumibles = setOf(RECARGA_CV, PLANTILLAS_EXTRA)
+    // Antes existía "plantillas_extra". Se quitó: los formatos van todos incluidos y
+    // vender un paquete que no entrega nada es tomarle el dinero a alguien.
+    val todos = listOf(PASE_LECTURA, PASE_COMPLETO, RECARGA_CV)
 
     /** Generaciones de CV incluidas en el pase, suficientes para un proceso de búsqueda normal. */
     const val CVS_INCLUIDOS_EN_PASE = 15
@@ -53,19 +59,29 @@ object Productos {
 
 data class EstadoCompras(
     val conectado: Boolean = false,
-    val tienePase: Boolean = false,
-    val recargasCompradas: Int = 0,
+    val tienePase: Boolean = BuildConfig.DESBLOQUEO_PRUEBA,
+    val tieneLectura: Boolean = BuildConfig.DESBLOQUEO_PRUEBA,
     val precios: Map<String, String> = emptyMap(),
     val error: String? = null,
+    /**
+     * Pagó con un método que se confirma después: efectivo en OXXO u otra tienda, que es
+     * como paga mucha gente sin tarjeta. El pase se desbloquea solo cuando Google lo
+     * confirma; mientras, hay que decirlo para que no crea que perdió su dinero.
+     */
+    val pagoPendiente: Boolean = false,
 ) {
-    fun creditosCv(cvsGenerados: Int): Int {
-        if (!tienePase) return 0
-        val total = Productos.CVS_INCLUIDOS_EN_PASE + recargasCompradas * Productos.CVS_POR_RECARGA
-        return (total - cvsGenerados).coerceAtLeast(0)
-    }
+    /** El pase completo incluye la lectura, así que quien lo tiene no necesita el otro. */
+    val puedeLeerTodo: Boolean get() = tienePase || tieneLectura
 }
 
-class GestorCompras(context: Context) {
+/**
+ * @param acreditarRecarga Avisa al backend de una recarga comprada y la cuenta en el
+ * teléfono. Devuelve true solo si quedó acreditada; mientras no, la compra no se consume.
+ */
+class GestorCompras(
+    context: Context,
+    private val acreditarRecarga: suspend (tokenRecarga: String) -> Boolean,
+) {
 
     private val alcance = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val _estado = MutableStateFlow(EstadoCompras())
@@ -81,6 +97,10 @@ class GestorCompras(context: Context) {
             resultado.responseCode == BillingClient.BillingResponseCode.USER_CANCELED ->
                 _estado.update { it.copy(error = null) }
 
+            // Ya lo tenía (otro teléfono, reinstaló): no es un error, es devolvérselo.
+            resultado.responseCode == BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED ->
+                alcance.launch { restaurarCompras() }
+
             else ->
                 _estado.update { it.copy(error = "No se pudo completar la compra.") }
         }
@@ -88,7 +108,9 @@ class GestorCompras(context: Context) {
 
     private val cliente = BillingClient.newBuilder(context)
         .setListener(escucha)
-        .enablePendingPurchases()
+        .enablePendingPurchases(
+            PendingPurchasesParams.newBuilder().enableOneTimeProducts().build()
+        )
         .build()
 
     fun conectar() {
@@ -142,8 +164,17 @@ class GestorCompras(context: Context) {
         val activas = resultado.purchasesList.filter {
             it.purchaseState == Purchase.PurchaseState.PURCHASED
         }
+        val pendientes = resultado.purchasesList.any {
+            it.purchaseState == Purchase.PurchaseState.PENDING
+        }
         _estado.update { estado ->
-            estado.copy(tienePase = activas.any { Productos.PASE_COMPLETO in it.products })
+            estado.copy(
+                pagoPendiente = pendientes,
+                tienePase = BuildConfig.DESBLOQUEO_PRUEBA ||
+                    activas.any { Productos.PASE_COMPLETO in it.products },
+                tieneLectura = BuildConfig.DESBLOQUEO_PRUEBA ||
+                    activas.any { Productos.PASE_LECTURA in it.products },
+            )
         }
         activas.forEach { procesar(it) }
     }
@@ -166,15 +197,23 @@ class GestorCompras(context: Context) {
     }
 
     private suspend fun procesar(compra: Purchase) {
+        if (compra.purchaseState == Purchase.PurchaseState.PENDING) {
+            _estado.update { it.copy(pagoPendiente = true, error = null) }
+            return
+        }
         if (compra.purchaseState != Purchase.PurchaseState.PURCHASED) return
+        _estado.update { it.copy(pagoPendiente = false) }
 
-        val esConsumible = compra.products.any { it in Productos.consumibles }
-        if (esConsumible) {
-            cliente.consumePurchase(
-                ConsumeParams.newBuilder().setPurchaseToken(compra.purchaseToken).build()
-            )
-            if (Productos.RECARGA_CV in compra.products) {
-                _estado.update { it.copy(recargasCompradas = it.recargasCompradas + 1) }
+        if (Productos.RECARGA_CV in compra.products) {
+            // Primero se acredita y DESPUÉS se consume. Antes era al revés y además
+            // el backend nunca se enteraba: quien compraba una recarga la perdía al
+            // reiniciar la app y el servidor le seguía diciendo que no tenía saldo.
+            // Mientras no se acredite (sin red, backend caído), la compra queda sin
+            // consumir y restaurarCompras() la vuelve a intentar en la siguiente apertura.
+            if (acreditarRecarga(compra.purchaseToken)) {
+                cliente.consumePurchase(
+                    ConsumeParams.newBuilder().setPurchaseToken(compra.purchaseToken).build()
+                )
             }
             return
         }
@@ -188,6 +227,9 @@ class GestorCompras(context: Context) {
         }
         if (Productos.PASE_COMPLETO in compra.products) {
             _estado.update { it.copy(tienePase = true) }
+        }
+        if (Productos.PASE_LECTURA in compra.products) {
+            _estado.update { it.copy(tieneLectura = true) }
         }
     }
 

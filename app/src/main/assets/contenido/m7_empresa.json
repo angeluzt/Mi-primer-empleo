@@ -20,11 +20,41 @@
         {
           "tipo": "recursos",
           "items": [
-            { "nombre": "Glassdoor", "descripcion": "Sueldos reportados por empleados y reseñas de la empresa. Empieza aquí.", "url": "https://www.glassdoor.com.mx/", "afiliado": false, "gratis": true },
-            { "nombre": "Indeed — Salarios", "descripcion": "Promedios por puesto y ciudad, con buena muestra en México y Latinoamérica.", "url": "https://mx.indeed.com/career/salaries", "afiliado": false, "gratis": true },
-            { "nombre": "Talent.com", "descripcion": "Rangos por puesto y estado. Útil para ciudades fuera de las capitales.", "url": "https://mx.talent.com/salary", "afiliado": false, "gratis": true },
-            { "nombre": "Levels.fyi", "descripcion": "Solo tecnología, pero muy preciso y con desglose por nivel.", "url": "https://www.levels.fyi/", "afiliado": false, "gratis": true },
-            { "nombre": "OCC — Comparador de sueldos", "descripcion": "Referencia del mercado mexicano por puesto y experiencia.", "url": "https://www.occ.com.mx/", "afiliado": false, "gratis": true }
+            {
+              "nombre": "Glassdoor",
+              "descripcion": "Sueldos reportados por empleados y reseñas de la empresa. Empieza aquí.",
+              "url": "https://www.glassdoor.com/",
+              "afiliado": false,
+              "gratis": true
+            },
+            {
+              "nombre": "Indeed — Salarios",
+              "descripcion": "Promedios por puesto y ciudad. Cambia el país en la parte de arriba del sitio.",
+              "url": "https://www.indeed.com/career/salaries",
+              "afiliado": false,
+              "gratis": true
+            },
+            {
+              "nombre": "Talent.com",
+              "descripcion": "Rangos por puesto y región. Útil para ciudades fuera de las capitales.",
+              "url": "https://www.talent.com/salary",
+              "afiliado": false,
+              "gratis": true
+            },
+            {
+              "nombre": "Levels.fyi",
+              "descripcion": "Solo tecnología, pero muy preciso y con desglose por nivel.",
+              "url": "https://www.levels.fyi/",
+              "afiliado": false,
+              "gratis": true
+            },
+            {
+              "nombre": "Bolsas locales de empleo",
+              "descripcion": "OCC en México, elempleo en Colombia, Bumeran en Argentina y Perú, Laborum en Chile. Casi todas publican rangos por puesto.",
+              "url": "https://www.computrabajo.com/",
+              "afiliado": false,
+              "gratis": true
+            }
           ]
         },
         {
@@ -45,7 +75,7 @@
           "tipo": "alerta",
           "nivel": "aviso",
           "titulo": "Bruto no es neto",
-          "texto": "Si te dicen «20,000», pregunta si es bruto o libre. La diferencia después de impuestos es grande. Y suma o resta lo que no aparece en el número: transporte, comida, si te pagan vales, si hay home office (eso son horas y dinero real). Un sueldo de 18,000 con comedor y híbrido puede pagar mejor que uno de 21,000 a dos horas de tu casa."
+          "texto": "Cuando te den una cifra, pregunta si es bruta o si es lo que recibes en la mano. La diferencia después de impuestos es grande. Y suma o resta lo que no aparece en el número: transporte, comida, si te pagan vales, si hay home office (eso son horas y dinero real). Un sueldo de 18,000 con comedor y híbrido puede pagar mejor que uno de 21,000 a dos horas de tu casa."
         },
         {
           "tipo": "accion",
@@ -106,7 +136,7 @@
           "verdes": [
             "Te dan el rango de sueldo desde la primera llamada.",
             "Hay una persona claramente asignada a enseñarte.",
-            "Prestaciones de ley por escrito, IMSS con sueldo real.",
+            "Prestaciones de ley por escrito y seguridad social declarada con tu sueldo real.",
             "Te dejan platicar con quien sería tu jefe y tu equipo.",
             "El proceso tiene pasos claros y cumplen las fechas que te dan.",
             "Gente con 3, 5 y 8 años en la empresa conviviendo con gente nueva.",
@@ -133,14 +163,35 @@
         },
         {
           "tipo": "tabla",
-          "encabezados": ["Criterio", "Qué preguntarte"],
+          "encabezados": [
+            "Criterio",
+            "Qué preguntarte"
+          ],
           "filas": [
-            ["Aprendizaje", "¿Voy a salir de aquí sabiendo algo que hoy no sé y que el mercado paga?"],
-            ["Quién me enseña", "¿Hay alguien mejor que yo de quien aprender, o voy a estar solo?"],
-            ["Dinero real", "Sueldo neto menos transporte y comida, más prestaciones que sí uso."],
-            ["Tiempo", "¿Cuánto de mi vida se va en traslados y horas extra?"],
-            ["Nombre en el CV", "¿Esta empresa abre puertas después? Algunas marcas pesan años."],
-            ["Estabilidad", "¿El área es nueva y frágil o está consolidada?"]
+            [
+              "Aprendizaje",
+              "¿Voy a salir de aquí sabiendo algo que hoy no sé y que el mercado paga?"
+            ],
+            [
+              "Quién me enseña",
+              "¿Hay alguien mejor que yo de quien aprender, o voy a estar solo?"
+            ],
+            [
+              "Dinero real",
+              "Sueldo neto menos transporte y comida, más prestaciones que sí uso."
+            ],
+            [
+              "Tiempo",
+              "¿Cuánto de mi vida se va en traslados y horas extra?"
+            ],
+            [
+              "Nombre en el CV",
+              "¿Esta empresa abre puertas después? Algunas marcas pesan años."
+            ],
+            [
+              "Estabilidad",
+              "¿El área es nueva y frágil o está consolidada?"
+            ]
           ]
         },
         {

@@ -1,0 +1,36 @@
+{
+  "name": "revision_cv",
+  "strict": true,
+  "schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["puntaje", "extension", "palabras", "veredicto", "correoSirve", "notaCorreo", "correoSugerido", "fuertes", "faltantes", "arreglos"],
+    "properties": {
+      "puntaje": { "type": "integer" },
+      "extension": { "type": "string", "enum": ["corto", "bien", "largo"] },
+      "palabras": { "type": "integer" },
+      "veredicto": { "type": "string" },
+      "correoSirve": { "type": "boolean" },
+      "notaCorreo": { "type": "string" },
+      "correoSugerido": { "type": "string" },
+      "fuertes": { "type": "array", "items": { "type": "string" } },
+      "faltantes": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["campo", "porque", "pregunta"],
+          "properties": {
+            "campo": {
+              "type": "string",
+              "enum": ["nombre", "puesto_buscado", "ciudad", "contacto", "enlaces", "formacion", "experiencia", "proyectos", "cursos", "habilidades", "idiomas"]
+            },
+            "porque": { "type": "string" },
+            "pregunta": { "type": "string" }
+          }
+        }
+      },
+      "arreglos": { "type": "array", "items": { "type": "string" } }
+    }
+  }
+}

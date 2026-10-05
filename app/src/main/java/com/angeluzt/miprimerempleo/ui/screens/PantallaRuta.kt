@@ -1,94 +1,178 @@
 package com.angeluzt.miprimerempleo.ui.screens
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.item
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.MenuBook
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material.icons.filled.QuestionAnswer
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.TravelExplore
+import androidx.compose.material.icons.filled.WorkspacePremium
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.angeluzt.miprimerempleo.billing.Productos
 import com.angeluzt.miprimerempleo.model.ModuloMeta
 import com.angeluzt.miprimerempleo.ui.EstadoApp
+import com.angeluzt.miprimerempleo.ui.Siguiente
+import com.angeluzt.miprimerempleo.ui.components.AccesoRapido
+import com.angeluzt.miprimerempleo.ui.components.AnilloProgreso
+import com.angeluzt.miprimerempleo.ui.components.BarraProgreso
+import com.angeluzt.miprimerempleo.ui.components.EncabezadoSeccion
+import com.angeluzt.miprimerempleo.ui.components.Hueco
+import com.angeluzt.miprimerempleo.ui.components.HuecoH
+import com.angeluzt.miprimerempleo.ui.components.IconoEnCaja
+import com.angeluzt.miprimerempleo.ui.components.Insignia
+import com.angeluzt.miprimerempleo.ui.components.TarjetaMarca
+import com.angeluzt.miprimerempleo.ui.components.TarjetaSuave
+import com.angeluzt.miprimerempleo.ui.theme.DegradadoCalido
+import com.angeluzt.miprimerempleo.ui.theme.SobreMarcaSuave
 
+/**
+ * La pantalla a la que la persona vuelve todos los días. Responde tres preguntas, en ese orden:
+ * cómo voy, qué sigue, y con qué herramienta lo hago. La lista de módulos va después: es el
+ * mapa, no el siguiente paso.
+ */
 @Composable
 fun PantallaRuta(
     estado: EstadoApp,
     onModulo: (String) -> Unit,
+    onCapitulo: (String, String) -> Unit,
     onCv: () -> Unit,
+    onVacante: () -> Unit,
+    onBitacora: () -> Unit,
     onPaywall: () -> Unit,
+    onAjustes: () -> Unit,
 ) {
     val ruta = estado.ruta ?: return
 
-    Scaffold { relleno ->
+    Scaffold(containerColor = MaterialTheme.colorScheme.background) { relleno ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(relleno),
-            contentPadding = androidx.compose.foundation.layout.PaddingValues(
-                start = 20.dp, end = 20.dp, top = 16.dp, bottom = 28.dp,
-            ),
+            contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 32.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
+            item { Encabezado(ruta.titulo, onAjustes) }
             item { TarjetaNivel(estado) }
-            item {
-                Spacer(Modifier.height(16.dp))
-                TarjetaCv(estado, onCv)
-                Spacer(Modifier.height(22.dp))
-                Text(
-                    text = "Tu ruta",
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-                Text(
-                    text = ruta.mensaje,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(top = 6.dp, bottom = 14.dp),
-                )
+            estado.siguiente?.let { siguiente ->
+                item { TarjetaSiguiente(siguiente) { onCapitulo(siguiente.modulo.id, siguiente.capitulo.id) } }
             }
 
-            items(estado.modulosEnOrden) { modulo ->
-                TarjetaModulo(
+            item {
+                Hueco(8.dp)
+                EncabezadoSeccion("Tus herramientas")
+            }
+            item { TarjetaCv(estado, onCv) }
+            item {
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    AccesoRapido(
+                        icono = Icons.Default.TravelExplore,
+                        titulo = "Revisar una vacante",
+                        detalle = "¿Es real? ¿Qué te falta? Tu CV adaptado.",
+                        color = MaterialTheme.colorScheme.primary,
+                        insignia = "Nuevo",
+                        modifier = Modifier.weight(1f),
+                        onClick = onVacante,
+                    )
+                    AccesoRapido(
+                        icono = Icons.Default.QuestionAnswer,
+                        titulo = "Bitácora",
+                        detalle = when {
+                            estado.entrevistas.isEmpty() -> "Aprende de cada entrevista que tengas."
+                            estado.porEstudiar > 0 ->
+                                "${estado.entrevistas.size} entrevistas · ${estado.porEstudiar} por estudiar"
+                            else -> "${estado.entrevistas.size} entrevistas · todo preparado"
+                        },
+                        color = MaterialTheme.colorScheme.tertiary,
+                        insignia = if (estado.compras.tienePase) null else "Pase",
+                        modifier = Modifier.weight(1f),
+                        onClick = if (estado.compras.tienePase) onBitacora else onPaywall,
+                    )
+                }
+            }
+
+            item {
+                Hueco(8.dp)
+                EncabezadoSeccion(titulo = "Tu ruta", subtitulo = ruta.mensaje)
+            }
+            itemsIndexed(estado.modulosEnOrden, key = { _, modulo -> modulo.id }) { indice, modulo ->
+                FilaModulo(
                     modulo = modulo,
+                    paso = indice + 1,
                     avance = estado.avanceDe(modulo.id),
-                    desbloqueado = estado.compras.tienePase || modulo.gratis,
+                    desbloqueado = estado.compras.puedeLeerTodo || modulo.gratis,
                     onClick = { onModulo(modulo.id) },
                 )
             }
 
-            if (!estado.compras.tienePase) {
+            if (!estado.compras.puedeLeerTodo) {
                 item {
-                    Spacer(Modifier.height(10.dp))
+                    Hueco(4.dp)
                     TarjetaPase(estado, onPaywall)
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun Encabezado(ruta: String, onAjustes: () -> Unit) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Column(Modifier.weight(1f)) {
+            Text(
+                text = "CONSEGUIR TRABAJO",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.primary,
+            )
+            Text(
+                text = "Tu camino",
+                style = MaterialTheme.typography.headlineLarge,
+                color = MaterialTheme.colorScheme.onBackground,
+            )
+            Text(
+                text = ruta,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier
+                    .padding(top = 2.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .clickable(onClick = onAjustes),
+            )
+        }
+        IconButton(onClick = onAjustes) {
+            Icon(
+                Icons.Default.Settings,
+                contentDescription = "Ajustes",
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
     }
 }
@@ -98,51 +182,91 @@ private fun TarjetaNivel(estado: EstadoApp) {
     val nivel = estado.nivel
     val siguiente = estado.siguienteNivel
     val puntos = estado.progreso.puntos
-    val avance = if (siguiente != null && nivel != null) {
-        val rango = (siguiente.puntosMinimos - nivel.puntosMinimos).coerceAtLeast(1)
-        ((puntos - nivel.puntosMinimos).toFloat() / rango).coerceIn(0f, 1f)
-    } else 1f
 
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
-        shape = RoundedCornerShape(18.dp),
-    ) {
-        Column(Modifier.padding(20.dp)) {
-            Text(
-                text = "NIVEL ${nivel?.nivel ?: 0} DE EMPLEABILIDAD",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.75f),
-            )
-            Text(
-                text = nivel?.titulo.orEmpty(),
-                style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.padding(top = 2.dp),
-            )
-            Text(
-                text = nivel?.descripcion.orEmpty(),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.85f),
-                modifier = Modifier.padding(top = 6.dp, bottom = 16.dp),
-            )
-            LinearProgressIndicator(
-                progress = { avance },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(8.dp),
-                color = MaterialTheme.colorScheme.onPrimary,
-                trackColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.25f),
-            )
-            Text(
-                text = if (siguiente != null) {
-                    "$puntos puntos · te faltan ${siguiente.puntosMinimos - puntos} para «${siguiente.titulo}»"
-                } else {
-                    "$puntos puntos · nivel máximo alcanzado"
-                },
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.85f),
-                modifier = Modifier.padding(top = 10.dp),
+    TarjetaMarca {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            AnilloProgreso(
+                valor = estado.avanceDeNivel,
+                tamano = 62.dp,
+                grosor = 6.dp,
+                color = Color.White,
+                fondo = Color.White.copy(alpha = 0.25f),
+            ) {
+                Text(
+                    text = "${nivel?.nivel ?: 0}",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = Color.White,
+                )
+            }
+            HuecoH(16.dp)
+            Column {
+                Text(
+                    text = "NIVEL DE EMPLEABILIDAD",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = SobreMarcaSuave,
+                )
+                Text(
+                    text = nivel?.titulo.orEmpty(),
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = Color.White,
+                )
+            }
+        }
+        Text(
+            text = nivel?.descripcion.orEmpty(),
+            style = MaterialTheme.typography.bodyMedium,
+            color = SobreMarcaSuave,
+            modifier = Modifier.padding(top = 12.dp, bottom = 14.dp),
+        )
+        BarraProgreso(
+            valor = estado.avanceDeNivel,
+            color = Color.White,
+            fondo = Color.White.copy(alpha = 0.25f),
+        )
+        Text(
+            text = if (siguiente != null) {
+                "$puntos puntos · te faltan ${siguiente.puntosMinimos - puntos} para «${siguiente.titulo}»"
+            } else {
+                "$puntos puntos · nivel máximo"
+            },
+            style = MaterialTheme.typography.labelMedium,
+            color = SobreMarcaSuave,
+            modifier = Modifier.padding(top = 8.dp),
+        )
+    }
+}
+
+@Composable
+private fun TarjetaSiguiente(siguiente: Siguiente, onClick: () -> Unit) {
+    TarjetaSuave(onClick = onClick) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            IconoEnCaja(Icons.AutoMirrored.Filled.MenuBook, MaterialTheme.colorScheme.primary)
+            HuecoH(14.dp)
+            Column(Modifier.weight(1f)) {
+                Text(
+                    text = "SIGUE AQUÍ",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+                Text(
+                    text = siguiente.capitulo.titulo,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Text(
+                    text = "${siguiente.modulo.titulo} · ${siguiente.capitulo.minutos} min",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            HuecoH(8.dp)
+            Icon(
+                imageVector = if (siguiente.desbloqueado) Icons.AutoMirrored.Filled.ArrowForward else Icons.Default.Lock,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(20.dp),
             )
         }
     }
@@ -150,121 +274,108 @@ private fun TarjetaNivel(estado: EstadoApp) {
 
 @Composable
 private fun TarjetaCv(estado: EstadoApp, onCv: () -> Unit) {
-    val tienePase = estado.compras.tienePase
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onCv),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
-        shape = RoundedCornerShape(18.dp),
-    ) {
-        Row(
-            Modifier.padding(18.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(
-                Icons.Default.Description,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.secondary,
-                modifier = Modifier.size(30.dp),
+    val listo = estado.cv != null
+    TarjetaMarca(fondo = DegradadoCalido, onClick = onCv) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            IconoEnCaja(
+                icono = Icons.Default.Description,
+                color = Color.White,
+                fondo = Color.White.copy(alpha = 0.2f),
             )
-            Column(Modifier.padding(start = 14.dp).weight(1f)) {
+            HuecoH(14.dp)
+            Column(Modifier.weight(1f)) {
                 Text(
-                    text = "Arma tu CV con IA",
+                    text = if (listo) "Tu CV" else "Arma tu CV con IA",
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    color = Color.White,
                 )
                 Text(
-                    text = if (tienePase) {
-                        "Te quedan ${estado.compras.creditosCv(estado.progreso.cvsGenerados)} generaciones"
-                    } else {
-                        "Gratis de armar. Se paga solo al exportar el PDF."
+                    text = when {
+                        listo -> "En español e inglés. Revísalo, edítalo o descárgalo."
+                        estado.compras.tienePase -> "Once preguntas y queda en español e inglés."
+                        else -> "Gratis de armar. Se paga solo al descargar el PDF."
                     },
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = SobreMarcaSuave,
                 )
             }
             Icon(
                 Icons.AutoMirrored.Filled.ArrowForward,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.secondary,
+                tint = Color.White,
+            )
+        }
+        if (estado.compras.tienePase) {
+            Text(
+                text = "Te quedan ${estado.creditosCv} generaciones",
+                style = MaterialTheme.typography.labelMedium,
+                color = SobreMarcaSuave,
+                modifier = Modifier.padding(top = 10.dp),
             )
         }
     }
 }
 
 @Composable
-private fun TarjetaModulo(
+private fun FilaModulo(
     modulo: ModuloMeta,
+    paso: Int,
     avance: Float,
     desbloqueado: Boolean,
     onClick: () -> Unit,
 ) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 10.dp)
-            .clickable(onClick = onClick),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-        shape = RoundedCornerShape(16.dp),
-    ) {
-        Row(
-            Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(38.dp)
-                    .background(
-                        if (avance >= 1f) MaterialTheme.colorScheme.tertiaryContainer
-                        else MaterialTheme.colorScheme.primaryContainer,
-                        RoundedCornerShape(11.dp),
-                    ),
-                contentAlignment = Alignment.Center,
+    val completo = avance >= 1f
+    TarjetaSuave(onClick = onClick, relleno = 14.dp) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            AnilloProgreso(
+                valor = avance,
+                tamano = 44.dp,
+                grosor = 4.dp,
+                color = if (completo) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary,
             ) {
-                Text(
-                    text = "${modulo.numero}",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = if (avance >= 1f) MaterialTheme.colorScheme.tertiary
-                    else MaterialTheme.colorScheme.primary,
-                )
+                if (completo) {
+                    Icon(
+                        Icons.Default.Check,
+                        contentDescription = "Terminado",
+                        tint = MaterialTheme.colorScheme.tertiary,
+                        modifier = Modifier.size(20.dp),
+                    )
+                } else {
+                    Text(
+                        text = "$paso",
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                }
             }
-            Column(Modifier.padding(start = 14.dp).weight(1f)) {
+            HuecoH(14.dp)
+            Column(Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = modulo.titulo,
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.weight(1f, fill = false),
                     )
                     if (modulo.gratis) {
-                        Insignia("GRATIS", MaterialTheme.colorScheme.tertiary)
+                        HuecoH(8.dp)
+                        Insignia("Gratis", MaterialTheme.colorScheme.tertiary)
                     }
                 }
                 Text(
                     text = modulo.subtitulo,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 2.dp),
                 )
-                if (avance > 0f) {
-                    LinearProgressIndicator(
-                        progress = { avance },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(4.dp)
-                            .padding(top = 8.dp),
-                        color = MaterialTheme.colorScheme.primary,
-                        trackColor = MaterialTheme.colorScheme.outline,
-                    )
-                }
             }
             if (!desbloqueado) {
+                HuecoH(8.dp)
                 Icon(
                     Icons.Default.Lock,
-                    contentDescription = "Con el Pase Completo",
-                    tint = MaterialTheme.colorScheme.secondary,
-                    modifier = Modifier.size(19.dp),
+                    contentDescription = "Con un pase",
+                    tint = MaterialTheme.colorScheme.outlineVariant,
+                    modifier = Modifier.size(18.dp),
                 )
             }
         }
@@ -272,60 +383,41 @@ private fun TarjetaModulo(
 }
 
 @Composable
-private fun Insignia(texto: String, color: Color) {
-    Surface(
-        color = color.copy(alpha = 0.14f),
-        shape = RoundedCornerShape(6.dp),
-        modifier = Modifier.padding(start = 8.dp),
-    ) {
-        Text(
-            text = texto,
-            style = MaterialTheme.typography.labelSmall,
-            color = color,
-            modifier = Modifier.padding(horizontal = 7.dp, vertical = 2.dp),
-        )
-    }
-}
-
-@Composable
 private fun TarjetaPase(estado: EstadoApp, onPaywall: () -> Unit) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onPaywall),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-        shape = RoundedCornerShape(18.dp),
-    ) {
-        Column(Modifier.padding(20.dp)) {
-            Text(
-                text = "Pase Completo",
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
-            )
-            Text(
-                text = "Un solo pago. Los 9 módulos, el generador de CV y todas las herramientas, para siempre.",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.85f),
-                modifier = Modifier.padding(top = 6.dp, bottom = 14.dp),
-            )
-            Row(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
+    TarjetaSuave(onClick = onPaywall, relleno = 18.dp) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            IconoEnCaja(Icons.Default.WorkspacePremium, MaterialTheme.colorScheme.secondary)
+            HuecoH(14.dp)
+            Column(Modifier.weight(1f)) {
                 Text(
-                    text = estado.compras.precios[com.angeluzt.miprimerempleo.billing.Productos.PASE_COMPLETO]
-                        ?: "Ver precio",
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Bold,
+                    text = "Pase Completo",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
-                    text = "Sin suscripción",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    text = "Un solo pago. Sin suscripción.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
+        }
+        Text(
+            text = "Los ${estado.indice?.modulos?.size ?: 10} módulos, tu CV en PDF, adaptarlo a cada " +
+                "vacante y la bitácora de entrevistas. Para siempre.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.padding(top = 12.dp, bottom = 14.dp),
+        )
+        Button(
+            onClick = onPaywall,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
+        ) {
+            Text(
+                estado.compras.precios[Productos.PASE_COMPLETO]?.let { "Ver el pase · $it" } ?: "Ver el pase",
+            )
         }
     }
 }

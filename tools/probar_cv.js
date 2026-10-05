@@ -1,0 +1,460 @@
+#!/usr/bin/env node
+/**
+ * Prueba la IA del CV en tu máquina, sin desplegar nada y sin Android.
+ * Usa los MISMOS prompts, esquemas y armado de mensajes que la Cloud Function.
+ *
+ *   export OPENAI_API_KEY=sk-...
+ *   node tools/probar_cv.js                          # genera y revisa el perfil de ejemplo
+ *   node tools/probar_cv.js mis_respuestas.json      # con tus propios datos
+ *   node tools/probar_cv.js --adaptar vacante.txt    # además lo adapta a una vacante
+ *   node tools/probar_cv.js --simular                # sin gastar tokens
+ *   node tools/probar_cv.js --simular-roto           # con una respuesta fuera de esquema
+ *
+ * Deja en salida_cv/ el JSON crudo, un HTML para verlo y, si aplica, la revisión y la adaptación.
+ */
+
+const fs = require("fs");
+const path = require("path");
+const {
+  config,
+  esquema,
+  mensajesGenerar,
+  mensajesEvaluar,
+  mensajesAdaptar,
+  OMITIDO,
+  MODELOS,
+} = require("../backend/prompts");
+
+const CLAVE = process.env.OPENAI_API_KEY;
+const SALIDA = path.resolve(__dirname, "..", "salida_cv");
+
+// Perfil típico de quien usa la app: sin experiencia formal, con un proyecto propio.
+const RESPUESTAS_EJEMPLO = {
+  nombre: "Ana López Ramírez",
+  puesto_buscado: "Analista de datos junior",
+  ciudad: "Guadalajara",
+  contacto: "33 1234 5678, ana.lopez.datos@gmail.com",
+  enlaces: "linkedin.com/in/analopezr y github.com/analopezr",
+  formacion: "Ingeniería Industrial, Universidad de Guadalajara, 2020 a 2025",
+  experiencia:
+    "Practicante de mejora continua en Manufacturas del Valle, de enero a junio 2025. " +
+    "Medí tiempos de una línea de empaque y propuse un reacomodo. El tiempo de ciclo bajó como 12%.",
+  proyectos:
+    "Le hice un control de inventario en hojas de cálculo a la papelería de mi tío. " +
+    "Tenía como 120 productos. El desabasto de los más vendidos pasó de 8 casos al mes a 2. " +
+    "Capacité a 3 personas para usarlo. Está en github.com/analopezr/inventario",
+  cursos: "Certificado de Análisis de Datos de Google (2025). Excel Avanzado de Microsoft Learn (2025).",
+  habilidades: "Excel avanzado, Power BI, SQL básico, Lean Manufacturing",
+  idiomas: "Español nativo. Inglés B2, puedo tener una junta.",
+};
+
+/** Precios por millón de tokens (entrada, salida). Verifícalos en la página de OpenAI. */
+const PRECIOS = { "gpt-4.1-mini": [0.4, 1.6], "gpt-4o-mini": [0.15, 0.6] };
+
+/**
+ * Salidas estructuradas: el modelo no puede devolver otra forma que la del esquema.
+ * Prueba los modelos en orden, igual que el backend.
+ */
+async function llamar(mensajes, nombreEsquema, tarea) {
+  let ultimo;
+  for (const modelo of MODELOS) {
+    const respuesta = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${CLAVE}` },
+      body: JSON.stringify({
+        model: modelo,
+        messages: mensajes,
+        temperature: config.temperatura[tarea] ?? 0.3,
+        response_format: { type: "json_schema", json_schema: esquema(nombreEsquema) },
+      }),
+    });
+    if (!respuesta.ok) {
+      const detalle = await respuesta.text();
+      ultimo = new Error(`OpenAI respondió ${respuesta.status} con ${modelo}: ${detalle}`);
+      if (respuesta.status === 404 || /model_not_found|does not exist|not supported/.test(detalle)) {
+        console.log(`  (${modelo} no está disponible en tu cuenta, probando el siguiente)`);
+        continue;
+      }
+      throw ultimo;
+    }
+    const datos = await respuesta.json();
+    return { contenido: JSON.parse(datos.choices[0].message.content), uso: datos.usage, modelo };
+  }
+  throw ultimo;
+}
+
+/** Lo que realmente cuesta cada llamada, para que no sea una sorpresa. */
+function costo(uso, modelo) {
+  if (!uso) return "desconocido";
+  const [entrada, salida] = PRECIOS[modelo] || PRECIOS["gpt-4o-mini"];
+  const usd = (uso.prompt_tokens / 1e6) * entrada + (uso.completion_tokens / 1e6) * salida;
+  return `${modelo} · ${uso.total_tokens} tokens ≈ $${usd.toFixed(5)} USD`;
+}
+
+/**
+ * Endereza lo que la IA devolvió, igual que hace la app en NormalizadorCv.kt.
+ *
+ * Existe porque un usuario perdió una generación con este error en el teléfono:
+ *   Expected beginning of the string, but got { at path: $.es.experiencia[0].logros[0]
+ * La IA había mandado los logros como objetos. Aquí, además de enderezarlo, se anota
+ * cada desvío para ver de un vistazo si el prompt está sirviendo o no.
+ */
+function enderezar(par) {
+  const desvios = [];
+
+  const aTexto = (valor, donde) => {
+    if (valor === null || valor === undefined) return "";
+    if (typeof valor === "string") return valor.trim();
+    if (typeof valor === "number" || typeof valor === "boolean") {
+      desvios.push(`${donde}: vino como ${typeof valor}, se esperaba texto`);
+      return String(valor);
+    }
+    if (Array.isArray(valor)) {
+      desvios.push(`${donde}: vino como lista, se esperaba texto`);
+      return valor.map((v, i) => aTexto(v, `${donde}[${i}]`)).filter(Boolean).join(", ");
+    }
+    desvios.push(`${donde}: vino como objeto, se esperaba texto`);
+    return Object.values(valor)
+      .map((v) => aTexto(v, donde))
+      .filter(Boolean)
+      .map((t) => t.replace(/[. ]+$/, ""))
+      .join(". ");
+  };
+
+  const aTextos = (valor, donde) => {
+    if (!valor) return [];
+    if (typeof valor === "string") return valor.split(/[,;\n]/).map((t) => t.trim()).filter(Boolean);
+    if (!Array.isArray(valor)) return Object.values(valor).map((v, i) => aTexto(v, `${donde}[${i}]`));
+    return valor.map((v, i) => aTexto(v, `${donde}[${i}]`)).filter(Boolean);
+  };
+
+  const arreglarCv = (cv, idioma) => {
+    if (!cv) return cv;
+    (cv.experiencia || []).forEach((e, i) => {
+      e.logros = aTextos(e.logros, `${idioma}.experiencia[${i}].logros`);
+    });
+    (cv.proyectos || []).forEach((p, i) => {
+      p.logros = aTextos(p.logros, `${idioma}.proyectos[${i}].logros`);
+    });
+    (cv.certificaciones || []).forEach((c, i) => {
+      c.anio = aTexto(c.anio, `${idioma}.certificaciones[${i}].anio`);
+    });
+    cv.habilidades = aTextos(cv.habilidades, `${idioma}.habilidades`);
+    Object.keys(cv.datos || {}).forEach((k) => {
+      cv.datos[k] = aTexto(cv.datos[k], `${idioma}.datos.${k}`);
+    });
+    return cv;
+  };
+
+  arreglarCv(par.es, "es");
+  arreglarCv(par.en, "en");
+  return desvios;
+}
+
+/**
+ * Igual que NormalizadorCv.conContactoReal en la app: nombre, teléfono, correo y enlaces no
+ * se le mandan a la IA, así que se ponen de vuelta desde lo que escribió la persona.
+ */
+function reponerContacto(par, respuestas) {
+  const CORREO = /[\w.+-]+@[\w-]+\.[\w.-]+/;
+  const contacto = respuestas.contacto || "";
+  const trozos = (respuestas.enlaces || "")
+    .split(/[ ,;\n]+/)
+    .map((t) => t.trim().replace(/[.)]+$/, ""))
+    .filter(Boolean);
+  const reales = {
+    nombre: (respuestas.nombre || "").trim(),
+    correo: (contacto.match(CORREO) || [""])[0],
+    telefono: (contacto.replace(new RegExp(CORREO, "g"), " ").match(/[+(]?\d[\d\s()+-]{6,}\d/) || [""])[0].trim(),
+    linkedin: trozos.find((t) => /linkedin/i.test(t)) || "",
+    portafolio: trozos.find((t) => t.includes(".") && !/linkedin/i.test(t) && !t.includes("@")) || "",
+  };
+  const respaldo = (valor) => (String(valor || "").trim().startsWith("[") ? "" : valor || "");
+  for (const cv of [par.es, par.en]) {
+    if (!cv) continue;
+    cv.datos = cv.datos || {};
+    for (const [campo, real] of Object.entries(reales)) cv.datos[campo] = real || respaldo(cv.datos[campo]);
+  }
+}
+
+/** La marca de dato omitido nunca debe aparecer en el texto del CV. */
+function marcasFiltradas(par) {
+  return [par.es, par.en].some((cv) => cv && JSON.stringify({ ...cv, datos: null }).includes(OMITIDO));
+}
+
+/** Revisa que la IA no se haya inventado cosas que la persona nunca dijo. */
+function auditarInventos(cv, respuestas) {
+  const dicho = Object.values(respuestas).join(" ").toLowerCase();
+  const sospechas = [];
+
+  const numerosDichos = new Set(dicho.match(/\d+/g) || []);
+  const revisar = (texto, donde) => {
+    (texto.match(/\d+/g) || []).forEach((n) => {
+      // Los años del periodo laboral suelen reescribirse, no son inventos.
+      if (!numerosDichos.has(n) && n.length <= 4 && Number(n) > 1 && Number(n) < 1900) {
+        sospechas.push(`${donde}: la cifra "${n}" no aparece en tus respuestas`);
+      }
+    });
+  };
+
+  revisar(cv.resumen || "", "resumen");
+  (cv.experiencia || []).forEach((e, i) =>
+    (e.logros || []).forEach((l) => revisar(l, `experiencia[${i}]`))
+  );
+  (cv.proyectos || []).forEach((p, i) =>
+    (p.logros || []).forEach((l) => revisar(l, `proyectos[${i}]`))
+  );
+  return sospechas;
+}
+
+function aHtml(par) {
+  const titulos = {
+    es: ["Proyectos", "Experiencia", "Formación", "Certificaciones", "Habilidades", "Idiomas"],
+    en: ["Projects", "Experience", "Education", "Certifications", "Skills", "Languages"],
+  };
+
+  const bloque = (cv) => {
+    const [tProy, tExp, tForm, tCert, tHab, tIdi] =
+      titulos[cv.idioma === "en" ? "en" : "es"];
+    return `
+  <section>
+    <h1>${cv.datos.nombre}</h1>
+    <p class="puesto">${cv.datos.puesto}</p>
+    <p class="contacto">${[cv.datos.ciudad, cv.datos.telefono, cv.datos.correo, cv.datos.linkedin, cv.datos.portafolio]
+      .filter(Boolean)
+      .join(" · ")}</p>
+    <p>${cv.resumen || ""}</p>
+    ${seccion(tProy, (cv.proyectos || []).map((p) =>
+      `<h3>${p.nombre}</h3><p class="meta">${p.enlace || ""}</p><p>${p.descripcion || ""}</p>${lista(p.logros)}`))}
+    ${seccion(tExp, (cv.experiencia || []).map((e) =>
+      `<h3>${e.puesto}</h3><p class="meta">${e.organizacion} · ${e.periodo}</p>${lista(e.logros)}`))}
+    ${seccion(tForm, (cv.formacion || []).map((f) =>
+      `<h3>${f.titulo}</h3><p class="meta">${f.institucion} · ${f.periodo}</p>`))}
+    ${seccion(tCert, (cv.certificaciones || []).map((c) =>
+      `<p>${c.nombre} — ${c.institucion}, ${c.anio}</p>`))}
+    ${seccion(tHab, [(cv.habilidades || []).join(" · ")])}
+    ${seccion(tIdi, [(cv.idiomas || []).map((i) => `${i.idioma}: ${i.nivel}`).join(" · ")])}
+  </section>`;
+  };
+
+  const lista = (items) =>
+    items && items.length ? `<ul>${items.map((i) => `<li>${i}</li>`).join("")}</ul>` : "";
+  const seccion = (titulo, partes) => {
+    const cuerpo = partes.filter((p) => p && p.trim()).join("");
+    return cuerpo ? `<h2>${titulo}</h2>${cuerpo}` : "";
+  };
+
+  return `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8">
+<title>CV generado</title><style>
+body{font-family:system-ui,sans-serif;background:#334155;margin:0;padding:30px;display:flex;gap:30px;flex-wrap:wrap;justify-content:center}
+section{background:#fff;width:600px;padding:44px;border-radius:6px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+h1{margin:0;font-size:26px;color:#0F172A}
+.puesto{margin:4px 0;color:#1D4ED8;font-size:15px}
+.contacto{margin:0 0 18px;color:#64748B;font-size:12px}
+h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#1D4ED8;border-bottom:1px solid #CBD5E1;padding-bottom:4px;margin:22px 0 10px}
+h3{font-size:14px;margin:12px 0 2px;color:#0F172A}
+.meta{margin:0 0 4px;color:#64748B;font-size:12px}
+p,li{font-size:13px;line-height:1.55;color:#1E293B}
+ul{margin:6px 0;padding-left:18px}
+</style></head><body>${bloque(par.es)}${bloque(par.en)}</body></html>`;
+}
+
+/**
+ * La respuesta torcida que de verdad devolvió la IA y tiró una generación:
+ * logros como objetos, año numérico, habilidades en una sola cadena.
+ * Sirve para comprobar que enderezar() la endereza, sin gastar un token.
+ */
+function simuladoRoto() {
+  const { contenido } = simulado();
+  contenido.es.experiencia[0].logros = [
+    { accion: "Medí tiempos de una línea de empaque y propuse un reacomodo" },
+    { accion: "Bajé el tiempo de ciclo", resultado: "alrededor de 12%." },
+  ];
+  contenido.es.proyectos[0].logros = "Ordené un catálogo de 120 productos";
+  contenido.es.certificaciones[0].anio = 2025;
+  contenido.es.habilidades = "Excel avanzado, Power BI; SQL básico";
+  contenido.es.datos.telefono = 3312345678;
+  return { contenido, uso: null };
+}
+
+/** Respuesta enlatada para revisar el HTML y la auditoría sin gastar tokens. */
+function simulado() {
+  const es = {
+    idioma: "es",
+    datos: {
+      nombre: "Ana López Ramírez",
+      puesto: "Analista de Datos Junior",
+      ciudad: "Guadalajara",
+      telefono: "33 1234 5678",
+      correo: "ana.lopez.datos@gmail.com",
+      linkedin: "linkedin.com/in/analopezr",
+      portafolio: "github.com/analopezr",
+    },
+    resumen:
+      "Ingeniera industrial recién egresada con proyectos propios de análisis de datos. " +
+      "Busco mi primera oportunidad en un equipo donde pueda aprender y aportar.",
+    proyectos: [
+      {
+        nombre: "Control de inventario para papelería local",
+        descripcion: "Sistema en hojas de cálculo con tablero de rotación de producto.",
+        enlace: "github.com/analopezr/inventario",
+        logros: [
+          "Ordené un catálogo de 120 productos y construí su control de existencias.",
+          "Reduje el desabasto de los más vendidos de 8 a 2 casos por mes.",
+          "Capacité a 3 personas para operarlo sin apoyo.",
+        ],
+      },
+    ],
+    experiencia: [
+      {
+        puesto: "Practicante de Mejora Continua",
+        organizacion: "Manufacturas del Valle",
+        periodo: "Ene 2025 – Jun 2025",
+        logros: [
+          "Medí tiempos de una línea de empaque y propuse un reacomodo.",
+          "El tiempo de ciclo bajó alrededor de 12%.",
+        ],
+      },
+    ],
+    formacion: [
+      {
+        titulo: "Ingeniería Industrial",
+        institucion: "Universidad de Guadalajara",
+        periodo: "2020 – 2025",
+        nota: "",
+      },
+    ],
+    certificaciones: [
+      { nombre: "Certificado de Análisis de Datos", institucion: "Google", anio: "2025", enlace: "" },
+      { nombre: "Excel Avanzado", institucion: "Microsoft Learn", anio: "2025", enlace: "" },
+    ],
+    habilidades: ["Excel avanzado", "Power BI", "SQL básico", "Lean Manufacturing"],
+    idiomas: [
+      { idioma: "Español", nivel: "Nativo" },
+      { idioma: "Inglés", nivel: "B2 intermedio-alto" },
+    ],
+  };
+  const en = {
+    ...es,
+    idioma: "en",
+    datos: { ...es.datos, puesto: "Junior Data Analyst" },
+    resumen:
+      "Industrial engineering graduate with self-directed data analysis projects. " +
+      "Looking for a first role on a team where I can learn and contribute.",
+  };
+  return { contenido: { es, en }, uso: null };
+}
+
+async function main() {
+  const roto = process.argv.includes("--simular-roto");
+  const simular = roto || process.argv.includes("--simular");
+
+  if (!CLAVE && !simular) {
+    console.error("Falta la llave. Ejecuta:  export OPENAI_API_KEY=sk-...");
+    console.error("O prueba el formato de salida sin gastar nada:  node tools/probar_cv.js --simular");
+    console.error("O prueba que aguante una respuesta torcida:     node tools/probar_cv.js --simular-roto");
+    process.exit(1);
+  }
+
+  const archivo = process.argv.find((a) => a.endsWith(".json"));
+  const respuestas = archivo
+    ? JSON.parse(fs.readFileSync(archivo, "utf8"))
+    : RESPUESTAS_EJEMPLO;
+
+  console.log(archivo ? `Usando ${archivo}` : "Usando el perfil de ejemplo");
+  console.log("Generando CV en español e inglés…\n");
+
+  const inicio = Date.now();
+  const pais = (process.argv.find((a) => a.startsWith("--pais=")) || "--pais=MX").slice(7);
+  const { contenido, uso, modelo } = roto
+    ? simuladoRoto()
+    : simular
+    ? simulado()
+    : await llamar(mensajesGenerar(respuestas, pais, ""), "cv", "generar");
+  const segundos = ((Date.now() - inicio) / 1000).toFixed(1);
+
+  const desvios = enderezar(contenido);
+  const filtradas = marcasFiltradas(contenido);
+  reponerContacto(contenido, respuestas);
+
+  fs.mkdirSync(SALIDA, { recursive: true });
+  fs.writeFileSync(path.join(SALIDA, "cv.json"), JSON.stringify(contenido, null, 2));
+  fs.writeFileSync(path.join(SALIDA, "cv.html"), aHtml(contenido));
+
+  console.log(`Listo en ${segundos}s · ${costo(uso, modelo)}`);
+  console.log(`  salida_cv/cv.json`);
+  console.log(`  salida_cv/cv.html   ← ábrelo en el navegador\n`);
+
+  if (desvios.length) {
+    console.log("⚠  La IA se salió del esquema (la app lo endereza, pero conviene saberlo):");
+    desvios.forEach((d) => console.log("   ·", d));
+    console.log("");
+  } else {
+    console.log("✓ El JSON respetó el esquema.");
+  }
+
+  if (filtradas) {
+    console.log(`⚠  La IA escribió ${OMITIDO} dentro del CV: el prompt de generar_cv.txt no se respetó.`);
+  }
+
+  const sospechas = auditarInventos(contenido.es, respuestas);
+  if (sospechas.length) {
+    console.log("⚠  Cifras que podrían ser inventadas (revísalas):");
+    sospechas.forEach((s) => console.log("   ·", s));
+  } else {
+    console.log("✓ No se detectaron cifras inventadas.");
+  }
+
+  if (simular) return;
+  await revisar(contenido.es);
+
+  const indice = process.argv.indexOf("--adaptar");
+  if (indice > 0 && process.argv[indice + 1]) {
+    await adaptar(contenido.es, fs.readFileSync(process.argv[indice + 1], "utf8"), pais);
+  }
+}
+
+/** Prueba el segundo prompt: el reclutador que revisa el CV ya armado. */
+async function revisar(cv) {
+  console.log("\nPidiendo la revisión del CV…");
+  const { contenido, uso, modelo } = await llamar(mensajesEvaluar(cv), "revision", "evaluar");
+
+  fs.writeFileSync(path.join(SALIDA, "revision.json"), JSON.stringify(contenido, null, 2));
+  console.log(`Revisión lista · ${costo(uso, modelo)}`);
+  console.log(`  Puntaje: ${contenido.puntaje}/100 · extensión: ${contenido.extension}`);
+  console.log(`  ${contenido.veredicto || ""}`);
+  if (contenido.correoSirve === false) {
+    console.log(`  Correo: ${contenido.notaCorreo || "no se ve profesional"}`);
+  }
+  (contenido.faltantes || []).forEach((f) =>
+    console.log(`  Falta [${f.campo}]: ${f.porque}`)
+  );
+  console.log(`  salida_cv/revision.json`);
+}
+
+/** Prueba el tercer prompt: adaptar el CV a una vacante, sin inventar, buscando fraudes. */
+async function adaptar(cv, vacante, pais) {
+  console.log("\nAdaptando el CV a la vacante…");
+  const { contenido, uso, modelo } = await llamar(mensajesAdaptar(cv, vacante, pais), "adaptacion", "adaptar");
+
+  fs.writeFileSync(path.join(SALIDA, "adaptacion.json"), JSON.stringify(contenido, null, 2));
+  console.log(`Adaptación lista · ${costo(uso, modelo)}`);
+  console.log(`  ${contenido.puesto || "(sin puesto)"} · ${contenido.empresa || "(sin empresa)"} · coincidencia ${contenido.coincidencia}%`);
+  (contenido.teFalta || []).forEach((r) =>
+    console.log(`  Te falta${r.indispensable ? " (indispensable)" : ""}: ${r.requisito} → ${r.comoCubrirlo}`)
+  );
+  (contenido.alertas || []).forEach((a) => console.log(`  ⚠ ${a}`));
+
+  // Lo mismo que hace la app: toda cifra del CV adaptado tiene que estar en el CV original.
+  const sospechas = auditarInventos(contenido.cv, { original: JSON.stringify(cv) });
+  if (sospechas.length) {
+    console.log("  ⚠ Cifras del CV adaptado que no estaban en el original:");
+    sospechas.forEach((s) => console.log("     ·", s));
+  }
+  console.log(`  salida_cv/adaptacion.json`);
+}
+
+main().catch((e) => {
+  console.error("\nFalló:", e.message);
+  process.exit(1);
+});

@@ -1,0 +1,6 @@
+{
+  "_nota": "Lo leen la app (modo de prueba) y el backend. Se prueba el primer modelo; si OpenAI dice que no existe o que no soporta salidas estructuradas, se usa el siguiente.",
+  "modelos": ["gpt-4.1-mini", "gpt-4o-mini"],
+  "temperatura": { "generar": 0.3, "evaluar": 0.2, "adaptar": 0.3 },
+  "limites": { "respuesta": 3000, "respuestas": 14000, "vacante": 8000, "cv": 24000 }
+}

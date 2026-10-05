@@ -38,14 +38,77 @@
         {
           "tipo": "lista",
           "items": [
-            "**Aguinaldo**: mínimo 15 días por ley. Muchas empresas dan 30.",
-            "**Vacaciones pagadas**: desde 2023 en México son mínimo 12 días desde el primer año.",
-            "**Vales de despensa**: dinero libre de impuestos. Pueden valer más que un aumento equivalente.",
+            "**Pago extra anual** (aguinaldo, prima o decimotercer sueldo, según tu país). Muchas empresas dan más del mínimo legal.",
+            "**Vacaciones pagadas**: revisa cuántos días te tocan por ley en tu país desde el primer año. No es un favor de la empresa.",
+            "**Bonos en especie** (vales de despensa, tarjeta de alimentación, bono de transporte). Suelen pagar menos impuestos que el sueldo, así que valen más de lo que parecen.",
             "**Fondo de ahorro**: la empresa iguala lo que tú aportas. Es dinero regalado, úsalo siempre que exista.",
             "**Seguro de gastos médicos mayores**: pagarlo por tu cuenta cuesta muchísimo.",
             "**Home office**: dos días en casa son unas 80 horas al año de tu vida y ahorro en transporte y comida.",
-            "**Que te den de alta con el sueldo real**: define tu crédito Infonavit, tu incapacidad y tu pensión."
+            "**Que te registren en la seguridad social con el sueldo real**: de ahí salen tu crédito de vivienda, tu incapacidad por enfermedad y tu pensión. Si declaran menos, todo eso se calcula sobre la cifra menor."
           ]
+        },
+        {
+          "tipo": "regional",
+          "titulo": "Cómo se llama en tu país",
+          "porPais": {
+            "MX": {
+              "items": [
+                "**Aguinaldo**: mínimo 15 días de salario al año.",
+                "**Seguridad social**: IMSS. De ahí salen Infonavit y tu Afore.",
+                "**Prima vacacional** sobre tus días de vacaciones.",
+                "**PTU**: reparto de utilidades, una vez al año si la empresa tuvo ganancias."
+              ]
+            },
+            "CO": {
+              "items": [
+                "**Prima de servicios**: equivale a un mes de salario al año, pagado en dos partes.",
+                "**Cesantías** e intereses sobre cesantías, que se consignan a un fondo.",
+                "**Seguridad social**: EPS para salud, fondo de pensiones y ARL para riesgos.",
+                "**Auxilio de transporte** si ganas por debajo del tope establecido."
+              ]
+            },
+            "AR": {
+              "items": [
+                "**Aguinaldo (SAC)**: medio sueldo en junio y medio en diciembre.",
+                "**Obra social** y aportes jubilatorios.",
+                "**ART**: seguro de riesgos del trabajo.",
+                "Verifica que estés «en blanco»: si te pagan en efectivo sin recibo, no estás aportando nada."
+              ]
+            },
+            "CL": {
+              "items": [
+                "**Gratificación legal**: participación anual en las utilidades.",
+                "**AFP** para pensión e **Isapre o Fonasa** para salud.",
+                "**Seguro de cesantía**, que te cubre si te despiden.",
+                "Revisa que las cotizaciones estén realmente pagadas, no solo descontadas."
+              ]
+            },
+            "PE": {
+              "items": [
+                "**Gratificaciones**: dos al año, en julio y diciembre.",
+                "**CTS**: compensación por tiempo de servicios, tu colchón si te quedas sin trabajo.",
+                "**EsSalud** y sistema de pensiones (ONP o AFP).",
+                "**Asignación familiar** si tienes hijos menores."
+              ]
+            },
+            "EC": {
+              "items": [
+                "**Decimotercer sueldo** en diciembre y **decimocuarto** según tu región.",
+                "**IESS**: afiliación obligatoria desde el primer día de trabajo.",
+                "**Fondos de reserva** a partir del año de trabajo.",
+                "**Utilidades** si la empresa tuvo ganancias."
+              ]
+            },
+            "generico": {
+              "texto": "Busca «prestaciones de ley» junto al nombre de tu país antes de aceptar una oferta. Casi todos los países de la región tienen, con nombres distintos:",
+              "items": [
+                "Un pago extra anual (aguinaldo, prima o decimotercer sueldo).",
+                "Días de vacaciones pagadas desde el primer año.",
+                "Afiliación obligatoria a salud y pensión desde el primer día.",
+                "Un fondo o seguro para cuando te quedes sin trabajo."
+              ]
+            }
+          }
         },
         {
           "tipo": "accion",
@@ -87,12 +150,27 @@
         },
         {
           "tipo": "tabla",
-          "encabezados": ["Parte", "A dónde va"],
+          "encabezados": [
+            "Parte",
+            "A dónde va"
+          ],
           "filas": [
-            ["50%", "Necesidades: renta, comida, transporte, servicios."],
-            ["20%", "Ahorro. Primero el fondo de emergencia, hasta completarlo."],
-            ["20%", "Tu crecimiento: cursos, inglés, herramientas, libros."],
-            ["10%", "Gusto. Sin culpa. Un plan sin nada de disfrute no se sostiene."]
+            [
+              "50%",
+              "Necesidades: renta, comida, transporte, servicios."
+            ],
+            [
+              "20%",
+              "Ahorro. Primero el fondo de emergencia, hasta completarlo."
+            ],
+            [
+              "20%",
+              "Tu crecimiento: cursos, inglés, herramientas, libros."
+            ],
+            [
+              "10%",
+              "Gusto. Sin culpa. Un plan sin nada de disfrute no se sostiene."
+            ]
           ]
         },
         {

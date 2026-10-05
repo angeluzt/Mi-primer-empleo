@@ -1,20 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  Un CV con la palomita de "conseguido". Todo cabe en la zona segura del ícono adaptable
+  (círculo de radio 33 dentro de 108): ningún launcher lo recorta, sea redondo o cuadrado.
+-->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Escalera ascendente: el avance de una etapa a la siguiente. -->
+    <!-- La hoja -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M30,70h12v8h-12z" />
+        android:pathData="M38,28h22a5,5 0,0 1,5 5v36a5,5 0,0 1,-5 5h-22a5,5 0,0 1,-5 -5v-36a5,5 0,0 1,5 -5z" />
+    <!-- Nombre y renglones -->
     <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M48,58h12v20h-12z" />
+        android:fillColor="#4338CA"
+        android:pathData="M39.5,36h16a2,2 0,0 1,0 4h-16a2,2 0,0 1,0 -4z" />
     <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M66,42h12v36h-12z" />
+        android:fillColor="#C7D2FE"
+        android:pathData="M39.5,45h19a1.5,1.5 0,0 1,0 3h-19a1.5,1.5 0,0 1,0 -3z" />
     <path
-        android:fillColor="#FBBF24"
-        android:pathData="M64,30l16,0l0,16l-5,0l0,-7.5l-10.5,10.5l-3.5,-3.5l10.5,-10.5l-7.5,0z" />
+        android:fillColor="#C7D2FE"
+        android:pathData="M39.5,51.5h13a1.5,1.5 0,0 1,0 3h-13a1.5,1.5 0,0 1,0 -3z" />
+    <path
+        android:fillColor="#C7D2FE"
+        android:pathData="M39.5,58h15a1.5,1.5 0,0 1,0 3h-15a1.5,1.5 0,0 1,0 -3z" />
+    <!-- La insignia: conseguido -->
+    <path
+        android:fillColor="#F97316"
+        android:pathData="M67,58a11,11 0,1 1,0 22a11,11 0,1 1,0 -22z" />
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M62,69.5l3.5,3.5l7,-7.5" />
 </vector>

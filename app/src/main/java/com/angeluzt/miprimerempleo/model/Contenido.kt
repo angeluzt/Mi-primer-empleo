@@ -10,6 +10,7 @@ data class Indice(
     val pais: String,
     val tesis: Tesis,
     val rutas: List<Ruta>,
+    val paises: List<Pais> = emptyList(),
     val niveles: List<Nivel>,
     val modulos: List<ModuloMeta>,
 )
@@ -120,6 +121,30 @@ data class Recurso(
     val afiliado: Boolean = false,
     val gratis: Boolean = false,
 )
+
+/**
+ * Contenido que cambia según el país: instituciones, prestaciones, bolsas de trabajo.
+ * Se resuelve uno solo al renderizar, el del país elegido, con "generico" de respaldo.
+ * Existe como bloque aparte para no llenar los otros nueve tipos de condicionales.
+ */
+@Serializable
+@SerialName("regional")
+data class Regional(
+    val titulo: String,
+    val porPais: Map<String, ContenidoPais>,
+) : Bloque {
+    fun para(pais: String): ContenidoPais? = porPais[pais] ?: porPais["generico"]
+}
+
+@Serializable
+data class ContenidoPais(
+    val texto: String = "",
+    val items: List<String> = emptyList(),
+    val recursos: List<Recurso> = emptyList(),
+)
+
+@Serializable
+data class Pais(val codigo: String, val nombre: String, val moneda: String)
 
 @Serializable
 @SerialName("comparacion")

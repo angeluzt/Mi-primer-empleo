@@ -69,8 +69,53 @@ data class IdiomaNivel(val idioma: String, val nivel: String)
 @Serializable
 data class ParCv(val es: Cv, val en: Cv)
 
-enum class Plantilla(val etiqueta: String, val conFoto: Boolean, val descripcion: String) {
-    ATS("Clásica ATS", false, "Sin foto ni columnas. La que debes subir a bolsas de trabajo."),
-    CON_FOTO("Con foto", true, "Para entrega en mano y empresas pequeñas."),
-    COMPACTA("Compacta", false, "Cuando tienes mucho que contar y quieres que quepa en una página."),
-}
+/**
+ * CV de muestra para previsualizar plantillas antes de que la persona haya
+ * armado el suyo. Es el perfil típico de quien usa esta app: sin experiencia
+ * formal, con un proyecto propio y cursos.
+ */
+fun cvDeMuestra() = Cv(
+    idioma = "es",
+    datos = Datos(
+        nombre = "Ana López Ramírez",
+        puesto = "Analista de Datos Junior",
+        ciudad = "Guadalajara, Jal.",
+        telefono = "33 1234 5678",
+        correo = "ana.lopez.datos@gmail.com",
+        linkedin = "linkedin.com/in/analopezr",
+        portafolio = "github.com/analopezr",
+    ),
+    resumen = "Recién egresada de Ingeniería Industrial con proyectos propios de análisis " +
+        "de datos. Busco mi primera oportunidad en un equipo donde pueda aprender y aportar.",
+    proyectos = listOf(
+        Proyecto(
+            nombre = "Control de inventario para papelería local",
+            descripcion = "Sistema en hojas de cálculo con tablero de rotación de producto.",
+            enlace = "github.com/analopezr/inventario",
+            logros = listOf(
+                "Reduje el desabasto de los 20 productos más vendidos de 8 a 2 casos por mes.",
+                "Capacité a 3 personas para usarlo sin apoyo.",
+            ),
+        ),
+    ),
+    experiencia = listOf(
+        Experiencia(
+            puesto = "Practicante de Mejora Continua",
+            organizacion = "Manufacturas del Valle",
+            periodo = "Ene 2025 – Jun 2025",
+            logros = listOf(
+                "Medí tiempos de una línea de empaque y propuse un reacomodo.",
+                "El cambio bajó el tiempo de ciclo cerca de 12%.",
+            ),
+        ),
+    ),
+    formacion = listOf(
+        Formacion("Ingeniería Industrial", "Universidad de Guadalajara", "2020 – 2025"),
+    ),
+    certificaciones = listOf(
+        Certificacion("Certificado de Análisis de Datos", "Google", "2025"),
+        Certificacion("Excel Avanzado", "Microsoft Learn", "2025"),
+    ),
+    habilidades = listOf("Excel avanzado", "Power BI", "SQL básico", "Lean Manufacturing"),
+    idiomas = listOf(IdiomaNivel("Español", "Nativo"), IdiomaNivel("Inglés", "B2 intermedio-alto")),
+)
