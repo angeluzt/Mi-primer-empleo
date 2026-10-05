@@ -1,7 +1,8 @@
 # Conseguir Trabajo: Mi primer empleo
 
 Guía gamificada de empleabilidad para estudiantes y recién egresados de Latinoamérica.
-App Android (Kotlin + Jetpack Compose) con generador de CV asistido por IA.
+App Android (Kotlin + Jetpack Compose) con generador de CV asistido por IA, revisión de
+vacantes (¿es estafa?, ¿qué me falta?, mi CV adaptado) y una bitácora de entrevistas.
 
 **Sin suscripciones.** Un solo pago desbloquea todo para siempre. Los únicos anuncios
 son con recompensa, máximo tres al día, y solo si la persona toca el botón: nunca hay
@@ -16,13 +17,14 @@ app/src/main/assets/contenido/   Los 10 módulos en JSON (fuente única de conte
 app/src/main/java/.../model/     Modelos de contenido y CV
 app/src/main/java/.../data/      Contenido, progreso local (DataStore) y anuncios
 app/src/main/java/.../billing/   Play Billing — SOLO productos de pago único
-app/src/main/java/.../cv/        Generador de CV: modelo, cliente y armado del PDF
-app/src/main/java/.../ui/        Pantallas Compose y renderizador de bloques
-app/src/test/                    Pruebas del normalizador (corren en CI antes del APK)
+app/src/main/java/.../cv/        CV: entrevista, cliente de IA, protección de datos,
+                                 verificador de cifras, detector de estafas y PDF
+app/src/main/java/.../bitacora/  Bitácora de entrevistas y su lista de estudio
+app/src/main/java/.../ui/        Pantallas Compose, tema y componentes de diseño
+app/src/test/                    Pruebas (corren en CI antes del APK) y capturas
 backend/                         Cloud Function: proxy de OpenAI + verificación de compra
-prompts/                         Los prompts, compartidos por app, backend y pruebas
-tools/                           Revisión de contenido, capturas y pruebas de la IA
-docs/capturas/                   PNGs de las pantallas
+prompts/                         Prompts, esquemas y modelos: compartidos por app, backend y pruebas
+tools/                           Revisión de contenido y pruebas de la IA
 ```
 
 ### El generador de CV
@@ -30,15 +32,36 @@ docs/capturas/                   PNGs de las pantallas
 Once preguntas fijas (`cv/GuionEntrevista.kt`), una sola llamada a la IA para redactar
 y otra, mucho más barata, para revisar el resultado. La IA devuelve JSON, nunca un PDF:
 el PDF lo dibuja el teléfono, así que cambiar de formato o corregir un dato no cuesta
-otra generación.
+otra generación. Lo que la IA redactó se puede corregir a mano en el **editor**, gratis.
 
-**La IA no garantiza el esquema.** Un mismo prompt a veces devuelve `"logros": ["texto"]`
-y a veces `"logros": [{"accion": "texto"}]`; lo segundo ya tiró una generación pagada en
-un teléfono real. Por eso `cv/NormalizadorCv.kt` lee el JSON campo por campo y aguanta
-objetos donde iba texto, números donde iba cadena, secciones ausentes y nombres de campo
-en inglés. Nunca inventa contenido: lo único que rellena son los datos de contacto, y
-solo copiándolos de lo que la propia persona escribió. `app/src/test/` cubre cada forma
-torcida que hemos visto.
+**Esquema garantizado, y una red debajo.** Las llamadas usan salidas estructuradas de
+OpenAI con esquema estricto (`prompts/esquemas/`), así que el modelo no puede devolver
+otra forma. Aun así `cv/NormalizadorCv.kt` lee el JSON campo por campo y aguanta objetos
+donde iba texto, números donde iba cadena o secciones ausentes: un modelo de respaldo o un
+cambio del proveedor no deben tirar una generación pagada. Los modelos y su orden viven en
+`prompts/modelos.json` (`gpt-4.1-mini`, con `gpt-4o-mini` de respaldo).
+
+**Lo que protege a la persona no depende de que la IA obedezca:**
+
+| Capa | Dónde | Qué hace |
+|---|---|---|
+| Identificaciones | `cv/ProteccionDatos.kt` | Tacha CURP, RFC, NSS, DNI, RUT, cédula, pasaporte y fecha de nacimiento **antes** de mandar nada |
+| Minimización | `cv/ProteccionDatos.kt` | Nombre, teléfono, correo y enlaces no viajan a la IA (`[omitido]`); la app los repone al volver |
+| Inyección | `cv/Adaptacion.kt` (`Delimitador`) | El texto de la persona y el de la vacante van delimitados como datos; los prompts dicen que no son órdenes |
+| Inventos | `cv/VerificadorCv.kt` | Señala cifras y habilidades del CV que la persona nunca dijo |
+| Datos de más | `cv/ProteccionDatos.kt` | Avisa si el CV terminado trae estado civil, edad o dirección exacta |
+| Estafas | `cv/DetectorEstafas.kt` | Revisa la vacante en el teléfono, gratis y sin IA: cobros, depósitos, INE por WhatsApp, multinivel… |
+
+### Herramientas para la búsqueda
+
+- **Revisar una vacante.** Se pega el texto de la vacante. Al instante, sin IA, dice si
+  tiene señales de fraude. Con la IA (gasta una generación) dice qué tanto la cubre, qué le
+  falta y cómo cubrirlo, y reordena el CV para ese puesto **sin agregar nada que no esté en
+  el CV**, más un mensaje para postularse. Si la vacante huele a estafa, adaptar deja de ser
+  el botón principal.
+- **Bitácora de entrevistas.** Qué preguntaron y cuáles no supo contestar. Agrupa las
+  preguntas que se repiten entre entrevistas (`bitacora/Bitacora.kt`) y arma la lista de
+  estudio sola. Nunca sale del teléfono.
 
 **Diez diseños de PDF**, con 8 colores y 4 tipos de letra: 640 combinaciones. No son
 diez tonos del mismo papel; cambian el encabezado, cómo se separan las secciones y
@@ -62,7 +85,7 @@ en PDF sin reescribir nada.
 
 | Producto | Tipo | Qué incluye |
 |---|---|---|
-| `pase_completo` | Pago único, no consumible | Los 10 módulos, generador de CV, 15 generaciones, exportar PDF, sin anuncios |
+| `pase_completo` | Pago único, no consumible | Los 10 módulos, generador de CV, 15 generaciones (generar o adaptar a una vacante), revisión, exportar PDF, bitácora, sin anuncios |
 | `pase_lectura` | Pago único, no consumible | Solo la lectura completa, más barato |
 | `recarga_cv_10` | Pago único, consumible | 10 generaciones más, para generar o adaptar el CV a vacantes |
 
@@ -81,6 +104,7 @@ genera cancelaciones, reembolsos y malas reseñas.
 - El primer capítulo de cada módulo
 - Cualquier capítulo cerrado, a cambio de ver un anuncio (hasta 3 al día)
 - **Armar el CV entero, verlo y que la IA lo revise** — se paga al exportar el PDF
+- **Revisar si una vacante tiene señales de fraude** — corre en el teléfono, sin IA
 
 El muro está donde la persona ya invirtió su trabajo, no antes de que vea el valor.
 
@@ -150,8 +174,15 @@ firebase functions:secrets:set OPENAI_API_KEY
 firebase deploy --only functions
 ```
 
+Despliega cuatro funciones: `generarCv`, `evaluarCv`, `adaptarCv` y `acreditarRecarga`.
+**Vuelve a desplegar cada vez que cambie algo en `prompts/`**: la app trae su propia copia
+dentro del APK, pero en producción manda lo que tenga el backend.
+
 Requiere además una cuenta de servicio con acceso a la **Google Play Developer API**
 para que `verificarCompra()` pueda validar los tokens de compra.
+
+En Firestore solo se guardan contadores por compra (generaciones y revisiones usadas,
+recargas acreditadas). Ni las respuestas ni el CV se guardan en el servidor.
 
 ### 3. Productos en Play Console
 
@@ -172,11 +203,29 @@ Usa los mismos prompts que la Cloud Function, reporta lo que costó en tokens, a
 la IA se salió del esquema y audita las cifras que no aparecen en las respuestas: es la
 red contra un CV inflado.
 
-### 5. Regenerar las capturas
+### 5. Ver las pantallas sin emulador
+
+CI dibuja las pantallas reales de la app en la JVM (Robolectric + Roborazzi,
+`app/src/test/.../capturas/`) y las sube a la rama **`capturas-ci`**, que se sobrescribe en
+cada ejecución. Para verlas: abre esa rama en GitHub, o
 
 ```bash
-node tools/capturas.js
+git fetch origin capturas-ci && git checkout origin/capturas-ci -- .   # en otra carpeta
 ```
+
+Las pruebas normales corren sin las capturas con `./gradlew testDebugUnitTest -PsinCapturas`.
+
+### 6. Antes de publicar en Play
+
+- **Política de privacidad.** La app usa anuncios, IA y datos personales del CV: Play exige
+  una URL pública. Lo que debe decir ya está escrito, sin letra chica, en
+  *Ajustes → Tu privacidad*.
+- **Seguridad de los datos (Data safety).** Datos personales (nombre, correo, teléfono,
+  historial laboral) que se procesan para la función del CV; se mandan cifrados a nuestro
+  backend y a OpenAI; no se venden ni se comparten para publicidad; la persona los borra
+  desde *Ajustes → Borrar mi CV y mis notas*. AdMob recopila el identificador de publicidad.
+- **AdMob** con tus identificadores reales (ver arriba) y **desactiva `plantillas_extra`** si
+  lo llegaste a crear.
 
 ---
 
@@ -194,6 +243,9 @@ node tools/capturas.js
 6. **La publicidad no interrumpe.** Solo anuncios con recompensa, que la persona pide
    tocando un botón, con tope diario. Nada de intersticiales.
 7. **La llave de OpenAI no viaja en el APK.** Un APK se descompila en minutos.
+8. **A la IA solo va lo necesario.** Las identificaciones se tachan y el contacto se omite
+   antes de salir del teléfono. La bitácora nunca sale. La persona puede borrar todo lo
+   suyo desde Ajustes.
 
 ---
 

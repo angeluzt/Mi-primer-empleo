@@ -648,8 +648,14 @@ private fun BarraExportar(
             OutlinedIconButton(
                 onClick = { if (tienePase) onExportar("es", AccionArchivo.COMPARTIR) else onPaywall() },
                 enabled = !exportando,
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
             ) {
-                Icon(Icons.Default.Share, contentDescription = "Compartir el PDF", modifier = Modifier.size(18.dp))
+                Icon(
+                    Icons.Default.Share,
+                    contentDescription = "Compartir el PDF",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(18.dp),
+                )
             }
         }
 
