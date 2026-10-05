@@ -126,6 +126,45 @@ object ProteccionDatos {
         return limpias to avisos.distinctBy { it.tipo }
     }
 
+    // ---------- Minimización ----------
+    //
+    // La IA no necesita saber cómo se llama la persona, ni su teléfono, ni su correo, ni sus
+    // enlaces para redactar un CV: esos datos se copian tal cual y la app los pone después
+    // (NormalizadorCv.conContactoReal). Así no salen del teléfono. La marca le dice al modelo
+    // que el dato existe, para que no lo reporte como faltante.
+
+    const val OMITIDO = "[omitido]"
+
+    /** Respuestas de la entrevista sin los datos de contacto, para generar el CV. */
+    fun sinContacto(respuestas: Map<String, String>): Map<String, String> =
+        respuestas.mapValues { (campo, valor) ->
+            if (campo in CAMPOS_DE_CONTACTO && valor.isNotBlank()) OMITIDO else valor
+        }
+
+    /**
+     * El CV para revisarlo. Nombre, correo y enlaces sí van: revisar si el correo se ve
+     * profesional y si los enlaces están completos es parte de lo que la persona pidió, y
+     * los enlaces de un CV son públicos de todos modos. El teléfono no le sirve a la revisión.
+     */
+    fun paraRevisar(cv: Cv): Cv = cv.copy(
+        datos = cv.datos.copy(telefono = marcar(cv.datos.telefono)),
+    )
+
+    /** El CV para adaptarlo a una vacante: ningún dato de contacto hace falta para eso. */
+    fun paraAdaptar(cv: Cv): Cv = cv.copy(
+        datos = cv.datos.copy(
+            nombre = marcar(cv.datos.nombre),
+            telefono = marcar(cv.datos.telefono),
+            correo = marcar(cv.datos.correo),
+            linkedin = marcar(cv.datos.linkedin),
+            portafolio = marcar(cv.datos.portafolio),
+        ),
+    )
+
+    private fun marcar(valor: String) = if (valor.isBlank()) "" else OMITIDO
+
+    private val CAMPOS_DE_CONTACTO = setOf("nombre", "contacto", "enlaces")
+
     /** Revisa el CV ya redactado: por si algo se coló, o la persona lo escribió en el editor. */
     fun revisarCv(cv: Cv): List<DatoSensible> {
         val partes = buildList {

@@ -25,8 +25,8 @@ function esquema(nombre) {
 }
 
 // ---------- Datos personales ----------
-// Igual que ProteccionDatos.kt: solo lo inequívoco. Las apps viejas ya los tachan antes de
-// mandarlos; esto cubre a quien llame al backend sin pasar por la app.
+// Igual que ProteccionDatos.kt: solo lo inequívoco. La app ya los tacha antes de mandarlos;
+// esto cubre a quien llame al backend sin pasar por ella.
 
 const TACHADO = "[dato personal omitido]";
 const PATRONES = [
@@ -49,6 +49,35 @@ function tachar(texto) {
   return limpio;
 }
 
+// ---------- Minimización ----------
+// Igual que ProteccionDatos.kt: la IA no necesita el nombre, el teléfono, el correo ni los
+// enlaces para redactar, y la app los quita antes de mandarlos y los repone al volver. Se
+// repite aquí para que los prompts siempre reciban lo mismo, y para que el script de pruebas
+// mande exactamente lo que manda la app.
+
+const OMITIDO = "[omitido]";
+const marcar = (valor) => (String(valor ?? "").trim() ? OMITIDO : "");
+
+function sinContacto(respuestas) {
+  return Object.fromEntries(
+    Object.entries(respuestas || {}).map(([campo, valor]) => [
+      campo,
+      ["nombre", "contacto", "enlaces"].includes(campo) ? marcar(valor) : valor,
+    ])
+  );
+}
+
+function ocultarDatos(cv, campos) {
+  if (!cv || typeof cv !== "object" || !cv.datos) return cv || {};
+  const datos = { ...cv.datos };
+  for (const campo of campos) datos[campo] = marcar(datos[campo]);
+  return { ...cv, datos };
+}
+
+/** El correo y los enlaces sí van a la revisión: juzgarlos es parte de revisar. */
+const paraRevisar = (cv) => ocultarDatos(cv, ["telefono"]);
+const paraAdaptar = (cv) => ocultarDatos(cv, ["nombre", "telefono", "correo", "linkedin", "portafolio"]);
+
 // ---------- Delimitación ----------
 // El texto de la persona y el de la vacante van entre etiquetas que el prompt declara como
 // datos. Antes se quitan nuestras etiquetas de adentro, para que una vacante no pueda
@@ -66,9 +95,9 @@ const recortar = (texto, maximo) =>
 // ---------- Mensajes ----------
 
 function mensajesGenerar(respuestas, pais, cvPegado) {
-  const limpias = Object.fromEntries(
+  const limpias = sinContacto(Object.fromEntries(
     Object.entries(respuestas || {}).map(([k, v]) => [k, tachar(recortar(String(v), config.limites.respuesta))])
-  );
+  ));
   const partes = [
     `País donde busca trabajo: ${nombrePais(pais)}`,
     envolver("respuestas", JSON.stringify(limpias, null, 2)),
@@ -83,7 +112,7 @@ function mensajesGenerar(respuestas, pais, cvPegado) {
 function mensajesEvaluar(cv) {
   return [
     { role: "system", content: leer("evaluar_cv.txt") },
-    { role: "user", content: envolver("cv", JSON.stringify(cv || {}, null, 2)) },
+    { role: "user", content: envolver("cv", JSON.stringify(paraRevisar(cv), null, 2)) },
   ];
 }
 
@@ -94,7 +123,7 @@ function mensajesAdaptar(cv, vacante, pais) {
       role: "user",
       content: [
         `País donde busca trabajo: ${nombrePais(pais)}`,
-        envolver("cv", JSON.stringify(cv || {}, null, 2)),
+        envolver("cv", JSON.stringify(paraAdaptar(cv), null, 2)),
         envolver("vacante", tachar(recortar(String(vacante || ""), config.limites.vacante))),
       ].join("\n\n"),
     },
@@ -105,6 +134,8 @@ module.exports = {
   config,
   esquema,
   tachar,
+  sinContacto,
+  OMITIDO,
   envolver,
   mensajesGenerar,
   mensajesEvaluar,

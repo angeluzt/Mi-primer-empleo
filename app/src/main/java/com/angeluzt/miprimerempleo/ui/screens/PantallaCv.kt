@@ -223,8 +223,8 @@ fun ContenidoCv(
             item {
                 Aviso(
                     tono = TonoAviso.SEGURIDAD,
-                    texto = "No inventamos nada: solo redactamos lo que tú digas. Y tus datos de " +
-                        "identificación (CURP, DNI, RUT…) se borran antes de salir del teléfono.",
+                    texto = "No inventamos nada: solo redactamos lo que tú digas. Tus identificaciones " +
+                        "(CURP, DNI, RUT…) se borran antes de salir del teléfono, y la IA nunca recibe tu teléfono.",
                 )
             }
             items(cv.turnos) { turno -> Burbuja(turno) }

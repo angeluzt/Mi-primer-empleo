@@ -125,7 +125,7 @@ object NormalizadorCv {
             ).filter { it.requisito.isNotBlank() },
             palabrasClave = textos(o["palabrasClave"]),
             alertas = textos(o["alertas"]),
-            mensaje = texto(o["mensaje"]),
+            mensaje = firmar(texto(o["mensaje"]), original.datos.nombre),
             cv = cv,
             vacante = vacante.take(4000),
         )
@@ -246,6 +246,62 @@ object NormalizadorCv {
         } else {
             IdiomaNivel(entrada.trim(), "")
         }
+    }
+
+    /**
+     * Los datos de contacto se le ocultan a la IA (no los necesita para redactar) y aquí se
+     * ponen de vuelta, tal como los escribió la persona. Se imponen sobre lo que haya devuelto
+     * el modelo: un teléfono o un correo no se "redactan", se copian.
+     */
+    fun conContactoReal(par: ParCv, respuestas: Map<String, String>): ParCv {
+        val contacto = respuestas["contacto"].orEmpty()
+        val enlaces = respuestas["enlaces"].orEmpty()
+        val nombre = nombrePropio(respuestas["nombre"].orEmpty())
+        // Si la persona no lo dijo en la entrevista vale lo del modelo (lo pudo leer de un CV
+        // pegado), salvo que sea una de nuestras marcas: esas nunca llegan al CV.
+        fun respaldo(delModelo: String) = delModelo.takeUnless { it.trimStart().startsWith("[") }.orEmpty()
+        fun Cv.real() = copy(
+            datos = datos.copy(
+                nombre = nombre.ifBlank { respaldo(datos.nombre) },
+                telefono = telefonoEn(contacto).ifBlank { respaldo(datos.telefono) },
+                correo = correoEn(contacto).ifBlank { respaldo(datos.correo) },
+                linkedin = enlaceCon(enlaces, "linkedin").ifBlank { respaldo(datos.linkedin) },
+                portafolio = otroEnlace(enlaces).ifBlank { respaldo(datos.portafolio) },
+            ),
+        )
+        return ParCv(par.es.real(), par.en.real())
+    }
+
+    /**
+     * El mensaje para postularse, con el nombre de la persona. La IA no lo conoce (no se lo
+     * mandamos), así que lo pone la app: donde el modelo dejó la marca y como firma al final.
+     * Las líneas de plantilla que a veces deja ("[Tu nombre]", "[Teléfono]") se quitan.
+     */
+    fun firmar(mensaje: String, nombre: String): String {
+        val firma = nombre.trim().takeUnless { it.startsWith("[") }.orEmpty()
+        val limpio = mensaje
+            .replace(MARCA_EN_TEXTO, if (firma.isBlank()) "" else " $firma")
+            .lines()
+            .map { it.trim() }
+            .filterNot { PLANTILLA.matches(it) }
+            .joinToString("\n")
+            .replace(Regex("\n{3,}"), "\n\n")
+            .trim()
+        if (limpio.isBlank() || firma.isBlank() || limpio.contains(firma)) return limpio
+        return limpio + (if (limpio.endsWith(",")) "\n" else "\n\n") + firma
+    }
+
+    private val MARCA_EN_TEXTO = Regex("[ \\t]*" + Regex.escape(ProteccionDatos.OMITIDO))
+    private val PLANTILLA = Regex("\\[[^\\]\\n]{1,40}\\]")
+
+    /** "ana lópez de la cruz" → "Ana López de la Cruz". Si ya trae mayúsculas, se respeta. */
+    fun nombrePropio(nombre: String): String {
+        val limpio = nombre.trim().replace(Regex("\\s+"), " ")
+        if (limpio.any { it.isUpperCase() }) return limpio
+        val particulas = setOf("de", "del", "la", "las", "los", "y")
+        return limpio.split(' ').mapIndexed { i, palabra ->
+            if (i > 0 && palabra in particulas) palabra else palabra.replaceFirstChar { it.uppercaseChar() }
+        }.joinToString(" ")
     }
 
     /**

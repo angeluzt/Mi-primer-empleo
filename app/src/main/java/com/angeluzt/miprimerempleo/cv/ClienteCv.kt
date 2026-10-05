@@ -60,8 +60,10 @@ data class Generacion(val par: ParCv, val tachados: List<DatoSensible>)
  * Ese camino no existe en release: `LLAVE_LOCAL_PERMITIDA` vale false y el compilador
  * elimina la rama entera.
  *
- * Las tres protecciones viven aquí, donde no se pueden olvidar:
+ * Las protecciones viven aquí, donde no se pueden olvidar:
  * - Los identificadores personales (CURP, RFC, DNI…) se tachan antes de salir del teléfono.
+ * - Nombre, teléfono, correo y enlaces no se mandan cuando la IA no los necesita, y se
+ *   reponen aquí desde lo que escribió la persona.
  * - El texto de la persona y el de las vacantes va delimitado como datos, nunca como órdenes.
  * - La respuesta de la IA se pide con esquema estricto y además se lee con el normalizador.
  */
@@ -112,17 +114,22 @@ class ClienteCv(private val context: Context) {
             respuestas.mapValues { Delimitador.recortar(it.value, maximo) },
         )
         val pegado = ProteccionDatos.tachar(cvPegado).first
+        // Nombre, teléfono, correo y enlaces no viajan: la IA no los necesita para redactar.
+        val aEnviar = ProteccionDatos.sinContacto(limpias)
 
         return if (usaLlaveLocal(llaveLocal)) {
             val entrada = buildString {
                 append("País donde busca trabajo: ").append(nombrePais(pais)).append("\n\n")
-                append(Delimitador.envolver("respuestas", json.encodeToString(limpias)))
+                append(Delimitador.envolver("respuestas", json.encodeToString(aEnviar)))
                 if (pegado.isNotBlank()) append("\n\n").append(Delimitador.envolver("cv_pegado", pegado))
             }
             directo(llaveLocal, "generar", asset("generar_cv.txt"), esquema("cv"), entrada)
         } else {
-            llamar("generarCv", json.encodeToString(PeticionCv(purchaseToken, limpias, pais, pegado)))
-        }.mapCatching { Generacion(NormalizadorCv.aParCv(it, limpias), tachados) }
+            llamar("generarCv", json.encodeToString(PeticionCv(purchaseToken, aEnviar, pais, pegado)))
+        }.mapCatching {
+            val par = NormalizadorCv.aParCv(it, limpias)
+            Generacion(NormalizadorCv.conContactoReal(par, limpias), tachados)
+        }
     }
 
     // ---------- Revisar ----------
@@ -139,10 +146,10 @@ class ClienteCv(private val context: Context) {
         if (usaLlaveLocal(llaveLocal)) {
             directo(
                 llaveLocal, "evaluar", asset("evaluar_cv.txt"), esquema("revision"),
-                Delimitador.envolver("cv", json.encodeToString(cv)),
+                Delimitador.envolver("cv", json.encodeToString(ProteccionDatos.paraRevisar(cv))),
             )
         } else {
-            llamar("evaluarCv", json.encodeToString(PeticionRevision(purchaseToken, cv)))
+            llamar("evaluarCv", json.encodeToString(PeticionRevision(purchaseToken, ProteccionDatos.paraRevisar(cv))))
         }.mapCatching { NormalizadorCv.aRevision(it) }
 
     // ---------- Adaptar a una vacante ----------
@@ -157,15 +164,17 @@ class ClienteCv(private val context: Context) {
     ): Result<Adaptacion> {
         // La vacante también se tacha: a veces la gente pega el correo de respuesta con sus datos.
         val texto = ProteccionDatos.tachar(Delimitador.recortar(vacante.trim(), limite("vacante", 8000))).first
+        // Para adaptar no hace falta ningún dato de contacto; el CV adaptado recupera los reales.
+        val oculto = ProteccionDatos.paraAdaptar(cv)
         return if (usaLlaveLocal(llaveLocal)) {
             val entrada = buildString {
                 append("País donde busca trabajo: ").append(nombrePais(pais)).append("\n\n")
-                append(Delimitador.envolver("cv", json.encodeToString(cv))).append("\n\n")
+                append(Delimitador.envolver("cv", json.encodeToString(oculto))).append("\n\n")
                 append(Delimitador.envolver("vacante", texto))
             }
             directo(llaveLocal, "adaptar", asset("adaptar_cv.txt"), esquema("adaptacion"), entrada)
         } else {
-            llamar("adaptarCv", json.encodeToString(PeticionAdaptacion(purchaseToken, cv, texto, pais)))
+            llamar("adaptarCv", json.encodeToString(PeticionAdaptacion(purchaseToken, oculto, texto, pais)))
         }.mapCatching {
             NormalizadorCv.aAdaptacion(it, cv, texto, UUID.randomUUID().toString(), System.currentTimeMillis())
         }

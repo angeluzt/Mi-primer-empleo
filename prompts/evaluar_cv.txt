@@ -15,7 +15,8 @@ que falta: no lo supongas.
    para distinguirlo. Un apodo, una palabra graciosa o un año de nacimiento cuestan entrevistas.
    Di si el correo sirve. Si no, propón en "correoSugerido" solo la parte antes de la arroba,
    armada con el nombre real de la persona. Revisa que haya teléfono y ciudad, y que los enlaces
-   se vean completos.
+   se vean completos. El teléfono no te llega: si existe viene como [omitido] y cuenta como
+   presente; solo falta si está vacío.
 
 3. QUÉ FALTA. Los vacíos que más le cuestan. Para cada uno, el campo de la entrevista donde lo
    puede agregar y la pregunta concreta que le harías para sacarle esa información.

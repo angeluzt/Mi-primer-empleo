@@ -21,6 +21,7 @@ const {
   mensajesGenerar,
   mensajesEvaluar,
   mensajesAdaptar,
+  OMITIDO,
   MODELOS,
 } = require("../backend/prompts");
 
@@ -148,6 +149,37 @@ function enderezar(par) {
   arreglarCv(par.es, "es");
   arreglarCv(par.en, "en");
   return desvios;
+}
+
+/**
+ * Igual que NormalizadorCv.conContactoReal en la app: nombre, teléfono, correo y enlaces no
+ * se le mandan a la IA, así que se ponen de vuelta desde lo que escribió la persona.
+ */
+function reponerContacto(par, respuestas) {
+  const CORREO = /[\w.+-]+@[\w-]+\.[\w.-]+/;
+  const contacto = respuestas.contacto || "";
+  const trozos = (respuestas.enlaces || "")
+    .split(/[ ,;\n]+/)
+    .map((t) => t.trim().replace(/[.)]+$/, ""))
+    .filter(Boolean);
+  const reales = {
+    nombre: (respuestas.nombre || "").trim(),
+    correo: (contacto.match(CORREO) || [""])[0],
+    telefono: (contacto.replace(new RegExp(CORREO, "g"), " ").match(/[+(]?\d[\d\s()+-]{6,}\d/) || [""])[0].trim(),
+    linkedin: trozos.find((t) => /linkedin/i.test(t)) || "",
+    portafolio: trozos.find((t) => t.includes(".") && !/linkedin/i.test(t) && !t.includes("@")) || "",
+  };
+  const respaldo = (valor) => (String(valor || "").trim().startsWith("[") ? "" : valor || "");
+  for (const cv of [par.es, par.en]) {
+    if (!cv) continue;
+    cv.datos = cv.datos || {};
+    for (const [campo, real] of Object.entries(reales)) cv.datos[campo] = real || respaldo(cv.datos[campo]);
+  }
+}
+
+/** La marca de dato omitido nunca debe aparecer en el texto del CV. */
+function marcasFiltradas(par) {
+  return [par.es, par.en].some((cv) => cv && JSON.stringify({ ...cv, datos: null }).includes(OMITIDO));
 }
 
 /** Revisa que la IA no se haya inventado cosas que la persona nunca dijo. */
@@ -342,6 +374,8 @@ async function main() {
   const segundos = ((Date.now() - inicio) / 1000).toFixed(1);
 
   const desvios = enderezar(contenido);
+  const filtradas = marcasFiltradas(contenido);
+  reponerContacto(contenido, respuestas);
 
   fs.mkdirSync(SALIDA, { recursive: true });
   fs.writeFileSync(path.join(SALIDA, "cv.json"), JSON.stringify(contenido, null, 2));
@@ -357,6 +391,10 @@ async function main() {
     console.log("");
   } else {
     console.log("✓ El JSON respetó el esquema.");
+  }
+
+  if (filtradas) {
+    console.log(`⚠  La IA escribió ${OMITIDO} dentro del CV: el prompt de generar_cv.txt no se respetó.`);
   }
 
   const sospechas = auditarInventos(contenido.es, respuestas);
