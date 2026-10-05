@@ -83,6 +83,20 @@ android {
         compose = true
         buildConfig = true
     }
+
+    testOptions {
+        unitTests {
+            // Robolectric necesita los recursos y los assets para dibujar las pantallas
+            // con el contenido real.
+            isIncludeAndroidResources = true
+            all {
+                // Las capturas no se comparan contra nada: se graban siempre, para
+                // poder ver la app real sin un teléfono.
+                it.systemProperty("roborazzi.test.record", "true")
+                it.maxHeapSize = "2g"
+            }
+        }
+    }
 }
 
 dependencies {
@@ -111,4 +125,26 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
 
     testImplementation("junit:junit:4.13.2")
+
+    // Capturas de las pantallas reales, dibujadas en la JVM sin emulador.
+    // CI las publica en la rama capturas-ci: así se revisa el diseño de verdad,
+    // no una maqueta parecida.
+    testImplementation(platform("androidx.compose:compose-bom:2024.10.01"))
+    testImplementation("androidx.compose.ui:ui-test-junit4")
+    testImplementation("org.robolectric:robolectric:4.16.1")
+    testImplementation("io.github.takahirom.roborazzi:roborazzi:1.76.0")
+    testImplementation("io.github.takahirom.roborazzi:roborazzi-compose:1.76.0")
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
+}
+
+tasks.withType<Test>().configureEach {
+    // CI corre primero las pruebas rápidas (-PsinCapturas) y después, aparte, las
+    // capturas, que tardan más y no deben impedir que salga el APK.
+    if (project.hasProperty("sinCapturas")) {
+        filter { excludeTestsMatching("*.capturas.*") }
+    }
+    testLogging {
+        events("failed")
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
 }

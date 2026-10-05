@@ -1,10 +1,11 @@
 name: APK de prueba
 
-# Compila un APK instalable para probar en un teléfono real.
+# Compila un APK instalable para probar en un teléfono real y dibuja las pantallas.
 # Se ejecuta en cada push y también a mano desde la pestaña Actions.
 on:
   push:
-    branches: ["**"]
+    # capturas-ci la escribe este mismo workflow: no debe dispararlo otra vez.
+    branches: ["**", "!capturas-ci"]
   workflow_dispatch:
 
 jobs:
@@ -17,10 +18,15 @@ jobs:
           node-version: "20"
       - name: Revisar el contenido
         run: node tools/revisar_contenido.js
+      - name: Probar el normalizador del script de IA
+        run: node tools/probar_cv.js --simular-roto > /dev/null
 
   construir-apk:
     runs-on: ubuntu-latest
     needs: revisar-contenido
+    permissions:
+      # Solo para publicar las capturas en la rama capturas-ci.
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -46,20 +52,18 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
-      # La IA no respeta siempre el esquema JSON y eso ya tiró una generación pagada.
-      # Estas pruebas cubren cada forma torcida que hemos visto; corren antes del APK
-      # porque son segundos y fallan con un mensaje claro.
-      - name: Pruebas del normalizador de CV
+      # La IA no respeta siempre el esquema y eso ya tiró una generación pagada.
+      # Estas pruebas corren antes del APK porque son segundos y fallan claro.
+      - name: Pruebas
         run: |
           set -o pipefail
-          ./gradlew testDebugUnitTest --no-daemon 2>&1 | tee test.log
+          ./gradlew testDebugUnitTest -PsinCapturas --no-daemon 2>&1 | tee test.log
 
       - name: Mostrar pruebas que fallaron
         if: failure()
         run: |
           echo "=== Pruebas ==="
-          grep -E "^e: |FAILED|expected:|What went wrong" -A 3 test.log || echo "(nada en test.log)"
-          find app/build/reports/tests -name "*.html" -newer test.log 2>/dev/null | head -5 || true
+          grep -E "^e: |FAILED|expected:|Exception|What went wrong" -A 6 test.log || echo "(nada en test.log)"
 
       # Sin --stacktrace: el volcado de Gradle entierra las líneas "e:" del compilador,
       # que son lo único que sirve para arreglar el fallo.
@@ -81,3 +85,40 @@ jobs:
           path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 30
+
+      # Las capturas van después del APK y no lo bloquean: si el dibujo en la JVM
+      # falla, la app para probar en el teléfono sale de todos modos.
+      - name: Dibujar las pantallas
+        id: capturas
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          ./gradlew testDebugUnitTest --tests "*.capturas.*" --no-daemon 2>&1 | tee capturas.log
+
+      - name: Mostrar por qué fallaron las capturas
+        if: steps.capturas.outcome == 'failure'
+        run: |
+          grep -E "FAILED|Exception|Caused by|What went wrong" -A 8 capturas.log | head -120 || true
+
+      - name: Publicar las capturas en la rama capturas-ci
+        if: hashFiles('app/build/capturas/*.png') != ''
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          tmp=$(mktemp -d)
+          cp app/build/capturas/*.png "$tmp/"
+          cd "$tmp"
+          {
+            echo "# Capturas de la app"
+            echo
+            echo "Dibujadas por CI con Robolectric desde \`${GITHUB_REF_NAME}\` @ ${GITHUB_SHA::7}."
+            echo "CI reescribe esta rama en cada push: no hagas commits aquí."
+          } > README.md
+          git init -q -b capturas-ci
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -qm "Capturas de ${GITHUB_SHA::7}"
+          git push -qf "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" capturas-ci
+          ls -1 *.png
