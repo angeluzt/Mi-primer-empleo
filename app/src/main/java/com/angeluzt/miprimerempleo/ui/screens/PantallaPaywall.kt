@@ -35,10 +35,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.angeluzt.miprimerempleo.billing.Productos
 import com.angeluzt.miprimerempleo.ui.EstadoApp
+import com.angeluzt.miprimerempleo.ui.components.Aviso
 import com.angeluzt.miprimerempleo.ui.components.Hueco
 import com.angeluzt.miprimerempleo.ui.components.HuecoH
 import com.angeluzt.miprimerempleo.ui.components.Insignia
 import com.angeluzt.miprimerempleo.ui.components.TarjetaMarca
+import com.angeluzt.miprimerempleo.ui.components.TonoAviso
 import com.angeluzt.miprimerempleo.ui.theme.SobreMarcaSuave
 
 /**
@@ -82,6 +84,15 @@ fun PantallaPaywall(
                     text = "Un pago. Una vez. Tuyo para siempre. Sin suscripción, nada se renueva ni se cobra otra vez.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = SobreMarcaSuave,
+                )
+            }
+
+            if (estado.compras.pagoPendiente) {
+                Aviso(
+                    tono = TonoAviso.INFO,
+                    titulo = "Tu pago está en camino",
+                    texto = "Si pagaste en efectivo, Google puede tardar hasta 48 horas en confirmarlo. " +
+                        "En cuanto lo haga, todo se desbloquea solo. No vuelvas a pagar.",
                 )
             }
 

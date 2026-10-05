@@ -197,7 +197,8 @@ object NormalizadorCv {
                 },
                 { t -> Certificacion(nombre = t, institucion = "", anio = "") },
             ).filter { it.nombre.isNotBlank() },
-            habilidades = textos(o["habilidades"] ?: o["skills"], separar = true),
+            // Repetidas no suman: "Excel" y "excel" ocupan dos renglones de una sola hoja.
+            habilidades = textos(o["habilidades"] ?: o["skills"], separar = true).distinctBy { it.lowercase() },
             idiomas = lista(
                 o["idiomas"] ?: o["languages"],
                 { i -> aIdioma(i) },

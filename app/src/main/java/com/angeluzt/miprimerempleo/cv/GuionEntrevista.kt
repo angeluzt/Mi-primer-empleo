@@ -53,7 +53,7 @@ object GuionEntrevista {
         Campo(
             id = "formacion",
             pregunta = "¿Qué estudiaste, dónde y en qué años?",
-            ayuda = "Ejemplo: Ingeniería Industrial, Universidad de Guadalajara, 2020 a 2025.",
+            ayuda = "Ejemplo: Ingeniería Industrial, Universidad de Guadalajara, 2020 a 2025. Si aún estudias, pon «en curso».",
             opcional = false,
         ),
         Campo(
@@ -100,6 +100,51 @@ object GuionEntrevista {
     }
 
     fun posicionDe(id: String): Int = campos.indexOfFirst { it.id == id } + 1
+
+    /**
+     * Una sola pregunta de seguimiento, sin IA, cuando la respuesta va a dar un CV flojo.
+     *
+     * Lo que más separa un CV que consigue entrevistas de uno que no es un resultado medible
+     * ("bajé el desabasto de 8 a 2 casos al mes"), y es justo lo que nadie escribe a la
+     * primera. La IA no puede inventarlo, así que hay que pedirlo aquí. Solo una vez por
+     * campo y siempre saltable: insistir convierte una entrevista en un formulario.
+     */
+    fun repregunta(campoId: String, respuesta: String): String? {
+        if (campoId !in CON_RESULTADOS) return null
+        val texto = respuesta.trim()
+        if (texto.isEmpty()) return null
+        val palabras = texto.split(Regex("\\s+")).size
+        return when {
+            palabras < 6 -> when (campoId) {
+                "experiencia" -> "Cuéntame un poco más: ¿qué puesto, dónde, cuándo y qué hacías ahí?"
+                else -> "Cuéntame un poco más: ¿qué problema resolvía y qué hiciste tú?"
+            }
+            !texto.any { it.isDigit() } && NUMEROS_EN_LETRA.none { " ${texto.lowercase()} ".contains(it) } ->
+                "¿Recuerdas algún número? Cuántas personas atendías, cuántos productos, cuánto tiempo, " +
+                    "cuánto subió o bajó algo. Aunque sea aproximado: es lo que más pesa en un CV.\n\n" +
+                    "Si no recuerdas ninguno, sáltalo."
+            else -> null
+        }
+    }
+
+    /**
+     * Una línea antes de la siguiente pregunta, para que se sienta como una plática y no
+     * como un trámite. Corta a propósito: cada palabra de más es una razón para dejarlo.
+     */
+    fun reaccion(campoId: String, respuesta: String): String? = when {
+        respuesta.isBlank() -> null
+        campoId in CON_RESULTADOS && respuesta.any { it.isDigit() } -> "Ese número es oro: es lo primero que lee un reclutador."
+        campoId == "puesto_buscado" -> "Bien. Todo el CV va a apuntar a eso."
+        campoId == "formacion" -> "Anotado."
+        campoId == "habilidades" -> "Perfecto. Solo pondré las que dijiste."
+        else -> null
+    }
+
+    private val CON_RESULTADOS = setOf("experiencia", "proyectos")
+    private val NUMEROS_EN_LETRA = listOf(
+        " dos ", " tres ", " cuatro ", " cinco ", " seis ", " siete ", " ocho ", " nueve ", " diez ",
+        " veinte ", " cien", " mil ", "mitad", "doble", "por ciento",
+    )
 
     /**
      * Se puede generar en cuanto están los mínimos y hay algo que contar:

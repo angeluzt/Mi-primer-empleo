@@ -50,6 +50,8 @@ data class EstadoCv(
     val revisando: Boolean = false,
     /** La persona volvió a una pregunta ya contestada para corregirla. */
     val editando: Boolean = false,
+    /** Se le hizo una pregunta de seguimiento sobre el mismo campo (ver GuionEntrevista.repregunta). */
+    val aclarando: Boolean = false,
     /** Cambió algo después de generar: el CV en pantalla ya no refleja sus respuestas. */
     val cambiosSinGenerar: Boolean = false,
     val exportando: Boolean = false,
@@ -119,7 +121,7 @@ class CvViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     private fun bienvenida() =
-        "Vamos a armar tu CV. Son ${GuionEntrevista.campos.size} preguntas cortas " +
+        "Vamos a armar tu CV. Son ${GuionEntrevista.campos.size} preguntas cortas, unos 5 minutos, " +
             "y puedes saltarte las que no apliquen.\n\n" +
             "No invento nada: solo acomodo y redacto lo que tú me digas."
 
@@ -187,16 +189,36 @@ class CvViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     private fun avanzar(actual: Campo, respuesta: String, turnoUsuario: TurnoCv) {
-        val editando = _estado.value.editando
+        val antes = _estado.value
+        // La respuesta a una pregunta de seguimiento se suma a lo que ya dijo; saltarla no borra nada.
+        val previa = if (antes.aclarando) antes.respuestas[actual.id].orEmpty().trim().trimEnd('.') else ""
+        val completa = listOf(previa, respuesta.trim()).filter { it.isNotBlank() }.joinToString(". ")
+
+        val repregunta = if (antes.aclarando) null else GuionEntrevista.repregunta(actual.id, completa)
+        if (repregunta != null) {
+            _estado.update {
+                it.copy(
+                    respuestas = it.respuestas + (actual.id to completa),
+                    aclarando = true,
+                    error = null,
+                    turnos = it.turnos + turnoUsuario + TurnoCv(false, repregunta),
+                )
+            }
+            guardarRespuestas()
+            return
+        }
+
+        val editando = antes.editando
         // Al corregir se vuelve al final, no se repite el resto del guion.
         val siguiente = if (editando) null else GuionEntrevista.siguienteDespuesDe(actual.id)
+        val reaccion = GuionEntrevista.reaccion(actual.id, completa)
 
         _estado.update { estado ->
             // Los saltos se guardan como respuesta vacía: así no se vuelven a preguntar
             // cuando la persona regresa a la app.
-            val respuestas = estado.respuestas + (actual.id to respuesta)
+            val respuestas = estado.respuestas + (actual.id to completa)
             val cierre = when {
-                siguiente != null -> textoDe(siguiente)
+                siguiente != null -> listOfNotNull(reaccion, textoDe(siguiente)).joinToString("\n\n")
                 estado.cv != null -> "Anotado. Dale a «Generar de nuevo» para que tu CV lo incluya."
                 else -> "Eso es todo. Dale a «Generar mi CV» y te lo armo en español e inglés."
             }
@@ -204,6 +226,7 @@ class CvViewModel(app: Application) : AndroidViewModel(app) {
                 respuestas = respuestas,
                 campo = siguiente,
                 editando = false,
+                aclarando = false,
                 cambiosSinGenerar = estado.cambiosSinGenerar || estado.cv != null,
                 error = null,
                 turnos = estado.turnos + turnoUsuario + TurnoCv(false, cierre),
@@ -219,6 +242,7 @@ class CvViewModel(app: Application) : AndroidViewModel(app) {
             it.copy(
                 campo = campo,
                 editando = true,
+                aclarando = false,
                 turnos = it.turnos + TurnoCv(false, textoDe(campo)),
             )
         }

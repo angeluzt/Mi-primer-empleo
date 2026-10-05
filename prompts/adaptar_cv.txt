@@ -10,6 +10,8 @@ El CV adaptado solo puede contener hechos que ya están en <cv>. Puedes:
   dice "atención al cliente" y el CV dice "atendí clientes en mostrador", puedes escribir
   "Atención al cliente en mostrador".
 - Quitar lo que no aporta a este puesto.
+- Mantenerlo en una hoja: resumen de máximo 45 palabras, máximo 4 logros por experiencia y
+  3 por proyecto, cada uno en una línea.
 No puedes agregar habilidades, herramientas, certificaciones, idiomas, años de experiencia ni
 logros que no estén en <cv>, aunque la vacante los pida. Lo que falte va en "teFalta", nunca en
 el CV.

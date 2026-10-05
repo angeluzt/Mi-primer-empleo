@@ -151,11 +151,15 @@ Qué funciona y qué no en ese APK:
 
 ```bash
 # Requiere Android Studio / SDK. Apunta al backend desplegado:
-./gradlew assembleRelease \
+./gradlew bundleRelease \
   -PbackendUrl=https://TU-REGION-TU-PROYECTO.cloudfunctions.net \
   -PadmobAppId=ca-app-pub-XXXXXXXX~YYYYYYYY \
   -PadmobRecompensado=ca-app-pub-XXXXXXXX/ZZZZZZZZ
 ```
+
+Play pide un `.aab` (`app/build/outputs/bundle/release/`), firmado con tu llave de subida:
+créala y fírmalo desde Android Studio (*Build → Generate Signed App Bundle*) y activa
+*Play App Signing* en Play Console. Guarda esa llave fuera del repositorio.
 
 > **Los identificadores de AdMob son obligatorios para publicar.** Sin `-PadmobAppId` se
 > compila con el identificador **de prueba** de Google: los anuncios se ven, pero no

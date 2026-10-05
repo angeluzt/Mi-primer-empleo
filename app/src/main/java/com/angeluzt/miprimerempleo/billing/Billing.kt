@@ -63,6 +63,12 @@ data class EstadoCompras(
     val tieneLectura: Boolean = BuildConfig.DESBLOQUEO_PRUEBA,
     val precios: Map<String, String> = emptyMap(),
     val error: String? = null,
+    /**
+     * Pagó con un método que se confirma después: efectivo en OXXO u otra tienda, que es
+     * como paga mucha gente sin tarjeta. El pase se desbloquea solo cuando Google lo
+     * confirma; mientras, hay que decirlo para que no crea que perdió su dinero.
+     */
+    val pagoPendiente: Boolean = false,
 ) {
     /** El pase completo incluye la lectura, así que quien lo tiene no necesita el otro. */
     val puedeLeerTodo: Boolean get() = tienePase || tieneLectura
@@ -90,6 +96,10 @@ class GestorCompras(
 
             resultado.responseCode == BillingClient.BillingResponseCode.USER_CANCELED ->
                 _estado.update { it.copy(error = null) }
+
+            // Ya lo tenía (otro teléfono, reinstaló): no es un error, es devolvérselo.
+            resultado.responseCode == BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED ->
+                alcance.launch { restaurarCompras() }
 
             else ->
                 _estado.update { it.copy(error = "No se pudo completar la compra.") }
@@ -154,8 +164,12 @@ class GestorCompras(
         val activas = resultado.purchasesList.filter {
             it.purchaseState == Purchase.PurchaseState.PURCHASED
         }
+        val pendientes = resultado.purchasesList.any {
+            it.purchaseState == Purchase.PurchaseState.PENDING
+        }
         _estado.update { estado ->
             estado.copy(
+                pagoPendiente = pendientes,
                 tienePase = BuildConfig.DESBLOQUEO_PRUEBA ||
                     activas.any { Productos.PASE_COMPLETO in it.products },
                 tieneLectura = BuildConfig.DESBLOQUEO_PRUEBA ||
@@ -183,7 +197,12 @@ class GestorCompras(
     }
 
     private suspend fun procesar(compra: Purchase) {
+        if (compra.purchaseState == Purchase.PurchaseState.PENDING) {
+            _estado.update { it.copy(pagoPendiente = true, error = null) }
+            return
+        }
         if (compra.purchaseState != Purchase.PurchaseState.PURCHASED) return
+        _estado.update { it.copy(pagoPendiente = false) }
 
         if (Productos.RECARGA_CV in compra.products) {
             // Primero se acredita y DESPUÉS se consume. Antes era al revés y además
